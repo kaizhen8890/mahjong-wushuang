@@ -1,0 +1,11 @@
+.vm-auto-controls{position:absolute;left:.8%;bottom:3%;z-index:9;display:grid;gap:.18cqw;padding:.25cqw;border:1px solid #ad9162;border-radius:5px 12px;background:linear-gradient(165deg,#25314bd9,#11182de8);box-shadow:0 .35cqw .8cqw #050918b0}
+.vm-auto-controls button{display:grid;place-items:center;width:clamp(32px,4.2cqw,54px);height:clamp(32px,4.2cqw,54px);padding:0;border:1px solid #9e8b6f;border-radius:3px;background:linear-gradient(145deg,#343a58,#171e38);color:#c9c3b7;font:400 clamp(19px,2.4cqw,30px)/1 var(--font-serif-display);text-shadow:0 2px 2px #080b20;cursor:pointer}
+.vm-auto-controls button[aria-pressed=true]{border-color:#f0d594;background:linear-gradient(145deg,#466d67,#1c4f53 72%);color:#f9e8b6;box-shadow:inset 0 0 0 1px #ffe8aa66,0 0 .8cqw #e6c57655}
+.vm-auto-controls button:focus-visible{outline:2px solid #fff0b7;outline-offset:2px}
+.vm-hand.vm-hand-manual button{cursor:grab}
+.vm-hand.vm-hand-manual button.vm-moving{z-index:2;cursor:grabbing;transform:translateY(-.8cqw) scale(1.05);filter:drop-shadow(0 0 .8cqw #f2d185)}
+.vm-hand.vm-hand-manual button[aria-disabled=true] :is(img,.vm-tile-face){filter:drop-shadow(0 .3cqw .15cqw #0008)}
+.vm-hand.vm-hand-manual:has(.vm-riichi-option) button[aria-disabled=true]{opacity:.45}
+.vm-tile-sheen{pointer-events:none}
+.vm-shell[data-reduced=true] .vm-tile-sheen{display:none}
+@media(prefers-reduced-motion:reduce){.vm-tile-sheen{display:none}}

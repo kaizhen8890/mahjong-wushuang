@@ -1,0 +1,31 @@
+import assert from 'node:assert/strict';
+import { analyzeHand, parseMelds, manualFu, type HandContext } from '../lib/hand-analysis';
+const tiles=(s:string)=>[...s.matchAll(/([0-9]+)([mpsz])/g)].flatMap(m=>[...m[1]].map(n=>n+m[2]));
+function run(s:string,w:string,extra:Partial<HandContext>={}) {return analyzeHand({tiles:tiles(s),winningTile:w,melds:[],closed:true,winType:'ron',seatWind:'南',roundWind:'东',selected:[],bonusHan:0,...extra});}
+function has(s:string,w:string,id:string,extra:Partial<HandContext>={}) {const r=run(s,w,extra);assert.ok(r.best?.yaku.includes(id),JSON.stringify(r));return r.best!;}
+assert.equal(has('123m12355p456789s','6s','pinfu').fu,30);
+assert.equal(has('123m12355p456789s','6s','pinfu',{winType:'tsumo'}).fu,20);
+assert.ok(!run('123m12355p456789s','5s').best?.yaku.includes('pinfu'));
+assert.equal(run('123m12355p456789s','5s').best?.fu,40);
+has('112233m456p789s55z','9s','iipeikou');
+assert.ok(run('112233m147p258s55z','5z').error);
+const ambiguous=run('11223344556677m','7m');
+assert.ok(ambiguous.candidates.some(c=>c.yaku.includes('chiitoi')));
+assert.ok(ambiguous.candidates.some(c=>c.yaku.includes('ryanpeikou')));
+assert.ok(ambiguous.candidates.every(c=>!(c.yaku.includes('chiitoi')&&c.yaku.includes('ryanpeikou'))));
+const winds=run('111555666z234m77p','4m',{seatWind:'东'}).best!;
+for(const id of ['seat-wind','round-wind','haku','hatsu'])assert.ok(winds.yaku.includes(id));
+assert.ok(!run('222m33355p444567s','2m').best?.yaku.includes('sanankou'));
+has('222m33355p444567s','2m','sanankou',{winType:'tsumo'});
+has('111m222p333s44455z','5z','suuankou-tanki');
+has('111m222p333s44455z','1m','suuankou',{winType:'tsumo'});
+has('119m19p19s1234567z','1m','kokushi-13');
+has('119m19p19s1234567z','9m','kokushi');
+has('11123455678999m','5m','junsei-chuuren');
+has('11123455678999m','1m','chuuren');
+assert.equal(run('1111m234p567789s55z','9s',{melds:parseMelds('暗杠1m')}).best?.fu,70);
+assert.equal(run('1122m3344p5566s77z','7z').best?.fu,25);
+assert.ok(run('11111m234p567s555z','5z').error);
+assert.equal(manualFu(true,false,4,2,[4,0,0,0],'normal'),40);
+assert.equal(manualFu(true,true,0,0,[],'pinfu'),20);
+console.log('Passed 24 hand recognition and fu assertions');

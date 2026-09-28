@@ -1,0 +1,63 @@
+import assert from 'node:assert/strict';
+import { BUILTIN_CHARACTERS, DEFAULT_SEAT_CHARACTERS, validCharacterChoice } from '../lib/characters';
+import { readAssetFrame, CharacterAssetReceiver } from '../lib/character-transfer';
+import { createGameState } from '../lib/mahjong';
+import { applyRemoteControllerCommand } from '../lib/remote-command';
+import { createControllerSnapshot } from '../lib/controller-snapshot';
+import { createCommandRequest, parseClientMessage, serializeWireMessage } from '../lib/lan-protocol';
+import { VirtualRoomHost, VIRTUAL_ROOM_PROTOCOL } from '../lib/virtual-mahjong/room';
+import { readRoomSnapshot } from '../lib/virtual-mahjong/room-wire';
+import { defaultRules } from '../lib/virtual-mahjong/rules';
+
+assert.equal(BUILTIN_CHARACTERS.length, 8);
+assert.deepEqual(DEFAULT_SEAT_CHARACTERS.map(character => character.id), ['deepseek', 'claude', 'gpt', 'gemini']);
+assert.equal(validCharacterChoice({ id: 'claude', name: 'spoofed' }), false);
+const custom = { id: 'custom:1234', name: '自选', avatarHash: 'a'.repeat(64), portraitHash: 'b'.repeat(64) };
+assert.ok(validCharacterChoice(custom));
+assert.equal(validCharacterChoice({ ...custom, portraitHash: 'bad' }), false);
+assert.equal(validCharacterChoice({ ...custom, hand: ['1m'] }), false);
+
+let game = createGameState();
+assert.deepEqual(game.players.map(player => player.character?.id), ['deepseek', 'claude', 'gpt', 'gemini']);
+const original = structuredClone(game);
+const actor = game.players[2].id;
+const snapshot = createControllerSnapshot(game, [], { roomId: 'r', matchId: 'm', handId: 'h', revision: 1, playerId: actor });
+const parsed = parseClientMessage(serializeWireMessage(createCommandRequest(snapshot, { kind: 'character.select', character: custom })));
+assert.ok(parsed.ok && parsed.value.type === 'command.request');
+if (!parsed.ok || parsed.value.type !== 'command.request') throw new Error('Invalid command');
+game = applyRemoteControllerCommand(game, [], actor, parsed.value.command).nextGame;
+assert.deepEqual(game.players[2].character, custom);
+assert.deepEqual(game.players.filter(player => player.id !== actor), original.players.filter(player => player.id !== actor));
+assert.equal(game.wallCount, original.wallCount);
+assert.equal(createControllerSnapshot(game, [], { roomId: 'r', matchId: 'm', handId: 'h', revision: 2, playerId: actor }).self.character?.id, custom.id);
+
+let id = 0;
+const room = new VirtualRoomHost({ roomId: 'r', code: 'ABCDEF', hostName: 'Host', rules: defaultRules(3) }, { now: () => 1_000 }, () => `id-${++id}`);
+const send = (connection: string, data: object) => room.receive(connection, JSON.stringify({ protocol: VIRTUAL_ROOM_PROTOCOL, roomId: 'r', ...data })).map(item => ({ connectionId: item.connectionId, ...JSON.parse(item.text) }));
+assert.equal(send('unbound', { type: 'CHARACTER', character: custom })[0].error, 'NOT_AUTHENTICATED');
+send('one', { type: 'JOIN', name: 'One', code: 'ABCDEF' });
+send('two', { type: 'JOIN', name: 'Two', code: 'ABCDEF' });
+assert.equal(send('one', { type: 'CHARACTER', character: custom })[0].type, 'SNAPSHOT');
+const view = room.localView();
+assert.deepEqual(view.seats[1].character, custom);
+assert.equal(view.seats[0].character?.id, 'deepseek');
+assert.equal(view.seats[2].character?.id, 'gpt');
+assert.deepEqual(readRoomSnapshot(view, room.hostPlayerId).seats[1].character, custom);
+assert.equal(room.characterAssetOwner('one', custom.avatarHash), true);
+assert.equal(room.characterAssetOwner('two', custom.avatarHash), false);
+assert.equal(room.characterAssetPeer('unbound'), false);
+assert.equal(room.characterAssetKnown('c'.repeat(64)), false);
+assert.equal(VirtualRoomHost.restoreCheckpoint(room.exportCheckpoint(), { now: () => 2000 }).localView().seats[1].character?.id, custom.id);
+assert.equal(send('one', { type: 'CHARACTER', character: { ...custom, portraitHash: 'bad' } })[0].error, 'INVALID_CHARACTER');
+assert.equal(send('one', { type: 'CHARACTER', character: { ...custom, hand: ['1m'] } })[0].error, 'INVALID_CHARACTER');
+
+let botId = 0;
+const botRoom = new VirtualRoomHost({ roomId: 'bots', code: 'ABCDEF', hostName: 'Host', rules: defaultRules(4) }, { now: () => 1_000 }, () => `bot-${++botId}`);
+botRoom.addBot(); botRoom.addBot(); botRoom.addBot();
+assert.deepEqual(botRoom.localView().seats.map(seat => seat.character?.id), ['deepseek', 'claude', 'gpt', 'gemini']);
+
+assert.deepEqual(readAssetFrame({ type: 'character.asset.request', hash: custom.avatarHash }), { type: 'character.asset.request', hash: custom.avatarHash });
+assert.throws(() => readAssetFrame({ type: 'character.asset.chunk', hash: custom.avatarHash, index: 0, total: 251, mime: 'image/png', data: 'YQ==' }), /INVALID_CHARACTER_ASSET/);
+assert.throws(() => readAssetFrame({ type: 'character.asset.chunk', hash: custom.avatarHash, index: 0, total: 1, mime: 'text/html', data: 'YQ==' }), /INVALID_CHARACTER_ASSET/);
+await assert.rejects(new CharacterAssetReceiver().accept('bad', { type: 'character.asset.chunk', hash: custom.avatarHash, index: 1, total: 2, mime: 'image/png', data: 'YQ==' }), /INVALID_CHARACTER_ASSET/);
+console.log('PASS characters: built-ins, per-seat authority, recovery, wire metadata, asset bounds');

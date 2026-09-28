@@ -1,0 +1,23 @@
+import assert from 'node:assert/strict';
+import { tableEffects } from '../lib/virtual-mahjong/table-effects';
+import { createTableScenario } from './helpers/virtual-table-scenarios';
+import { layoutTable } from '../app/components/virtual-mahjong/three/table-layout';
+
+const h = createTableScenario('ankan'), before = h.view();
+h.act({ kind: 'KAN', optionId: before.availableActions.selfKanOptions[0].id });
+const after = h.view(), effects = tableEffects(before, after);
+assert(effects.some(e => e.kind === 'kan')); assert(effects.some(e => e.kind === 'dora'));
+assert.deepEqual(tableEffects(null, after), []);
+assert.deepEqual(tableEffects(after, after), []);
+assert.deepEqual(tableEffects(before, { ...after, revision: before.revision + 3 }), []);
+assert.deepEqual(tableEffects(before, { ...after, viewerId: 'someone-else' }), []);
+assert.deepEqual(tableEffects(before, { ...after, gameId: 'another' }), []);
+const layout = layoutTable(before, { selected: null, legal: [], riichi: false, highlight: null }, true);
+const backs = layout.filter(t => t.key.startsWith('back:'));
+assert(backs.every(t => t.motion === 'deal' && t.tileId === undefined && t.face === undefined));
+assert(backs.some(t => t.delay === 330));
+h.act({ kind: 'TSUMO' }); const finished = h.view();
+assert(h.engine.advanceRound({ gameId: finished.gameId, roundId: finished.roundId }).ok);
+assert.deepEqual(tableEffects(finished, h.view()), [{ kind: 'deal' }]);
+assert.deepEqual(tableEffects(after, h.view()), [], 'Unobserved round boundary is a recovery baseline');
+console.log('PASS live effects: kan/indicator, new deal, anonymous backs, duplicate/gap/reconnect/viewer boundaries');

@@ -1,0 +1,302 @@
+/* Player-facing Japanese table layout. East remains at the bottom. */
+.physical-table-main .physical-table-board {
+  --plate-wide: clamp(300px, 26vw, 420px);
+  --plate-high: clamp(125px, 16vh, 155px);
+  --plate-inset: 18px;
+  --plate-circle-size: min(58vh, 52%);
+  --wind-frame-size: calc(var(--plate-circle-size) - var(--plate-high) - 16px);
+  --vertical-wind-size: calc(min(58vh, calc(52vw - 62px)) - var(--plate-high) - 16px);
+  --wind-slot-width: 68%;
+  --wind-slot-thickness: 52px;
+  --plate-avatar-size: clamp(76px, 9vmin, 100px);
+  background-image:
+    radial-gradient(circle at center, #101d30df 0 22%, #1a2744b3 36%, #11182fa8 70%),
+    url('/art/sakura-courtyard-v2.png');
+  background-position: center;
+  background-size: cover;
+  border-width: 5px;
+  box-shadow: 0 0 0 3px #32273a, 0 0 0 5px #d7b978, 0 18px 40px #05061999,
+    inset 0 0 0 8px #10182d99, inset 0 0 0 10px #c7a46e88;
+}
+.physical-table-main .physical-table-board::after {
+  content: none;
+}
+.physical-table-main .tablet-player-card {
+  width: var(--plate-wide);
+  height: var(--plate-high);
+  min-height: 0;
+  padding: 13px 17px 11px;
+  overflow: visible;
+  border-width: 2px;
+  border-radius: 13px;
+  box-shadow: 0 10px 23px #05081aaa, inset 0 0 0 2px #e9ce8a33;
+  transform-origin: center center;
+}
+.physical-table-main .tablet-player-card.is-current {
+  animation: none !important;
+  box-shadow: 0 10px 23px #05081aaa, inset 0 0 0 2px #e9ce8a33;
+}
+.physical-table-main .plate-character-button {
+  position: absolute;
+  z-index: 3;
+  top: 50%;
+  left: calc(-1 * (var(--plate-avatar-size) + 14px));
+  width: var(--plate-avatar-size);
+  height: var(--plate-avatar-size);
+  display: block;
+  overflow: hidden;
+  border: 2px solid #f0d496;
+  border-radius: 13px;
+  padding: 3px;
+  background: linear-gradient(145deg, #7d5683, #4c355e);
+  box-shadow: 0 0 0 2px #382447, 0 9px 23px #100a25aa;
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+.physical-table-main .plate-character-button:focus-visible { outline: 3px solid #ffe39d; outline-offset: 4px; }
+.physical-table-main .plate-character-button .plate-character-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  object-fit: cover;
+}
+.physical-table-main .tablet-player-card.seat-top {
+  top: calc(50% - var(--vertical-wind-size) / 2 - var(--plate-high) - 14px);
+  left: 50%; right: auto; bottom: auto;
+  translate: -50% 0;
+  transform: rotate(180deg) !important;
+}
+.physical-table-main .tablet-player-card.seat-right {
+  top: 50%; right: 18%;
+  right: calc(50% - var(--plate-circle-size) / 2 - var(--plate-wide) / 2);
+  left: auto; bottom: auto;
+  translate: 0 -50%;
+  transform: rotate(-90deg) !important;
+}
+.physical-table-main .tablet-player-card.seat-bottom {
+  bottom: calc(50% - var(--vertical-wind-size) / 2 - var(--plate-high) - 14px);
+  left: 50%; right: auto; top: auto;
+  translate: -50% 0;
+  transform: none !important;
+}
+.physical-table-main .tablet-player-card.seat-left {
+  top: 50%; left: 18%;
+  left: calc(50% - var(--plate-circle-size) / 2 - var(--plate-wide) / 2);
+  right: auto; bottom: auto;
+  translate: 0 -50%;
+  transform: rotate(90deg) !important;
+}
+.physical-table-main .tablet-player-card .player-card-main { position: relative; z-index: 1; padding-right: 72px; }
+.physical-table-main .tablet-player-card .player-card-head { padding-right: 0; }
+.physical-table-main .tablet-player-card .player-card-head > span { min-width: 0; }
+.physical-table-main .tablet-player-card .player-card-head strong { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.physical-table-main .tablet-player-card .player-card-head strong { font-size: clamp(25px, 2.2vw, 35px); }
+.physical-table-main .tablet-player-card .player-score { font-size: clamp(50px, 5.8vh, 76px); }
+.physical-table-main .tablet-player-card .player-draw-button {
+  z-index: 2; right: 13px; bottom: 13px; width: 68px; min-height: 66px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  padding: 5px 4px;
+}
+.physical-table-main .player-draw-team {
+  display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  color: #e3d5bc; font: 600 11px/1.1 sans-serif; letter-spacing: 0;
+}
+.physical-table-main .player-draw-action {
+  display: inline-flex; align-items: center; justify-content: center; gap: 1px;
+  white-space: nowrap; line-height: 1.1;
+}
+.physical-table-main .player-draw-action svg { flex: none; width: 13px; height: 13px; }
+.physical-table-main .tablet-player-card .player-tags,
+.physical-table-main .tablet-player-card .effect-chips { padding-right: 72px; }
+.table-wind-dial {
+  position: absolute;
+  z-index: 1;
+  left: 50%; top: 50%;
+  width: var(--wind-frame-size);
+  aspect-ratio: 1;
+  border: 3px solid #cbb27d;
+  border-radius: 18%;
+  background: linear-gradient(145deg, #665477 0%, #392d55 52%, #514064 100%);
+  box-shadow: 0 0 0 4px #211a37aa, 0 0 0 7px #b89b6b66,
+    0 12px 30px #0c092388, inset 0 0 0 2px #f1dfb138, inset 0 0 32px #190f37aa;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  isolation: isolate;
+}
+.table-wind-dial::after {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  inset: var(--wind-slot-thickness);
+  border: 2px solid #c9ad79a6;
+  border-radius: 12%;
+  background: linear-gradient(145deg, #3c2f55, #251d3c);
+  box-shadow: inset 0 0 23px #100b2a88, 0 0 0 2px #e1c89620;
+}
+.wind-slot {
+  position: absolute;
+  z-index: 1;
+  width: var(--wind-slot-width);
+  height: var(--wind-slot-thickness);
+  border: 0;
+  border-radius: 0 0 26px 26px;
+  background: #796b8e;
+  box-shadow: none;
+}
+.wind-slot.seat-top { top: -3px; left: 50%; transform: translateX(-50%); }
+.wind-slot.seat-bottom { bottom: -3px; left: 50%; transform: translateX(-50%) rotate(180deg); }
+.wind-slot.seat-left {
+  top: 50%; left: calc(-3px - (var(--wind-slot-width) - var(--wind-slot-thickness)) / 2);
+  transform: translateY(-50%) rotate(-90deg);
+}
+.wind-slot.seat-right {
+  top: 50%; right: calc(-3px - (var(--wind-slot-width) - var(--wind-slot-thickness)) / 2);
+  transform: translateY(-50%) rotate(90deg);
+}
+.wind-slot.is-lit {
+  background: #ffe27a;
+  filter: drop-shadow(0 0 10px #ffe675) drop-shadow(0 0 24px #ffc747);
+  animation: wind-gold-breath 2.3s ease-in-out infinite alternate;
+}
+@keyframes wind-gold-breath {
+  from { filter: brightness(.94) drop-shadow(0 0 8px #ffe17a) drop-shadow(0 0 17px #ffcd57); }
+  to { filter: brightness(1.16) drop-shadow(0 0 16px #fff2a5) drop-shadow(0 0 34px #ffd45b); }
+}
+@media (prefers-reduced-motion: reduce) { .wind-slot.is-lit { animation: none; } }
+@media (orientation: landscape) and (max-width: 1100px) {
+  .physical-table-main .table-turn-timer { top: 2%; }
+}
+@media (orientation: portrait) {
+  .physical-table-main .physical-table-board { --plate-wide: clamp(225px, 45vw, 350px); --plate-high: clamp(100px, 12vh, 130px); --plate-inset: 10px; --plate-circle-size: min(58vh, 74%); --vertical-wind-size: calc(min(58vh, calc(74vw - 15px)) - var(--plate-high) - 16px); --wind-slot-width: 68%; --wind-slot-thickness: 48px; }
+  .physical-table-main .tablet-player-card.seat-top,
+  .physical-table-main .tablet-player-card.seat-bottom,
+  .physical-table-main .tablet-player-card.seat-left,
+  .physical-table-main .tablet-player-card.seat-right { width: var(--plate-wide); }
+  .physical-table-main .tablet-player-card .player-card-head strong { font-size: clamp(18px, 3vw, 25px); }
+  .physical-table-main .tablet-player-card .player-score { font-size: clamp(33px, 4.5vh, 52px); }
+  .physical-table-main .tablet-player-card.seat-left { left: -85px; left: calc(var(--plate-inset) - (var(--plate-wide) - var(--plate-high)) / 2); }
+  .physical-table-main .tablet-player-card.seat-right { right: -85px; right: calc(var(--plate-inset) - (var(--plate-wide) - var(--plate-high)) / 2); }
+  .physical-table-main .table-turn-timer { top: 3%; left: 3.5%; transform: none; }
+}
+@media (orientation: portrait) and (min-width: 700px) {
+  .physical-table-main .tablet-player-card.seat-top .player-score,
+  .physical-table-main .tablet-player-card.seat-right .player-score,
+  .physical-table-main .tablet-player-card.seat-bottom .player-score,
+  .physical-table-main .tablet-player-card.seat-left .player-score {
+    font-size: clamp(52px, 7.5vw, 62px);
+  }
+  .view-table.app-shell { grid-template-rows: 62px 38px minmax(0, 1fr) 24px; }
+  .view-table .topbar { grid-template-columns: 146px minmax(0, 1fr) auto; gap: 7px; padding: 4px 10px; }
+  .view-table .brand-lockup { min-width: 0; gap: 5px; }
+  .view-table .brand-lockup small { display: none; }
+  .view-table .brand-lockup strong { font-size: 21px; white-space: nowrap; }
+  .view-table .top-tabs { grid-column: auto; min-width: 0; overflow: hidden; }
+  .view-table .top-tabs-list { width: 100%; min-width: 0; gap: 2px !important; justify-content: center; }
+  .view-table .top-tabs-list button { min-width: 0; padding-inline: 7px; font-size: clamp(17px, 2.45vw, 22px); white-space: nowrap; }
+  .view-table .header-actions { min-width: 0; gap: 2px; flex-wrap: nowrap; }
+  .view-table .header-actions button { width: 39px; min-width: 39px; height: 39px; min-height: 39px; padding: 0; }
+  .view-table .physical-table-stage { padding: 6px 8px 4px; }
+  .physical-table-main { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) 62px; gap: 5px; }
+  .physical-table-main .physical-table-board { min-height: 0; }
+  .physical-table-main .table-side-actions {
+    min-width: 0; min-height: 0; height: 62px;
+    display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr);
+    grid-template-rows: 1fr; gap: 5px; overflow: visible;
+  }
+  .physical-table-main .table-side-actions button {
+    min-width: 0; min-height: 0; height: 100%;
+    display: flex; flex-direction: row; align-items: center; justify-content: center;
+    gap: 3px; padding: 5px 2px; font-size: clamp(15px, 2vw, 19px);
+  }
+  .physical-table-main .table-side-actions button svg { width: 17px; height: 17px; flex: none; }
+  .physical-table-main .table-side-actions .end-match-button { margin-top: 0; }
+}
+@media (orientation: portrait) and (min-width: 800px) {
+  .physical-table-main .physical-table-board {
+    --plate-circle-size: min(58vh, 78%);
+    --vertical-wind-size: calc(min(58vh, calc(78vw - 15px)) - var(--plate-high) - 16px);
+  }
+}
+@media (max-width: 680px) {
+  .physical-table-main .physical-table-board { --plate-wide: clamp(205px, 44vw, 250px); --plate-high: 96px; --plate-inset: 7px; --plate-avatar-size: clamp(42px, 10vw, 52px); }
+  .physical-table-main .plate-character-button { left: calc(-1 * (var(--plate-avatar-size) + 7px)); padding: 2px; border-radius: 9px; }
+  .physical-table-main .tablet-player-card { padding: 8px 10px; }
+  .physical-table-main .tablet-player-card .player-card-main { padding-right: 48px; }
+  .physical-table-main .tablet-player-card .player-card-head strong { font-size: 17px; }
+  .physical-table-main .tablet-player-card .player-score { font-size: 34px; }
+  .physical-table-main .tablet-player-card.seat-left { left: -55px; left: calc(var(--plate-inset) - (var(--plate-wide) - var(--plate-high)) / 2); }
+  .physical-table-main .tablet-player-card.seat-right { right: -55px; right: calc(var(--plate-inset) - (var(--plate-wide) - var(--plate-high)) / 2); }
+  .physical-table-main .tablet-player-card.seat-top { top: var(--plate-inset); }
+  .physical-table-main .tablet-player-card.seat-bottom { bottom: var(--plate-inset); }
+  .physical-table-main .tablet-player-card .player-draw-button { right: 7px; bottom: 7px; width: 54px; min-height: 52px; gap: 2px; font-size: 11px; }
+  .physical-table-main .player-draw-team { font-size: 9px; }
+  .physical-table-main .player-draw-action svg { width: 10px; height: 10px; }
+  .physical-table-main .tablet-player-card .player-tags,
+  .physical-table-main .tablet-player-card .effect-chips { padding-right: 48px; }
+  .physical-table-main .table-wind-dial,
+  .physical-table-main .physical-table-board::after { display: none; }
+  .physical-table-main .physical-table-board.is-turn-active .table-control-island {
+    border-color: #ffe184;
+    box-shadow: 0 0 0 3px #f5ce6b66, 0 0 28px #f9c75c99;
+  }
+}
+
+/* The physical remote gives the turn action the available vertical space. */
+.remote-control-shell .remote-controller-body { overflow: hidden; gap: 6px; padding: 2px 0 4px; grid-template-rows: auto minmax(0, 1fr) auto; }
+.remote-control-shell .remote-round-strip { min-height: 35px; padding-block: 4px; }
+.remote-control-shell .remote-command-grid { min-height: 0; height: 100%; grid-template-rows: minmax(130px, 1fr) repeat(3, 58px); gap: 6px; }
+.remote-control-shell .remote-command { min-height: 0; padding: 6px 10px; grid-template-columns: 28px minmax(0, 1fr); gap: 7px; }
+.remote-control-shell .remote-command > svg { width: 25px; height: 25px; }
+.remote-control-shell .remote-command strong { font-size: clamp(16px, 4.3vw, 22px); line-height: 1.1; }
+.remote-control-shell .remote-command:not(.remote-command-draw) small { display: none; }
+.remote-control-shell .remote-command-draw { order: 0; grid-column: 1 / -1; grid-row: 1; height: 100%; grid-template-columns: 66px minmax(0, 1fr); padding: 15px; }
+.remote-control-shell .remote-command-draw:has(.turn-timer) { min-height: 0; grid-template-rows: minmax(0, 1fr) auto; }
+.remote-control-shell .remote-command-draw > svg { width: 62px; height: 62px; }
+.remote-control-shell .remote-command-draw strong { font-size: clamp(34px, 10vw, 56px); }
+.remote-control-shell .remote-command-draw small { font-size: 12px; }
+.remote-control-shell .remote-command-draw {
+  border: 2px solid #62e3a4;
+  border-radius: 15px;
+  color: #e6fff0 !important;
+  background: linear-gradient(145deg, #176349f7, #0b2a2efb), url('/art/mahjong-pattern.svg') center / auto 115% !important;
+  box-shadow: 0 0 0 1px #b5f9ce33, 0 12px 28px #06151899, inset 0 1px #d9ffe34d;
+}
+.remote-control-shell .remote-command-draw > svg { color: #9af5bb; }
+.remote-control-shell .remote-command-draw strong { color: #e8ffe9; }
+.remote-control-shell .remote-command-draw.is-discard-ready {
+  border-color: #ff817e;
+  color: #fff0ec !important;
+  background: linear-gradient(145deg, #8b2b3cf7, #351627fb), url('/art/mahjong-pattern.svg') center / auto 115% !important;
+  box-shadow: 0 0 0 2px #ff9c9399, 0 0 30px #f45f6999, inset 0 1px #ffe3d088;
+}
+.remote-control-shell .remote-command-draw.is-discard-ready > svg { color: #ffc4b1; }
+.remote-control-shell .remote-command-draw.is-discard-ready strong { color: #fff1e8; }
+.remote-control-shell .remote-command-win { order: 1; }
+.remote-control-shell .remote-command-tenpai { order: 2; }
+.remote-control-shell .remote-command-riichi { order: 3; }
+.remote-control-shell .remote-command-skill { order: 4; }
+.remote-control-shell .remote-command-points { order: 5; }
+.remote-control-shell .remote-command-effects { order: 6; grid-column: auto; }
+.remote-control-shell .remote-command-draw .turn-timer { padding: 5px 8px; }
+.remote-tenpai-drawer .remote-flow-body { overflow-y: auto; }
+.remote-tenpai-checker { display: grid; gap: 12px; padding-bottom: 18px; }
+.remote-tenpai-checker > p { margin: 0; color: #d8cda8; line-height: 1.45; }
+.remote-tenpai-count { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.remote-tenpai-count span { color: #b5b1ae; font-size: 12px; }
+.remote-tenpai-count button { margin-left: auto; border: 1px solid #bda16a; padding: 5px 10px; color: #ffe3a5; background: #283251; }
+.remote-tenpai-melds { display: grid; gap: 5px; color: #ffe2a6; }
+.remote-tenpai-melds input { width: 100%; border: 1px solid #9a876e; border-radius: 8px; padding: 10px; color: #fff0d5; background: #1d2844; }
+.remote-tenpai-result { display: grid; gap: 9px; border: 1px solid #d2ae6f; border-radius: 11px; padding: 12px; color: #ffdf96; background: #1b2743; }
+.remote-tenpai-result > div { display: grid; gap: 5px; border-bottom: 1px solid #ffffff22; padding-bottom: 8px; }
+.remote-tenpai-result > div:last-child { border-bottom: 0; }
+.remote-tenpai-result span { font-size: 13px; }
+@media (orientation: landscape) and (max-height: 620px) {
+  .remote-control-shell .remote-command-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(45px, 1fr)); }
+  .remote-control-shell .remote-command-draw { grid-column: 1 / 3; grid-row: 1 / 4; }
+  .remote-control-shell .remote-command-win { grid-column: 3; grid-row: 1; }
+  .remote-control-shell .remote-command-tenpai { grid-column: 4; grid-row: 1; }
+  .remote-control-shell .remote-command-riichi { grid-column: 3; grid-row: 2; }
+  .remote-control-shell .remote-command-skill { grid-column: 4; grid-row: 2; }
+  .remote-control-shell .remote-command-points { grid-column: 3; grid-row: 3; }
+  .remote-control-shell .remote-command-effects { grid-column: 4; grid-row: 3; }
+}

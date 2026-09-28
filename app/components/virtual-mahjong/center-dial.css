@@ -1,0 +1,34 @@
+/* One top surface in the same world plane as the bevelled Three.js hardware. */
+.vm-dial{position:absolute;z-index:2;left:42%;top:30%;width:16cqw;height:16cqw;pointer-events:none;isolation:isolate;font-family:var(--font-serif-display);background:linear-gradient(145deg,#42516b,#131d32);border:2px solid #bfa775;border-radius:12%;box-shadow:0 5px 0 #0b1423,0 8px 16px #0008}
+.vm-is-three .vm-dial{left:0;top:0;width:300px;height:300px;border:0;border-radius:0;background:none;box-shadow:none;transform-origin:0 0;transform:var(--vm-center-projection,scale(0))}
+.vm-dial-seat{position:absolute;inset:0;transform:rotate(var(--dial-turn));transform-origin:50% 50%}
+.vm-dial-core{position:absolute;inset:27%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#b8f0e4;background:radial-gradient(ellipse at 50% 20%,#275257,#102a36 70%);border:1px solid #608681;clip-path:polygon(12% 0,88% 0,100% 12%,100% 88%,88% 100%,12% 100%,0 88%,0 12%);box-shadow:inset 0 0 15px #020b1a;text-shadow:0 0 8px #75d5c74d}
+.vm-dial-core>strong{font-size:42px;line-height:1.1;white-space:nowrap;font-weight:700}
+.vm-dial-core>div{display:flex;flex-direction:column;align-items:center;border-top:1px solid #83b7aa40;line-height:1}
+.vm-dial-core>div>span{font-size:25px}.vm-dial-core b{font-size:48px;font-weight:700;color:#edffe7}
+.vm-dial-score{position:absolute;left:23%;right:18%;top:78%;height:14%;display:flex;align-items:center;justify-content:center;color:#ffe8a7;font-size:38px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.8px;white-space:nowrap;text-shadow:0 2px 1px #000,0 0 6px #ffd36a22}
+.vm-dial-score.is-long{font-size:28px}
+.vm-dial-wind{position:absolute;left:5.2%;bottom:5.2%;width:17%;height:17%;display:flex;align-items:center;justify-content:center;border:1px solid #e2c78b;border-radius:6px;background:linear-gradient(145deg,#3d4e6c,#15213a 70%);box-shadow:inset 0 0 0 2px #0f1b31,inset 0 0 10px #0007;color:#f4e0ae}
+.vm-dial-wind>span{font-size:43px;line-height:1;text-shadow:0 2px 1px #0008}
+.vm-dial-wind>small{position:absolute;right:1px;bottom:0;font-size:10px;color:#ffedc2}
+.vm-dial-seat.is-east .vm-dial-wind{background:linear-gradient(135deg,#d06053,#8c263b 65%,#591e32);border:2px solid #ffda7e;box-shadow:inset 0 0 0 2px #6c2736,0 0 9px #ffc47144;color:#fff0bd}
+.vm-dial-lamp{position:absolute;left:28%;right:28%;bottom:2.5%;height:4%;border-radius:4px;background:#0b1527;border:1px solid #586174;overflow:visible}
+.vm-dial-lamp>i{position:absolute;inset:1px;border-radius:3px;background:linear-gradient(90deg,#735b27,#a58b45 50%,#735b27);opacity:.22}
+.vm-dial-lamp>b{position:absolute;left:calc(50% - 5px);bottom:15px;width:10px;height:5px;background:#fff0b5;clip-path:polygon(0 0,100% 0,50% 100%);opacity:0}
+.vm-dial-seat.is-active .vm-dial-lamp{border-color:#ffe09a}
+.vm-dial-seat.is-active .vm-dial-lamp>i{background:linear-gradient(90deg,#d48928 0%,#ffd777 20%,#fffbd3 50%,#ffd777 80%,#d48928);opacity:1;box-shadow:0 0 5px #fff0aa,0 0 13px #ffc250,0 -3px 25px #ffce6166;animation:vm-dial-breathe 2.2s ease-in-out infinite}
+.vm-dial-seat.is-active .vm-dial-lamp>b{opacity:1;filter:drop-shadow(0 0 3px #ffd268)}
+@keyframes vm-dial-breathe{0%,100%{opacity:.56;filter:brightness(.9);box-shadow:0 0 4px #ffdc7e,0 0 9px #ffc25088}50%{opacity:1;filter:brightness(1.3);box-shadow:0 0 7px #fff0aa,0 0 19px #ffc250,0 -4px 27px #ffce6180}}
+.vm-shell[data-reduced=true] .vm-dial-lamp>i{animation:none}
+@media(prefers-reduced-motion:reduce){.vm-dial-lamp>i{animation:none!important}}
+/* The retained flat renderer uses the same legible controls without a projected plane. */
+.vm-shell:not(.vm-is-three) .vm-dial{width:12cqw;height:12cqw;left:44%;top:28%;font-size:1cqw}
+.vm-shell:not(.vm-is-three) .vm-dial-core{gap:.12cqw}
+.vm-shell:not(.vm-is-three) .vm-dial-core>strong{font-size:1.4cqw}
+.vm-shell:not(.vm-is-three) .vm-dial-core b{font-size:1.45cqw}
+.vm-shell:not(.vm-is-three) .vm-dial-core>div>span{font-size:.9cqw}
+.vm-shell:not(.vm-is-three) .vm-dial-score{font-size:1.35cqw}
+.vm-shell:not(.vm-is-three) .vm-dial-score.is-long{font-size:1.1cqw}
+.vm-shell:not(.vm-is-three) .vm-dial-wind>span{font-size:1.55cqw}
+.vm-shell:not(.vm-is-three) .vm-dial-wind>small{font-size:.55cqw}
+.vm-shell:not(.vm-is-three) .vm-dial-lamp>b{display:none}

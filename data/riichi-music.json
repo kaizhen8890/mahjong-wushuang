@@ -1,0 +1,11 @@
+[
+  { "id": "sortie", "label": "出阵", "src": "/audio/riichi/sortie.mp3" },
+  { "id": "calm", "label": "处变不惊", "src": "/audio/riichi/calm.mp4" },
+  { "id": "soaring", "label": "凌云", "src": "/audio/riichi/soaring.mp4" },
+  { "id": "momentum", "label": "势破如竹", "src": "/audio/riichi/momentum.mp4" },
+  { "id": "prelude", "label": "舞之序曲", "src": "/audio/riichi/prelude.mp4" },
+  { "id": "trigger", "label": "一触即发", "src": "/audio/riichi/trigger.mp4" },
+  { "id": "duel", "label": "真剑胜负", "src": "/audio/riichi/duel.mp4" },
+  { "id": "duel-1997", "label": "真剑胜负1997", "src": "/audio/riichi/duel-1997.mp4" },
+  { "id": "finale", "label": "终结之战", "src": "/audio/riichi/finale.mp4" }
+]

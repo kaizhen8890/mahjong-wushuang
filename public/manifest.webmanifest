@@ -1,0 +1,22 @@
+{
+  "name": "麻将无双 · 实体牌桌助手",
+  "short_name": "麻将无双",
+  "description": "日本麻将与麻将无双的平板计分、流局结算和技能效果记录工具。",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#080d0c",
+  "theme_color": "#0f3d30",
+  "lang": "zh-Hans",
+  "categories": ["games", "utilities"],
+  "icons": [
+    {
+      "src": "/cards/core/mahjong-wushuang-logo.png",
+      "sizes": "1280x1280",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

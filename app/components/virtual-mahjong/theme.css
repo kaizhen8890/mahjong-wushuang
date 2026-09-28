@@ -1,0 +1,69 @@
+/* Reused physical-table assets. These tokens control all virtual panel tints. */
+:is(.vm-shell,.vr-result,.vr-room,.vm-lobby){--vm-panel:#252b49f2;--vm-panel-warm:#622d48ee;--vm-gold:#c7b287;--vm-ink:#fff2d5;--vm-pattern:url('/art/mahjong-pattern.svg');color:var(--vm-ink)}
+:is(.vm-shell.vm-is-three,.vm-shell,.vr-room,.vm-lobby,.vr-result){background:linear-gradient(#19214366,#17172faa),url('/art/sakura-courtyard-v2.png') center/cover}
+.vm-shell .vm-stage{background:transparent}
+.vm-shell .vm-stage::before{content:none}
+.vr-room.vr-room{background:linear-gradient(#19214366,#17172faa),url('/art/sakura-courtyard-v2.png') center/cover}
+.vm-shell.vm-is-three :is(.vm-center,.vm-round,.vm-center-score),.vm-shell .vm-portrait{background-color:#252b49;background-image:linear-gradient(var(--vm-panel),var(--vm-panel)),var(--vm-pattern);background-size:auto,300px auto}
+.vm-shell.vm-is-three :is(.vm-actions,.vm-toolbar) button{background:#251c4b url('/art/signboard-short.png') center/100% 100%;color:#ffe1a0;border-color:#ad874f}
+.vm-shell.vm-is-three .vm-actions .vm-win{background-color:#622d48;background-image:linear-gradient(#622d48dd,#622d48dd),var(--vm-pattern);background-size:auto,300px auto}
+.vm-shell:not(.vm-is-three) .vm-stage{background:#283159 url('/art/sakura-courtyard-v2.png') center/cover;border-color:var(--vm-gold)}
+.vr-result::before{content:none}
+:is(.vm-settings,.vm-dora-panel,.vm-choice,.vm-emote-picker,.vr-room section,.vr-room article,.vr-win-panel,.vr-result-brand,.vr-score-card,.vr-summary-row,.vr-draw-players article,.vm-center,.vm-round,.vm-center-score,.vm-furiten){background-color:#252b49;background-image:linear-gradient(var(--vm-panel),var(--vm-panel)),var(--vm-pattern);background-size:auto,300px auto;border-color:var(--vm-gold);color:var(--vm-ink);box-shadow:0 5px 14px #080b2277,inset 0 1px #ffffff18}
+:is(.vm-settings,.vm-emote-picker,.vm-choice,.vr-room section,.vr-score-card,.vr-summary-row){border-radius:6px 20px 6px 20px}
+.vm-shell .vm-dora-panel{border:3px double var(--vm-gold);clip-path:none;border-radius:6px 18px}
+:is(.vm-shell,.vr-result,.vr-room,.vm-lobby) :is(h1,h2,h3),.vm-player strong,.vm-shell .vm-avatar{font-family:var(--font-serif-display);font-weight:400;color:#ffe9c6;text-shadow:0 2px #0a0920}
+.vm-shell .vm-avatar{background:linear-gradient(145deg,#812f47,#351f3c);color:#ffe0a0;border:2px solid #bc9b62;border-radius:4px;box-shadow:0 5px 14px #080b2277;font-style:normal}
+.vm-shell .vm-player{background-color:#252b49;background-image:linear-gradient(var(--vm-panel),var(--vm-panel)),var(--vm-pattern);background-size:auto,300px auto;border:1px solid #bda271;border-radius:6px 20px 6px 20px;box-shadow:0 5px 14px #080b2277,inset 0 1px #ffffff18}
+.vm-shell .vm-player.vm-active{border-color:#ffdc7c;box-shadow:0 0 0 2px #b27d4666,0 0 20px #ffd17b55}
+.vm-shell .vm-player-riichi{--vm-panel:#743044f5}
+.vm-shell .vm-avatar.is-east{position:relative;background:linear-gradient(155deg,#fff0aa,#e3b957);color:#6b2638;border:2px solid #ffe7a1;border-radius:6px 6px 12px 12px;box-shadow:0 0 0 2px #96532a88,0 0 13px #ffd57866}
+.vm-shell .vm-avatar.is-east::after{content:'庄';position:absolute;right:-7px;bottom:-5px;display:grid;place-items:center;width:18px;height:18px;border-radius:50%;border:1px solid #ffdf91;background:#8d3044;color:#fff1bb;font:11px/1 sans-serif}
+.vm-shell .vm-active .vm-avatar{outline:2px solid #ffdc7c;outline-offset:3px}
+.vm-shell .vm-round{color:#ffe0a1}.vm-shell .vm-score-active{--vm-panel:#743044eb}.vm-shell .vm-dealer-wind{background:#e3b957;color:#6b2638;border-color:#ffe7a1}
+:is(.vm-toolbar,.vm-actions,.vm-settings,.vm-choice,.vm-emote-picker,.vr-result,.vr-room,.vm-lobby) button,.vm-emote-toggle,.vm-lobby>a:first-of-type{background:#251c4b url('/art/signboard-short.png') center/100% 100%;border:1px solid #ad874f;border-radius:5px;color:#ffe1a0;box-shadow:0 4px 8px #080b2280,inset 0 0 0 1px #d9b87855;text-shadow:0 2px 2px #090c25;font-family:var(--font-serif-display)}
+.vm-actions button.vm-win,.vm-actions button.vm-riichi,.vr-summary-row.vr-first{--vm-panel:var(--vm-panel-warm);background-color:#622d48;background-image:linear-gradient(#622d48dd,#622d48dd),var(--vm-pattern);background-size:auto,300px auto;border-color:#de9279;color:#ffddb5}
+.vm-actions .vm-pass{filter:saturate(.55)}.vm-settings button[aria-pressed=true]{outline:2px solid #efc97c;outline-offset:-3px}
+.vm-shell .vm-emote-picker>div button{background:#ffffff0a;border:0;box-shadow:none;padding:2px}
+.vm-shell .vm-hand button{background:transparent;box-shadow:none;border:0}
+.vm-settings :is(input,select),.vr-room :is(input,select){background-color:#161e36;color:#f8edd5;border-color:#84778b}
+.vr-result .vr-positive{color:#b9dcc8}.vr-result .vr-negative{color:#f0a19a}
+.vr-result.vr-striking{background:transparent}.vr-result.vr-striking::before{content:none}
+.vm-shell.vm-is-three,.vm-shell:not(.vm-is-three){background-color:#15182e;background-image:linear-gradient(#11162666,#17152c77),url('/art/virtual-table-backdrop.jpg');background-position:center;background-size:cover;background-repeat:no-repeat}
+.vr-result.vr-result button{color:#ffe1a0;text-shadow:0 2px 2px #090c25}
+.vm-shell.vm-is-three .vm-stage{background:transparent}
+.vr-result :is(.vr-fan-medallion,.vr-payment){color:#fff0ca}.vr-result .vr-fan-medallion{background-color:#252b49;background-image:linear-gradient(var(--vm-panel),var(--vm-panel)),var(--vm-pattern);background-size:auto,300px auto;border-color:var(--vm-gold)}
+.vm-lobby{min-height:100vh;min-height:100dvh;display:grid;place-content:center;text-align:center;gap:20px;padding:30px}.vm-lobby h1{font-size:36px}.vm-lobby>a:first-of-type,.vm-lobby>button{padding:16px 40px;font-size:20px}.vm-lobby>a:last-child{color:#dfd3c9}
+.vm-shell .vm-player strong{background:transparent;text-shadow:0 1px 3px #071023,0 0 7px #071023}
+.vm-shell .vm-dora-panel{padding:.35cqw .45cqw;line-height:1.25}
+.vm-shell .vm-dora-panel .vm-dora{gap:0;justify-content:flex-start}
+.vm-shell .vm-dora-panel .vm-dora>span{margin:0}
+.vm-shell .vm-dora-panel .vm-dora :is(img,.vm-tile-face){width:2.7cqw;height:4.36cqw}
+.vm-shell .vm-dora-panel small{font-size:.83cqw;white-space:nowrap}
+.vr-result .vr-score-card{clip-path:none;border-radius:2.2cqw 0 2.2cqw 0}
+.vr-result .vr-score-card output,.vr-result .vr-summary-row output{font-weight:900;font-family:Georgia,'Noto Serif SC',serif}
+.vr-result .vr-score-card h3 small,.vr-result .vr-summary h3 small{font-size:clamp(13px,1.35cqw,21px);padding:0 .5cqw;white-space:nowrap}
+.vr-result .vr-summary-row h3{font-size:clamp(15px,1.85cqw,26px)}
+.vr-result .vr-summary-row>strong{font-weight:900}
+.vr-result .vr-win-type{position:absolute;z-index:2;right:2%;top:2%;padding:.3cqw 1.3cqw;border:2px solid #f8dd91;border-radius:1.1cqw 0 1.1cqw 0;background:linear-gradient(145deg,#96364c,#4b203b);box-shadow:0 0 .8cqw #eebd7970,inset 0 0 0 1px #ffefbb80;color:#ffe7a8;font:400 clamp(20px,2.8cqw,48px)/1.15 var(--font-serif-display);letter-spacing:.08em;text-shadow:2px 3px #481a31}
+.vr-result .vr-indicators{gap:1cqw}.vr-result .vr-indicators>div{gap:0}.vr-result .vr-indicators b{margin-right:.4cqw}
+.vr-result .vr-point-drop{font-family:'Wushuang Jianghu',Georgia,serif;font-size:clamp(40px,6.8cqw,108px);font-weight:900;font-style:italic;letter-spacing:-.045em;color:#ffe6ad;text-shadow:3px 4px #58213b,0 0 1cqw #d9914988;transform:skew(-7deg)}
+.vr-result .vr-point-drop small{font:400 2.2cqw var(--font-serif-display);letter-spacing:0}
+.vr-result .vr-limit-drop,.vr-result .vr-yaku-row span,.vr-result .vr-indicators b,.vr-result .vr-draw-panel h2{font-family:var(--font-serif-display)}
+.vr-result{font-family:var(--font-serif-display)}
+.vr-result :is(.vr-result-brand>span,.vr-result-brand h2,.vr-fan-medallion,.vr-yaku-row,.vr-win-type,.vr-score-card h3,.vr-summary-row h3,.vr-score-stage h2,.vr-draw-players strong,.vr-summary h2){font-family:var(--font-serif-display)}
+.vr-result .vr-fan-medallion{top:31%;right:11%}
+.vr-result .vr-point-drop{font-size:clamp(60px,10.2cqw,162px);line-height:1}
+.vr-result .vr-point-drop small{font-size:clamp(16px,2.8cqw,42px)}
+.vr-result .vr-draw-details p,.vr-result .vr-draw-players output,.vr-result .vr-summary-row>small{font-family:var(--font-sans-ui)}
+.vm-lobby.vm-lobby{box-sizing:border-box;display:grid;grid-template-rows:auto minmax(0,1fr);place-content:stretch;text-align:left;gap:12px;padding:clamp(10px,2vw,26px);height:100dvh;overflow:hidden}
+.vm-lobby header{display:flex;align-items:center;gap:12px}
+.vm-lobby header h1{margin:0 0 0 auto;font-size:clamp(23px,3.5vw,42px)}
+.vm-lobby .vm-back{width:44px;height:42px;padding:0;font-size:36px;line-height:1;flex:none}
+.vm-lobby-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;min-height:0}
+.vm-lobby-choices section{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;min-width:0;padding:clamp(12px,2vw,24px);border:1px solid var(--vm-gold);border-radius:6px 20px 6px 20px;background-color:#252b49;background-image:linear-gradient(#252b49e8,#252b49e8),url('/art/mahjong-pattern.svg');background-size:auto,320px auto}
+.vm-lobby-choices h2{font-size:clamp(24px,3.1vw,40px);margin:0 0 6px}
+.vm-lobby-choices p{line-height:1.35;margin:0 0 12px}
+.vm-lobby-choices :is(a,button){display:inline-flex;align-items:center;justify-content:center;background:#251c4b url('/art/signboard-short.png') center/100% 100%;border:1px solid #ad874f;color:#ffe1a0;border-radius:5px;padding:10px 20px;font:400 clamp(18px,2.2vw,26px) var(--font-serif-display);text-decoration:none}
+@media(max-width:600px) and (orientation:portrait){.vm-lobby.vm-lobby{height:auto;min-height:100dvh;overflow:auto}.vm-lobby-choices{grid-template-columns:1fr}.vm-lobby header{flex-wrap:wrap}.vm-lobby header h1{margin-left:0}}
+

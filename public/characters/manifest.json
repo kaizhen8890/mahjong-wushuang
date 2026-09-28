@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "characters": [
+    { "id": "claude", "name": "Claude", "avatar": "/characters/claude/avatar.png", "portrait": "/characters/claude/portrait.png" },
+    { "id": "deepseek", "name": "DeepSeek", "avatar": "/characters/deepseek/avatar.png", "portrait": "/characters/deepseek/portrait.png" },
+    { "id": "gemini", "name": "Gemini", "avatar": "/characters/gemini/avatar.png", "portrait": "/characters/gemini/portrait.png" },
+    { "id": "glm", "name": "GLM", "avatar": "/characters/glm/avatar.png", "portrait": "/characters/glm/portrait.png" },
+    { "id": "gpt", "name": "GPT", "avatar": "/characters/gpt/avatar.png", "portrait": "/characters/gpt/portrait.png" },
+    { "id": "grok", "name": "Grok", "avatar": "/characters/grok/avatar.png", "portrait": "/characters/grok/portrait.png" },
+    { "id": "kimi", "name": "Kimi", "avatar": "/characters/kimi/avatar.png", "portrait": "/characters/kimi/portrait.png" },
+    { "id": "qwen", "name": "Qwen", "avatar": "/characters/qwen/avatar.png", "portrait": "/characters/qwen/portrait.png" }
+  ]
+}

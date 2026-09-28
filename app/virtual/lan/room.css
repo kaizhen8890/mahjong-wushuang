@@ -1,0 +1,88 @@
+.vr-room{min-height:100dvh;background:radial-gradient(ellipse at top,#364766,#111c32);color:#f4e5cc;padding:28px;font-family:var(--font-sans-ui)}.vr-room h1{font-size:28px;margin:8px 0 20px}.vr-room h2{font-size:20px;color:#dfbd86}.vr-room section{padding:20px;border:1px solid #7d7890;border-radius:10px;margin:18px 0;background:#172139dd}.vr-room label{display:flex;flex-direction:column;gap:6px;margin:8px 16px 8px 0;font-size:16px;color:#f5e8d2}.vr-room input,.vr-room select{background:#101b30;color:#fff1dc;border:1px solid #8e92a0;border-radius:5px;padding:10px;max-width:210px}.vr-room button{background:linear-gradient(140deg,#77516e,#303854);border:1px solid #d0ad73;border-radius:6px;padding:12px 20px;margin:8px;color:#fff0d7;cursor:pointer}.vr-room button:disabled{opacity:.45;cursor:default}.vr-room a{display:inline-block;margin:16px;color:#e0bd8c}.vr-room [role=alert]{color:#ffb7b7}.vr-seats{display:flex;gap:16px;flex-wrap:wrap}.vr-seats article{flex:1;min-width:145px;padding:12px;border:1px solid #69748c}.vr-room button:focus-visible,.vr-room input:focus-visible{outline:3px solid #f3c876}
+.vr-bot-badge{display:inline-block;margin-left:.45em;padding:.08em .45em;border:1px solid #d9b878;border-radius:3px;background:#332b42;color:#ffdc98;font-size:.7em;white-space:nowrap}
+.vr-mode,.vr-virtual-room{box-sizing:border-box;min-height:100dvh}
+.vr-mode header{flex:none}.vr-mode h1{margin:2px 0 8px}
+.vr-mode-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;min-height:0;flex:1}
+.vr-mode-choices section{display:flex;flex-direction:column;min-width:0;min-height:0;margin:0;padding:clamp(10px,2vw,22px)}
+.vr-mode-choices h2{margin:0 0 4px}.vr-mode-choices p{margin:0 0 8px;line-height:1.35}
+.vr-mode-choices button{margin:4px 4px 0 0;padding:8px 16px;align-self:flex-start}
+.vr-room-header{display:flex;align-items:center;gap:12px;flex:none;min-height:48px}
+.vr-room-header h1{margin:0;font-size:clamp(20px,2.6vw,30px)}
+.vr-room-header small{font-size:12px}
+.vr-room .vr-room-back{margin:0;padding:0;width:42px;height:40px;font-size:36px;line-height:1;flex:none}
+.vr-room-layout{display:grid;grid-template-columns:minmax(220px,35%) minmax(0,1fr);gap:12px;flex:1;min-height:0}
+.vr-room-profile,.vr-room-forms{min-height:0;min-width:0}
+.vr-room-profile section,.vr-room-forms section{margin:0;padding:10px 12px}
+.vr-room-profile h2,.vr-room-forms h2{margin:0 0 3px}
+.vr-room-profile p{margin:0 0 6px;line-height:1.35}
+.vr-room-profile>label{margin:6px 0;width:100%}
+.vr-room-profile button,.vr-room-forms button{margin:2px;padding:6px 12px}
+.vr-room-profile input{padding:5px 8px;max-width:100%;min-width:0}
+.vr-room-forms{display:flex;flex-direction:column;gap:5px}
+.vr-room-forms nav{display:flex;gap:6px;flex:none}
+.vr-room-forms nav button{flex:1;min-width:0;min-height:42px;font-size:clamp(17px,2vw,22px);line-height:1.15}
+.vr-room-forms nav button[aria-current=true]{outline:2px solid #efc97c;outline-offset:-3px}
+.vr-room-forms section{display:flex;flex-direction:column;gap:8px;min-height:0;overflow:auto;scrollbar-gutter:stable}
+.vr-room-forms section{flex:1}
+.vr-room-forms .vr-form-submit{flex:none;align-self:flex-end;margin:0 2px;min-height:42px;padding:6px 18px;font-size:18px}
+.vr-room-forms label{margin:0;min-width:0;font-size:14px;gap:4px;line-height:1.25}
+.vr-room-forms :is(input,select){box-sizing:border-box;width:100%;max-width:none;min-width:0;padding:5px 8px;height:32px}
+.vr-room-forms section>button{align-self:end}
+.vr-room-forms details[open]{max-height:none;overflow:visible}
+@media(orientation:landscape) and (max-height:540px){
+  .vr-mode,.vr-virtual-room{height:100dvh;overflow:hidden;padding:8px max(12px,env(safe-area-inset-right)) 8px max(12px,env(safe-area-inset-left));display:flex;flex-direction:column}
+  .vr-mode header{min-height:48px}.vr-mode-choices section{justify-content:center}
+  .vr-room-header{min-height:46px}
+  .vr-virtual-room>output,.vr-virtual-room>[role=alert]{font-size:12px;margin:0;line-height:1.2}
+  .vr-room-profile{display:flex;flex-direction:column}
+  .vr-room-profile section{flex:1;overflow:auto}
+  .vr-room-profile p{font-size:13px}
+  .vr-room-profile button{font-size:13px}
+}
+@media(max-width:600px) and (orientation:portrait){
+  .vr-mode-choices,.vr-room-layout{grid-template-columns:1fr}
+  .vr-virtual-room{height:auto;overflow:auto}
+}
+.vr-saved-summary{display:grid;gap:2px;padding:6px 8px;border-left:2px solid #e2bf80;background:#ffffff0d;font-size:13px;overflow-wrap:anywhere}
+.vr-saved-summary span{font-family:var(--font-sans-ui)}
+.vr-reconnect{display:flex;flex-wrap:wrap;align-items:center;gap:4px;padding:5px;border:1px solid #bda271;border-radius:5px;font-size:13px}
+.vr-reconnect button{font-size:13px}
+.vr-rule-editor{display:grid;gap:7px;min-width:0;width:100%;color:#f5e8d2}
+.vr-rule-editor details{border:1px solid #9e8f78;border-radius:6px;padding:6px 10px;background:#18233dd9}
+.vr-rule-editor summary{cursor:pointer;color:#ffe1a0;font-family:var(--font-serif-display);font-size:19px;line-height:1.35}
+.vr-rule-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px 12px;padding:7px 0}
+.vr-rule-fields label{display:flex;flex-direction:column;margin:0;min-width:0;font:14px/1.25 var(--font-sans-ui);color:#f5e8d2}
+.vr-rule-fields label.vr-rule-check{display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:9px;min-height:34px;white-space:normal}
+.vr-rule-fields .vr-rule-check input[type=checkbox]{flex:none;width:20px;height:20px;min-width:20px;margin:0;accent-color:#d7b976}
+.vr-rule-fields input:not([type=checkbox]),.vr-rule-fields select{box-sizing:border-box;max-width:none;width:100%;min-width:0;padding:5px 8px}
+.vr-rule-fields small{grid-column:1/-1}
+.vr-rule-summary{grid-column:1/-1;padding:7px 9px;border:1px solid #9e8f78;border-radius:5px;background:#101a34b8;font:13px/1.35 var(--font-sans-ui)}
+.vr-rule-summary p{margin:3px 0}
+.vr-rule-summary p:first-child{display:flex;flex-wrap:wrap;gap:8px;color:#ffe1a0}
+.vr-room-active{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:12px;flex:1;min-height:0}
+.vr-room-active>div,.vr-room-active>aside{min-width:0;min-height:0;overflow:auto}
+.vr-room-active>div>p{margin:2px 0 8px}
+.vr-room-active>div>p.vr-room-meta{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px}
+.vr-room-meta span{white-space:nowrap}
+.vr-room-active>aside{display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+.vr-room-active .vr-seats{margin:0;padding:8px;gap:6px;flex-wrap:nowrap}
+.vr-room-active .vr-seats article{min-width:0;margin:0;padding:7px;overflow-wrap:anywhere}
+.vr-room-active .vr-seats h2,.vr-room-active .vr-seats p{margin:2px 0}
+.vr-room-active .vr-seats .vr-seat-empty{display:block;font-size:clamp(11px,1.15vw,15px);letter-spacing:0;white-space:nowrap}
+.vr-room-active .vr-seats .vr-seat-status{display:flex;flex-wrap:wrap;gap:0 3px;font-size:11px;line-height:1.25;white-space:normal}
+.vr-room-active .vr-seats .vr-seat-status span{white-space:nowrap}
+.vr-room-active .vr-seats button{padding:4px 9px;margin:2px 0}
+.vr-room-actions,.vr-swap{display:flex;flex-wrap:wrap;align-items:end;gap:4px}
+.vr-swap{margin:5px 0}
+.vr-swap label{margin:0;gap:2px;font-size:13px}
+.vr-swap select{max-width:150px;padding:5px}
+.vr-room-actions button,.vr-swap button{margin:2px;padding:6px 12px}
+.vr-rule-modal{position:fixed;inset:0;z-index:90;box-sizing:border-box;width:100vw;height:100dvh;max-width:none;max-height:none;margin:0;border:0;display:grid;place-items:center;overflow:hidden;padding:max(10px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));background:#080b1bd9}
+.vr-rule-modal>div{box-sizing:border-box;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:10px;width:min(840px,100%);max-height:100%;overflow:hidden;padding:16px;border:2px solid #c7b287;border-radius:6px 20px;background:#19243e;color:#f5e8d2;box-shadow:0 12px 30px #040716}
+.vr-rule-modal h2,.vr-rule-modal p{margin:0 0 8px;color:#f5e8d2}
+.vr-rule-modal .vr-rule-editor details{background:#24304b}
+.vr-rule-modal-scroll{min-height:0;overflow:auto;scrollbar-gutter:stable}
+.vr-rule-modal-actions{display:flex;gap:8px;justify-content:flex-end;border-top:1px solid #8d8068;padding-top:8px}
+.vr-rule-modal-actions button{margin:0;padding:7px 14px;font-size:17px}
+@media(max-width:600px) and (orientation:portrait){.vr-room-active{grid-template-columns:1fr}.vr-room-active>div,.vr-room-active>aside{overflow:visible}.vr-room-active .vr-seats{flex-wrap:wrap}}
+.vr-character-choice{position:absolute;right:3%;top:2%;z-index:2;display:flex;align-items:center;gap:8px;border:1px solid #cba36b;border-radius:8px;padding:4px 10px;background:#352741;color:#ffe8bb;cursor:pointer}.vr-character-choice .character-avatar{width:35px;height:35px;border-radius:5px}.vr-seats .vr-seat-character{width:44px;height:44px;border:1px solid #d5af75;border-radius:6px}

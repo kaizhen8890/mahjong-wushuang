@@ -1,0 +1,1 @@
+User supplied mahjong_graphic SVG transparent faces. Original files copied without changes. 5z is an intentionally blank white tile. Source: https://github.com/lietxia/mahjong_graphic . See LICENSE.txt. Used only by virtual 3D table; original 2D sheet is unchanged.

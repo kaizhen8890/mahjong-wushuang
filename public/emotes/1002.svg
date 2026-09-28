@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="惊讶">
+<defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#574071"/><stop offset="1" stop-color="#241a42"/></linearGradient><radialGradient id="face"><stop stop-color="#fff2c7"/><stop offset="1" stop-color="#e8b962"/></radialGradient></defs>
+<rect x="3" y="3" width="122" height="122" rx="25" fill="url(#bg)" stroke="#d8b671" stroke-width="3"/>
+<circle cx="64" cy="61" r="43" fill="url(#face)" stroke="#fff3bf" stroke-width="2"/>
+<g fill="none" stroke="#64375a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><circle cx="49" cy="51" r="3"/><circle cx="79" cy="51" r="3"/><ellipse cx="64" cy="75" rx="11" ry="15" fill="#66305f"/></g>
+<path d="M18 101q46 23 92 0" fill="none" stroke="#eacb80" stroke-opacity=".55" stroke-width="2"/>
+</svg>

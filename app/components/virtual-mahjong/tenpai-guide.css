@@ -1,0 +1,14 @@
+/* Tenpai seal and hold panel: deep blue with gold edging, inside the hand row but never covering the hand. */
+.vm-hand .vm-tenpai-stamp{display:grid;place-items:center;flex:none;align-self:flex-end;width:3.4cqw;height:3.4cqw;min-width:26px;min-height:26px;margin:0 0 .6cqw .5cqw;padding:0;border:2px solid #d8b878;border-radius:.4cqw;background:linear-gradient(150deg,#2b3f78,#132049);color:#ffe6ab;font:400 clamp(15px,1.9cqw,26px)/1 var(--font-serif-display);text-shadow:0 2px 2px #071023;box-shadow:0 .2cqw .5cqw #0009,inset 0 0 0 1px #ffe7ab4d}
+.vm-hand .vm-tenpai-stamp:focus-visible{outline:2px solid #fff0b7;outline-offset:2px}
+.vm-shell .vm-hand.vm-tenpai-open{z-index:9}
+.vm-tenpai-pop{position:absolute;right:0;bottom:calc(100% + .7cqw);z-index:2;display:none;box-sizing:border-box;max-width:46cqw;padding:.5cqw .7cqw .55cqw;border:2px solid #c9ab76;border-radius:.6cqw;background:linear-gradient(150deg,#243a6b,#101b38);color:#fff0d6;box-shadow:0 .3cqw .9cqw #000a,inset 0 0 0 1px #ffe7ab33;pointer-events:none;text-align:left}
+.vm-tenpai-pop[data-open=true]{display:block}
+.vm-tenpai-pop>strong{font:400 1.7cqw var(--font-serif-display);color:#ffe6ab;margin-right:.5cqw}
+.vm-tenpai-pop>small{color:#d9c8a8;font-size:1cqw}
+.vm-tenpai-waits{display:flex;flex-wrap:wrap;gap:.25cqw .6cqw;margin:.35cqw 0 .2cqw}
+.vm-tenpai-wait{display:flex;align-items:center;gap:.25cqw;padding:.15cqw .3cqw;border:1px solid #8c7a56;border-radius:.3cqw;background:#0e1832cc}
+.vm-tenpai-wait :is(img,.vm-tile-face){width:2.1cqw;height:3.4cqw;object-fit:contain}
+.vm-tenpai-wait b{font-size:1.15cqw;color:#ffe6ab;font-variant-numeric:tabular-nums}
+.vm-tenpai-note{display:block;color:#b9a988}
+@media(min-aspect-ratio:19/10){.vm-tenpai-pop{max-width:42cqw}}

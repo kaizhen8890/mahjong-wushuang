@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <title>五瓣樱花</title>
+  <defs><path id="petal" d="M100 96C75 78 65 44 83 14L100 27 117 14C135 44 125 78 100 96Z"/></defs>
+  <g fill="white"><use href="#petal"/><use href="#petal" transform="rotate(72 100 100)"/><use href="#petal" transform="rotate(144 100 100)"/><use href="#petal" transform="rotate(216 100 100)"/><use href="#petal" transform="rotate(288 100 100)"/><circle cx="100" cy="100" r="5"/></g>
+</svg>

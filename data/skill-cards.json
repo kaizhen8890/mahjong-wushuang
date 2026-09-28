@@ -1,0 +1,2553 @@
+{
+  "schemaVersion": 1,
+  "cards": [
+    {
+      "id": 1,
+      "name": "借刀杀人",
+      "rarity": "史诗",
+      "type": {
+        "code": "陷",
+        "name": "防守陷阱",
+        "guide": "【陷｜防守陷阱】暗置使用，满足条件时公开并生效",
+        "guideMatchesTypeDefinition": true
+      },
+      "effectDescription": "使用后在本局内生效：暗置使用。放铳时技能卡发动。本次支付的点数改为由另一名敌方玩家负担。同队内和牌行为无法发动该卡。",
+      "flavorText": "“你牌怎么飞起来了？你队友怎么也飞起来了？”",
+      "summary": "自己放铳时，把本次付款责任转移给另一名敌方玩家。",
+      "timing": {
+        "playWindow": "暗置使用；具体暗置窗口未单列",
+        "activationTriggers": [
+          "技能卡使用者放铳"
+        ],
+        "duration": "本局",
+        "expiry": "资料库未说明触发后是否立即失效"
+      },
+      "targeting": {
+        "scope": "另一名敌方玩家",
+        "factionRelations": [
+          "敌方",
+          "排除同队和牌"
+        ]
+      },
+      "constraints": [
+        "同队内和牌无法发动"
+      ],
+      "structuredEffects": {
+        "scoreOperations": [
+          {
+            "operation": "replacePayer",
+            "amount": "使用者本次本应支付的全部点数",
+            "from": "技能卡使用者",
+            "toPayer": "另一名敌方玩家",
+            "recipient": "和牌者"
+          }
+        ],
+        "tileOperations": [],
+        "skillCardOperations": [],
+        "ruleOverrides": []
+      },
+      "stackability": "资料库未说明",
+      "factionAndMode": {
+        "usesFactionSemantics": true,
+        "requiresTeamAssignment": true,
+        "bloodBattleRulesRequired": false,
+        "playerCountNotes": [
+          "需要存在可代付的另一名敌方玩家；三人或不对称阵营需另定回退规则"
+        ],
+        "physicalTableDependency": "无"
+      },
+      "ambiguities": [
+        "未写明由谁选择代付者",
+        "未写明多次放铳时能否重复触发"
+      ],
+      "source": {
+        "sheet": "技能卡资料库",
+        "row": 2,
+        "range": "A2:G2"
+      },
+      "artwork": "/cards/art/06_借刀杀人.png"
+    },
+    {
+      "id": 2,
+      "name": "祸水东引",
+      "rarity": "史诗",
+      "type": {
+        "code": "团",
+        "name": "团队增益",
+        "guide": "【团｜团队增益】可对己方阵营使用",
+        "guideMatchesTypeDefinition": true
+      },
+      "effectDescription": "使用后在本局内生效：当己方任一玩家听牌时，该玩家可以选择由其队友代为承担放铳责任。若选择如此处理：和牌点数由两名对手玩家平均支付，原放铳玩家不承担点数损失。",
+      "flavorText": "“单点爆伤太无聊，来点群体伤害。”",
+      "summary": "己方听牌者可启用替代放铳处理，使和牌点数改由两名对手平均支付。",
+      "timing": {
+        "playWindow": "主动使用；具体窗口未单列",
+        "activationTriggers": [
+          "己方任一玩家听牌",
+          "选择替代放铳处理后的和牌结算"
+        ],
+        "duration": "本局",
+        "expiry": "本局结束"
+      },
+      "targeting": {
+        "scope": "己方阵营与两名对手",
+        "factionRelations": [
+          "己方",
+          "敌方"
+        ]
+      },
+      "constraints": [
+        "只有己方听牌玩家拥有选择权",
+        "原放铳玩家不承担点数损失"
+      ],
+      "structuredEffects": {
+        "scoreOperations": [
+          {
+            "operation": "splitPayment",
+            "amount": "和牌点数，各支付一半",
+            "payers": "两名对手玩家",
+            "recipient": "和牌者",
+            "excludedPayer": "原放铳玩家"
+          }
+        ],
+        "tileOperations": [],
+        "skillCardOperations": [],
+        "ruleOverrides": []
+      },
+      "stackability": "资料库未说明",
+      "factionAndMode": {
+        "usesFactionSemantics": true,
+        "requiresTeamAssignment": true,
+        "bloodBattleRulesRequired": false,
+        "playerCountNotes": [
+          "明确写有“两名对手玩家”，按四人 2v2 阵营结构表述"
+        ],
+        "physicalTableDependency": "无"
+      },
+      "ambiguities": [
+        "“队友代为承担放铳责任”与随后“两名对手平均支付”并不完全一致",
+        "选择是在听牌时锁定还是在放铳结算时决定未写明",
+        "平均分配时的取整规则未写明"
+      ],
+      "source": {
+        "sheet": "技能卡资料库",
+        "row": 3,
+        "range": "A3:G3"
+      },
+      "artwork": "/cards/art/08_祸水东引.png"
+    },
+    {
+      "id": 3,
+      "name": "背水一战",
+      "rarity": "史诗",
+      "type": {
+        "code": "单",
+        "name": "个人增益",
+        "guide": "【单｜个人增益】仅可对自己使用",
+        "guideMatchesTypeDefinition": true
+      },
+      "effectDescription": "使用时，暗置一张手牌作为你的和牌张，并打出一张手牌进入立直状态。进入立直时，立即额外摸一张牌。立直期间不得更改听牌。若成功以该牌和牌，番数视为**固定 8 番（倍满）**。本效果优先于其他番数修正类效果。",
+      "flavorText": "“这是一场豪赌。”",
+      "summary": "暗置一张牌作为指定和牌张并立直；若以该牌和牌，总番固定为 8 番。",
+      "timing": {
+        "playWindow": "使用时立即处理暗置、弃牌与立直",
+        "activationTriggers": [
+          "使用技能",
+          "以指定暗置牌和牌"
+        ],
+        "duration": "本局／该次立直期间",
+        "expiry": "和牌、立直状态解除或本局结束"
+      },
+      "targeting": {
+        "scope": "自己",
+        "factionRelations": [
+          "自己"
+        ]
+      },
+      "constraints": [
+        "立直期间不得更改听牌",
+        "固定 8 番优先于其他番数修正"
+      ],
+      "structuredEffects": {
+        "scoreOperations": [
+          {
+            "operation": "setHan",
+            "amount": 8,
+            "unit": "番",
+            "condition": "以暗置的指定牌和牌",
+            "priority": "高于其他番数修正"
+          }
+        ],
+        "tileOperations": [
+          "暗置 1 张手牌作为和牌张",
+          "打出 1 张手牌进入立直",
+          "进入立直时额外摸 1 张牌"
+        ],
+        "skillCardOperations": [],
+        "ruleOverrides": [
+          "成功条件下把总番数固定为 8 番，而非加 8 番"
+        ]
+      },
+      "stackability": "资料库未说明",
+      "factionAndMode": {
+        "usesFactionSemantics": false,
+        "requiresTeamAssignment": false,
+        "bloodBattleRulesRequired": false,
+        "playerCountNotes": [],
+        "physicalTableDependency": "无"
+      },
+      "ambiguities": [
+        "暗置牌离开手牌后的牌张计数、是否可被他人取得及本局结束后的去向未写明",
+        "未说明是否必须满足通常立直条件与役条件"
+      ],
+      "source": {
+        "sheet": "技能卡资料库",
+        "row": 4,
+        "range": "A4:G4"
+      },
+      "artwork": "/cards/art/05_背水一战.png"
+    },
+    {
+      "id": 4,
+      "name": "万剑齐发",
+      "rarity": "史诗",
+      "type": {
+        "code": "攻",
+        "name": "负面攻击",
+        "guide": "【攻｜负面攻击】仅可对对手使用",
+        "guideMatchesTypeDefinition": true
+      },
+      "effectDescription": "使用后在本局内生效：选择一名敌方玩家。该玩家必须将其**当前手牌明示**并保持公开，直至本局结束。该玩家在此之后新摸入的牌无需公开。",
+      "flavorText": "“我想了解你多一点♡”",
+      "summary": "令一名敌方玩家公开使用时已有的全部手牌，之后摸入牌无需公开。",
+      "timing": {
+        "playWindow": "使用时选择目标并立即公开",
+        "activationTriggers": [
+          "使用技能"
+        ],
+        "duration": "本局",
+        "expiry": "本局结束"
+      },
+      "targeting": {
+        "scope": "一名敌方玩家",
+        "factionRelations": [
+          "敌方"
+        ]
+      },
+      "constraints": [
+        "只公开使用时的当前手牌",
+        "后续新摸入牌无需公开"
+      ],
+      "structuredEffects": {
+        "scoreOperations": [],
+        "tileOperations": [],
+        "skillCardOperations": [],
+        "ruleOverrides": [
+          "目标当前手牌维持明示"
+        ]
+      },
+      "stackability": "资料库未说明",
+      "factionAndMode": {
+        "usesFactionSemantics": true,
+        "requiresTeamAssignment": false,
+        "bloodBattleRulesRequired": false,
+        "playerCountNotes": [],
+        "physicalTableDependency": "需要在实体牌桌公开；数字版可直接显示目标初始手牌快照并维持公开标记"
+      },
+      "ambiguities": [],
+      "source": {
+        "sheet": "技能卡资料库",
+        "row": 5,
+        "range": "A5:G5"
+      },
+      "artwork": "/cards/art/07_万剑齐发.png"
+    },
+    {
+      "id": 5,
+      "name": "顺手牵羊",
+      "rarity": "史诗",
+      "type": {
+        "code": "团",
+        "name": "团队增益",
+        "guide": "【团｜团队增益】可对己方阵营使用",
+        "guideMatchesTypeDefinition": true
+      },
+      "effectDescription": "使用后在本局内生效：使用后，该局内已方玩家每巡可以摸2张牌，直到本局结束。",
+      "flavorText": "“顺手的事。”",
+      "summary": "己方玩家本局每巡可摸 2 张牌。",
+      "timing": {
+        "playWindow": "主动使用；具体窗口未单列",
+        "activationTriggers": [
+          "己方玩家每巡摸牌"
+        ],
+        "duration": "本局",
+        "expiry": "本局结束"
+      },
+      "targeting": {
+        "scope": "己方所有玩家",
+        "factionRelations": [
+          "己方"
+        ]
+      },
+      "constraints": [],
+      "structuredEffects": {
+        "scoreOperations": [],
+        "tileOperations": [
+          "己方每名玩家每巡摸 2 张牌"
+        ],
+        "skillCardOperations": [],
+        "ruleOverrides": []
+      },
+      "stackability": "资料库未说明",
+      "factionAndMode": {
+        "usesFactionSemantics": true,
+        "requiresTeamAssignment": true,
+        "bloodBattleRulesRequired": false,
+        "playerCountNotes": [],
+        "physicalTableDependency": "无"
+      },
+      "ambiguities": [
+        "“每巡可以摸2张”未说明是总计摸 2 张还是在通常摸 1 张之外再摸 2 张",
+        "摸两张后的弃牌数量与手牌张数修正规则未写明",
+        "原文把“己方”写作“已方”"
+      ],
+      "source": {
+        "sheet": "技能卡资料库",
+        "row": 6,
+        "range": "A6:G6"
+      },
+      "artwork": "/cards/art/03_顺手牵羊.png"
+    },
+    {
+      "id": 6,
+      "name": "釜底抽薪",
+      "rarity": "史诗",
+      "type": {
+        "code": "攻",
+        "name": "负面攻击",
+        "guide": "【攻｜负面攻击】仅可对对手使用",
+        "guideMatchesTypeDefinition": true
+      },
+      "effectDescription": "使用后在本局内生效：选择一名敌方玩家，该玩家和牌时不得超过3番。若超过3番，则和牌作废并支付技能卡使用者2000点。",
+      "flavorText": "“给国士无双立直的人最好的礼物。”",
+      "summary": "限制一名敌方玩家最多以 3 番和牌；超过时和牌作废并向使用者支付 2000 点。",
+      "timing": {
+        "playWindow": "使用时选择目标",
+        "activationTriggers": [
+          "目标尝试以超过 3 番的牌型和牌"
+        ],
+        "duration": "本局",
+        "expiry": "本局结束"
+      },
+      "targeting": {
+        "scope": "一名敌方玩家",
+        "factionRelations": [
+          "敌方"
+        ]
+      },
+      "constraints": [
+        "目标和牌不得超过 3 番"
+      ],
+      "structuredEffects": {
+        "scoreOperations": [
+          {
+            "operation": "transfer",
+            "amount": 2000,
+            "unit": "点",
+            "payer": "目标玩家",
+            "recipient": "技能卡使用者",
+            "condition": "目标以超过 3 番的牌型和牌"
+          }
+        ],
+        "tileOperations": [],
+        "skillCardOperations": [],
+        "ruleOverrides": [
+          "超过 3 番时和牌作废"
+        ]
+      },
+      "stackability": "资料库未说明",
+      "factionAndMode": {
+        "usesFactionSemantics": true,
+        "requiresTeamAssignment": false,
+        "bloodBattleRulesRequired": false,
+        "playerCountNotes": [],
+        "physicalTableDependency": "无"
+      },
+      "ambiguities": [
+        "未说明作废和牌是否造成振听、是否继续出牌或结束该玩家行动"
+      ],
+      "source": {
+        "sheet": "技能卡资料库",
+        "row": 7,
+        "range": "A7:G7"
+      },
+      "artwork": "/cards/art/02_釜底抽薪.png"
+    },
+    {
+      "id": 7,
+      "name": "破釜沉舟",
+      "rarity": "史诗",
+      "type": {
+        "code": "单",
+        "name": "个人增益",
+        "guide": "【单｜个人增益】仅可对自己使用",
+        "guideMatchesTypeDefinition": true
+      },
+      "effectDescription": "使用后，在本局内生效：选择弃掉全部手牌并重新摸13张。若在本局内 未能和牌，则本局结束时 额外失去 4000 点。若成功和牌，则本次和牌番数 +5 番。",
+      "flavorText": "“赢了进场，输了进厂”",
+      "summary": "弃掉全部手牌重摸 13 张；本局和牌加 5 番，未和牌则额外失去 4000 点。",
+      "timing": {
+        "playWindow": "使用时立即重置手牌",
+        "activationTriggers": [
+          "使用技能",
+          "本局和牌",
+          "本局结束且未和牌"
+        ],
+        "duration": "本局",
+        "expiry": "和牌或本局结束"
+      },
+      "targeting": {
+        "scope": "自己",
+        "factionRelations": [
+          "自己"
+        ]
+      },
+      "constraints": [],
+      "structuredEffects": {
+        "scoreOperations": [
+          {
+            "operation": "addHan",
+            "amount": 5,
+            "unit": "番",
+            "condition": "本局成功和牌"
+          },
+          {
+            "operation": "deduct",
+            "amount": 4000,
+            "unit": "点",
+            "payer": "技能卡使用者",
+            "recipient": "未说明",
+            "condition": "本局未能和牌"
+          }
+        ],
+        "tileOperations": [
+          "弃掉全部手牌",
+          "重新摸 13 张牌"
+        ],
+        "skillCardOperations": [],
+        "ruleOverrides": []
+      },
+      "stackability": "资料库未说明",
+      "factionAndMode": {
+        "usesFactionSemantics": false,
+        "requiresTeamAssignment": false,
+        "bloodBattleRulesRequired": false,
+        "playerCountNotes": [],
+        "physicalTableDependency": "无"
+      },
+      "ambiguities": [
+        "弃牌进入牌河、牌山或移出游戏未写明",
+        "未和牌扣除的 4000 点支付给谁未写明",
+        "是否保留副露、立直与振听状态未写明"
+      ],
+      "source": {
+        "sheet": "技能卡资料库",
+        "row": 8,
+        "range": "A8:G8"
+      },
+      "artwork": "/cards/art/04_破釜沉舟.jpeg"
+    },
+    {
+      "id": 8,
+      "name": "飞升天堂",
+      "rarity": "史诗",
+      "type": {
+        "code": "陷",
+        "name": "防守陷阱",
+        "guide": "【陷｜防守陷阱】暗置使用，满足条件时公开并生效",
+        "guideMatchesTypeDefinition": true
+      },
+      "effectDescription": "使用后在本局内生效：暗置使用。放铳时技能卡发动。本次支付的点数，和牌者也需要扣除相同数值的点数。同队内和牌行为无法发动该卡。",
+      "flavorText": "“致敬传奇歌曲：《Ascension to Heaven》—xi”",
+      "summary": "自己放铳时，和牌者也扣除与本次付款相同的点数。",
+      "timing": {
+        "playWindow": "暗置使用；具体暗置窗口未单列",
+        "activationTriggers": [
+          "技能卡使用者放铳"
+        ],
+        "duration": "本局",
+        "expiry": "资料库未说明触发后是否立即失效"
+      },
+      "targeting": {
+        "scope": "和牌者",
+        "factionRelations": [
+          "敌方",
+          "排除同队和牌"
+        ]
+      },
+      "constraints": [
+        "同队内和牌无法发动"
+      ],
+      "structuredEffects": {
+        "scoreOperations": [
+          {
+            "operation": "deduct",
+            "amount": "技能卡使用者本次支付点数的同额",
+            "payer": "和牌者",
+            "recipient": "未说明",
+            "condition": "技能卡使用者放铳"
+          }
+        ],
+        "tileOperations": [],
+        "skillCardOperations": [],
+        "ruleOverrides": []
+      },
+      "stackability": "资料库未说明",
+      "factionAndMode": {
+        "usesFactionSemantics": true,
+        "requiresTeamAssignment": true,
+        "bloodBattleRulesRequired": false,
+        "playerCountNotes": [],
+        "physicalTableDependency": "无"
+      },
+      "ambiguities": [
+        "和牌者扣除点数的去向未写明",
+        "未写明多次放铳时能否重复触发"
+      ],
+      "source": {
+        "sheet": "技能卡资料库",
+        "row": 9,
+        "range": "A9:G9"
+      },
+      "artwork": "/cards/art/01_飞升天堂.png"
+    },
+    {
+      "id": 9,
+      "name": "魔女审判",
+      "rarity": "史诗",
+      "type": {
+        "code": "环",
+        "name": "战局扰动",
+        "guide": "【环｜战局扰动】中置桌上，影响本局规则，全场生效",
+        "guideMatchesTypeDefinition": true
+      },
+      "effectDescription": "使用后在本局内生效：任意玩家进行 碰牌 时，可选择对一名未和牌的对手进行一次“审判”。被审判的玩家立即退出本局，不再参与本局的摸牌、出牌与结算。若本局中仅剩一名未和牌玩家，该玩家立即获得 4000 点 奖励。同一时间仅可存在一张环境干涉效果。新的环境干涉生效时，旧的立即失效。",
+      "flavorText": "“没有参考一款13个神人的百合游戏。”",
+      "summary": "碰牌后可淘汰一名尚未和牌的对手；仅剩一名未和牌者时，该玩家获 4000 点。",
+      "timing": {
+        "playWindow": "置于桌面中央并立即成为环境",
+        "activationTriggers": [
+          "任意玩家碰牌",
+          "场上仅剩一名未和牌玩家"
+        ],
+        "duration": "本局",
+        "expiry": "本局结束或被新环境效果替换"
+      },
+      "targeting": {
+        "scope": "全场；发动者选择一名未和牌对手",
+        "factionRelations": [
+          "全场",
+          "对手"
+        ]
+      },
+      "constraints": [
+        "同一时间只能存在一张环境干涉效果",
+        "被审判者立即退出本局，不再摸牌、出牌或结算"
+      ],
+      "structuredEffects": {
+        "scoreOperations": [
+          {
+            "operation": "award",
+            "amount": 4000,
+            "unit": "点",
+            "payer": "未说明",
+            "recipient": "最后一名未和牌玩家",
+            "condition": "仅剩一名未和牌玩家"
+          }
+        ],
+        "tileOperations": [],
+        "skillCardOperations": [],
+        "ruleOverrides": [
+          "碰牌可触发审判",
+          "被审判者退出当前局"
+        ]
+      },
+      "stackability": "资料库未说明",
+      "factionAndMode": {
+        "usesFactionSemantics": true,
+        "requiresTeamAssignment": false,
+        "bloodBattleRulesRequired": true,
+        "playerCountNotes": [
+          "依赖同一局中部分玩家已和牌或退出、其他玩家继续的状态模型"
+        ],
+        "physicalTableDependency": "无"
+      },
+      "ambiguities": [
+        "4000 点奖励来源未写明",
+        "执行审判的玩家与目标的阵营判断时点未写明",
+        "碰牌者是否必须选择审判未写明"
+      ],
+      "source": {
+        "sheet": "技能卡资料库",
+        "row": 10,
+        "range": "A10:G10"
+      },
+      "artwork": "/cards/art/12_魔女审判.jpeg"
+    },
+    {
+      "id": 10,
+      "name": "暗夜之战",
+      "rarity": "史诗",
+      "type": {
+        "code": "环",
+        "name": "战局扰动",
+        "guide": "【环｜战局扰动】中置桌上，影响本局规则，全场生效",
+        "guideMatchesTypeDefinition": true
+      },
+      "effectDescription": "使用后在本局内生效：关闭场内所有公共照明。使用者可使用独立光源，仅用于查看自己的手牌。不得照亮牌桌或其他玩家的手牌。同一时间仅可存在一张环境干涉效果。新的环境干涉生效时，旧的立即失效。",
+      "flavorText": "“Deep ♂ Dark ♂ Fantasy ♂”",
+      "summary": "关闭公共照明，只有使用者可用不照亮牌桌或他人手牌的独立光源。",
+      "timing": {
+        "playWindow": "置于桌面中央并立即生效",
+        "activationTriggers": [
+          "使用技能"
+        ],
+        "duration": "本局",
+        "expiry": "本局结束或被新环境效果替换"
+      },
+      "targeting": {
+        "scope": "全场",
+        "factionRelations": [
+          "全场"
+        ]
+      },
+      "constraints": [
+        "同一时间只能存在一张环境干涉效果",
+        "独立光源仅可查看自己的手牌"
+      ],
+      "structuredEffects": {
+        "scoreOperations": [],
+        "tileOperations": [],
+        "skillCardOperations": [],
+        "ruleOverrides": [
+          "关闭场内公共照明"
+        ]
+      },
+      "stackability": "资料库未说明",
+      "factionAndMode": {
+        "usesFactionSemantics": false,
+        "requiresTeamAssignment": false,
+        "bloodBattleRulesRequired": false,
+        "playerCountNotes": [],
+        "physicalTableDependency": "强依赖实体场地；数字版需改写为遮蔽、视野或信息显示机制"
+      },
+      "ambiguities": [
+        "照明安全、裁判确认与无障碍规则未写明"
+      ],
+      "source": {
+        "sheet": "技能卡资料库",
+        "row": 11,
+        "range": "A11:G11"
+      },
+      "artwork": "/cards/art/11_暗夜之战.png"
+    },
+    {
+      "id": 11,
+      "name": "寂静之地",
+      "rarity": "史诗",
+      "type": {
+        "code": "环",
+        "name": "战局扰动",
+        "guide": "【环｜战局扰动】中置桌上，影响本局规则，全场生效",
+        "guideMatchesTypeDefinition": true
+      },
+      "effectDescription": "使用后在本局内生效：全场玩家禁止任何非规则宣告的语言交流。违反者立即向牌桌支付 3000 点。本局内，禁止所有叫牌行为（吃、碰、杠）。仅允许进行 立直、自摸、荣和与流局。同一时间仅可存在一张环境干涉效果。新的环境干涉生效时，旧的立即失效。",
+      "flavorText": "“换位加斩沉默九个。”",
+      "summary": "禁止非规则宣告的交流与所有吃碰杠；违规者向牌桌支付 3000 点。",
+      "timing": {
+        "playWindow": "置于桌面中央并立即生效",
+        "activationTriggers": [
+          "任意玩家进行非规则宣告的语言交流",
+          "任意玩家尝试吃、碰或杠"
+        ],
+        "duration": "本局",
+        "expiry": "本局结束或被新环境效果替换"
+      },
+      "targeting": {
+        "scope": "全场",
+        "factionRelations": [
+          "全场"
+        ]
+      },
+      "constraints": [
+        "同一时间只能存在一张环境干涉效果",
+        "允许立直、自摸、荣和与流局",
+        "禁止吃、碰、杠"
+      ],
+      "structuredEffects": {
+        "scoreOperations": [
+          {
+            "operation": "payToTable",
+            "amount": 3000,
+            "unit": "点",
+            "payer": "违规玩家",
+            "recipient": "牌桌／公共池"
+          }
+        ],
+        "tileOperations": [],
+        "skillCardOperations": [],
+        "ruleOverrides": [
+          "限制语言交流",
+          "禁用吃、碰、杠"
+        ]
+      },
+      "stackability": "资料库未说明",
+      "factionAndMode": {
+        "usesFactionSemantics": false,
+        "requiresTeamAssignment": false,
+        "bloodBattleRulesRequired": false,
+        "playerCountNotes": [],
+        "physicalTableDependency": "实体局需要人工判罚；数字版可直接禁用相关按钮并限制聊天"
+      },
+      "ambiguities": [
+        "“牌桌”点数池的归属、何时分配及是否影响阵营总分未写明",
+        "手势、文字聊天与网络语音是否属于交流未写明"
+      ],
+      "source": {
+        "sheet": "技能卡资料库",
+        "row": 12,
+        "range": "A12:G12"
+      },
+      "artwork": "/cards/art/13_寂静之地.png"
+    },
+    {
+      "id": 12,
+      "name": "宝箱猎人",
+      "rarity": "史诗",
+      "type": {
+        "code": "环",
+        "name": "战局扰动",
+        "guide": "【环｜战局扰动】中置桌上，影响本局规则，全场生效",
+        "guideMatchesTypeDefinition": true
+      },
+      "effectDescription": "使用后在本局内生效：立即翻开场内所有宝牌指示器。本局内，四杠流局无效。同一时间仅可存在一张环境干涉效果。新的环境干涉生效时，旧的立即失效。",
+      "flavorText": "“其实设计这张卡的人并不喜欢Big Chest。”",
+      "summary": "立即翻开场内所有宝牌指示器，并取消四杠流局。",
+      "timing": {
+        "playWindow": "置于桌面中央并立即生效",
+        "activationTriggers": [
+          "使用技能",
+          "出现第四次杠"
+        ],
+        "duration": "本局",
+        "expiry": "本局结束或被新环境效果替换"
+      },
+      "targeting": {
+        "scope": "全场",
+        "factionRelations": [
+          "全场"
+        ]
+      },
+      "constraints": [
+        "同一时间只能存在一张环境干涉效果"
+      ],
+      "structuredEffects": {
+        "scoreOperations": [],
+        "tileOperations": [
+          "立即翻开所有宝牌指示器"
+        ],
+        "skillCardOperations": [],
+        "ruleOverrides": [
+          "四杠流局无效"
+        ]
+      },
+      "stackability": "资料库未说明",
+      "factionAndMode": {
+        "usesFactionSemantics": false,
+        "requiresTeamAssignment": false,
+        "bloodBattleRulesRequired": false,
+        "playerCountNotes": [],
+        "physicalTableDependency": "无"
+      },
+      "ambiguities": [
+        "“所有宝牌指示器”是否包含尚未解锁的位置、里宝牌或其他扩展指示器未写明",
+        "继续开杠时牌山补牌与指示器不足的处理未写明"
+      ],
+      "source": {
+        "sheet": "技能卡资料库",
+        "row": 13,
+        "range": "A13:G13"
+      },
+      "artwork": "/cards/art/14_宝箱猎人.jpeg"
+    },
+    {
+      "id": 13,
+      "name": "规则怪谈",
+      "rarity": "史诗",
+      "type": {
+        "code": "环",
+        "name": "战局扰动",
+        "guide": "【环｜战局扰动】中置桌上，影响本局规则，全场生效",
+        "guideMatchesTypeDefinition": true
+      },
+      "effectDescription": "使用后在本局内生效：声明一种役种。于本局内，任意玩家和牌时，若其和牌包含该役种，该役种的番数视为 固定 5 番。可声明任意非役满、非双倍役满的役种。该役种仍可与其他役种正常叠加计算。同一时间仅可存在一张环境干涉效果。新的环境干涉生效时，旧的立即失效。",
+      "flavorText": "“断幺九已经5番了，你还没收到通知吗？”",
+      "summary": "声明一个非役满役种，使该役种在本局所有和牌中固定计 5 番。",
+      "timing": {
+        "playWindow": "置于桌面中央；使用时声明役种",
+        "activationTriggers": [
+          "任意玩家以包含所声明役种的牌型和牌"
+        ],
+        "duration": "本局",
+        "expiry": "本局结束或被新环境效果替换"
+      },
+      "targeting": {
+        "scope": "全场",
+        "factionRelations": [
+          "全场"
+        ]
+      },
+      "constraints": [
+        "不得声明役满或双倍役满",
+        "被声明役种仍可与其他役种叠加",
+        "同一时间只能存在一张环境干涉效果"
+      ],
+      "structuredEffects": {
+        "scoreOperations": [
+          {
+            "operation": "setYakuHan",
+            "amount": 5,
+            "unit": "番",
+            "target": "声明的役种",
+            "condition": "和牌包含该役种"
+          }
+        ],
+        "tileOperations": [],
+        "skillCardOperations": [],
+        "ruleOverrides": [
+          "替换该役种原本番值为固定 5 番"
+        ]
+      },
+      "stackability": "资料库未说明",
+      "factionAndMode": {
+        "usesFactionSemantics": false,
+        "requiresTeamAssignment": false,
+        "bloodBattleRulesRequired": false,
+        "playerCountNotes": [],
+        "physicalTableDependency": "无"
+      },
+      "ambiguities": [
+        "古役、地方役、食下役及役种别名是否可声明未写明"
+      ],
+      "source": {
+        "sheet": "技能卡资料库",
+        "row": 14,
+        "range": "A14:G14"
+      },
+      "artwork": "/cards/art/10_规则怪谈.png"
+    },
+    {
+      "id": 14,
+      "name": "偶氮玉红",
+      "rarity": "史诗",
+      "type": {
+        "code": "环",
+        "name": "战局扰动",
+        "guide": "【环｜战局扰动】中置桌上，影响本局规则，全场生效",
+        "guideMatchesTypeDefinition": true
+      },
+      "effectDescription": "使用后在本局内生效：使用时，声明一个数字（1–9）。于本局内，任意玩家和牌时，其手牌（含副露）中每拥有 两张该数字牌，视为额外拥有 一张宝牌。不足两张的部分不计入。同一时间仅可存在一张环境干涉效果。新的环境干涉生效时，旧的立即失效。",
+      "flavorText": "“这色素是有点便宜，两张才能染出一张红宝牌。”",
+      "summary": "声明 1–9 的数字；和牌时每有两张该数字牌，额外算一张宝牌。",
+      "timing": {
+        "playWindow": "置于桌面中央；使用时声明数字",
+        "activationTriggers": [
+          "任意玩家和牌结算"
+        ],
+        "duration": "本局",
+        "expiry": "本局结束或被新环境效果替换"
+      },
+      "targeting": {
+        "scope": "全场",
+        "factionRelations": [
+          "全场"
+        ]
+      },
+      "constraints": [
+        "只能声明 1–9",
+        "统计手牌与副露",
+        "不足两张不计",
+        "同一时间只能存在一张环境干涉效果"
+      ],
+      "structuredEffects": {
+        "scoreOperations": [
+          {
+            "operation": "addDora",
+            "amountFormula": "floor(和牌中该数字牌张数 / 2)",
+            "unit": "宝牌张数"
+          }
+        ],
+        "tileOperations": [],
+        "skillCardOperations": [],
+        "ruleOverrides": [
+          "按数字而非具体牌种追加宝牌"
+        ]
+      },
+      "stackability": "资料库未说明",
+      "factionAndMode": {
+        "usesFactionSemantics": false,
+        "requiresTeamAssignment": false,
+        "bloodBattleRulesRequired": false,
+        "playerCountNotes": [],
+        "physicalTableDependency": "无"
+      },
+      "ambiguities": [
+        "默认看似跨万筒索统计同一数字，但资料库未明确",
+        "赤牌是否只按数字计数、杠子的四张如何计数未单列"
+      ],
+      "source": {
+        "sheet": "技能卡资料库",
+        "row": 15,
+        "range": "A15:G15"
+      },
+      "artwork": "/cards/art/09_偶氮玉红.png"
+    },
+    {
+      "id": 15,
+      "name": "立直仙人",
+      "rarity": "稀有",
+      "type": {
+        "code": "陷",
+        "name": "防守陷阱",
+        "guide": "【陷｜防守陷阱】暗置使用，满足条件时公开并生效",
+        "guideMatchesTypeDefinition": true
+      },
+      "effectDescription": "使用后在本局内生效：暗置使用。任意敌方玩家宣告立直时技能卡发动。该敌方玩家必须从其手牌中选择三张牌公开于桌面，直至本局结束。该敌方玩家可自行选择要公开的三张手牌。",
+      "flavorText": "“看谁还立直？”",
+      "summary": "敌方立直时，立直者自行公开三张手牌至本局结束。",
+      "timing": {
+        "playWindow": "暗置使用；具体暗置窗口未单列",
+        "activationTriggers": [
+          "任意敌方玩家宣告立直"
+        ],
+        "duration": "本局",
+        "expiry": "资料库未说明触发后是否立即失效"
+      },
+      "targeting": {
+        "scope": "触发立直的一名敌方玩家",
+        "factionRelations": [
+          "敌方"
+        ]
+      },
+      "constraints": [
+        "由目标自行选择公开的三张牌",
+        "公开状态持续到本局结束"
+      ],
+      "structuredEffects": {
+        "scoreOperations": [],
+        "tileOperations": [],
+        "skillCardOperations": [],
+        "ruleOverrides": [
+          "目标三张手牌维持公开"
+        ]
+      },
+      "stackability": "资料库未说明",
+      "factionAndMode": {
+        "usesFactionSemantics": true,
+        "requiresTeamAssignment": false,
+        "bloodBattleRulesRequired": false,
+        "playerCountNotes": [],
+        "physicalTableDependency": "实体牌桌公开；数字版需锁定三张公开牌并追踪其后续去向"
+      },
+      "ambiguities": [
+        "目标打出、交换或组成副露时，公开标记是否随牌移动未写明",
+        "未写明能否对多次立直重复触发"
+      ],
+      "source": {
+        "sheet": "技能卡资料库",
+        "row": 16,
+        "range": "A16:G16"
+      },
+      "artwork": "/cards/art/20_立直仙人.png"
+    },
+    {
+      "id": 16,
+      "name": "御风之使",
+      "rarity": "稀有",
+      "type": {
+        "code": "团",
+        "name": "团队增益",
+        "guide": "【团｜团队增益】可对己方阵营使用",
+        "guideMatchesTypeDefinition": true
+      },
+      "effectDescription": "使用后立即生效：于本巡内，己方阵营的每名玩家最多可以进行 3 次“拔风”操作。“拔风”指：从手牌中选择任意一张风牌（东／南／西／北）移出手牌并横置于面前，该风牌视为拔北宝牌；每拔出 1 张风牌，即从牌山额外摸进 1 张牌。已拔出的风牌不计入手牌。",
+      "flavorText": "“起风了。”",
+      "summary": "本巡内，己方每名玩家最多三次把任意风牌作为拔北移出并补摸一张。",
+      "timing": {
+        "playWindow": "使用后立即开放本巡拔风操作",
+        "activationTriggers": [
+          "己方玩家选择拔风"
+        ],
+        "duration": "本巡",
+        "expiry": "本巡结束"
+      },
+      "targeting": {
+        "scope": "己方所有玩家",
+        "factionRelations": [
+          "己方"
+        ]
+      },
+      "constraints": [
+        "每名己方玩家最多 3 次",
+        "仅可拔东南西北风牌",
+        "拔出的风牌不计入手牌"
+      ],
+      "structuredEffects": {
+        "scoreOperations": [],
+        "tileOperations": [
+          "每次从手牌移出 1 张风牌并横置",
+          "每次额外摸 1 张牌",
+          "移出的风牌视为拔北宝牌"
+        ],
+        "skillCardOperations": [],
+        "ruleOverrides": []
+      },
+      "stackability": "资料库未说明",
+      "factionAndMode": {
+        "usesFactionSemantics": true,
+        "requiresTeamAssignment": true,
+        "bloodBattleRulesRequired": false,
+        "playerCountNotes": [
+          "借用了三人麻将拔北概念，但文本把任意风牌均视为拔北宝牌，未限定三人模式"
+        ],
+        "physicalTableDependency": "无"
+      },
+      "ambiguities": [
+        "“本巡”是仅使用者的行动巡、全场一巡还是己方各自下一次行动未写明",
+        "拔风是否产生技能卡、岭上类判定或被抢拔未写明"
+      ],
+      "source": {
+        "sheet": "技能卡资料库",
+        "row": 17,
+        "range": "A17:G17"
+      },
+      "artwork": "/cards/art/22_御风之使.jpeg"
+    },
+    {
+      "id": 17,
+      "name": "哈耶克的大手",
+      "rarity": "稀有",
+      "type": {
+        "code": "单",
+        "name": "个人增益",
+        "guide": "【单｜个人增益】仅可对自己使用",
+        "guideMatchesTypeDefinition": true
+      },
+      "effectDescription": "使用时，指定一张宝牌指示器：从手牌中选择一张牌，与该宝牌指示器上的牌进行交换。被指示器交换得到的那张牌加入你的手牌。交换完成后，新的宝牌即时生效。",
+      "flavorText": "“市场改变了这个牌。”",
+      "summary": "用一张手牌与所选宝牌指示器牌交换，新指示牌即时生效。",
+      "timing": {
+        "playWindow": "使用时立即选择指示器与手牌",
+        "activationTriggers": [
+          "使用技能"
+        ],
+        "duration": "立即",
+        "expiry": "交换完成"
+      },
+      "targeting": {
+        "scope": "自己与一个宝牌指示器",
+        "factionRelations": [
+          "自己",
+          "公共牌"
+        ]
+      },
+      "constraints": [
+        "必须指定一张宝牌指示器",
+        "必须从手牌选择一张牌交换"
+      ],
+      "structuredEffects": {
+        "scoreOperations": [],
+        "tileOperations": [
+          "所选指示器牌加入使用者手牌",
+          "使用者手牌中的一张牌成为新指示器",
+          "新宝牌立即生效"
+        ],
+        "skillCardOperations": [],
+        "ruleOverrides": []
+      },
+      "stackability": "资料库未说明",
+      "factionAndMode": {
+        "usesFactionSemantics": false,
+        "requiresTeamAssignment": false,
+        "bloodBattleRulesRequired": false,
+        "playerCountNotes": [],
+        "physicalTableDependency": "无"
+      },
+      "ambiguities": [
+        "可否选择里宝牌、未翻开的指示器或受其他技能翻开的额外指示器未写明",
+        "立直后能否交换手牌未写明"
+      ],
+      "source": {
+        "sheet": "技能卡资料库",
+        "row": 18,
+        "range": "A18:G18"
+      },
+      "artwork": "/cards/art/19_哈耶克的大手.png"
+    },
+    {
+      "id": 18,
+      "name": "崇洋媚外",
+      "rarity": "稀有",
+      "type": {
+        "code": "攻",
+        "name": "负面攻击",
+        "guide": "【攻｜负面攻击】仅可对对手使用",
+        "guideMatchesTypeDefinition": true
+      },
+      "effectDescription": "使用后在本局内生效：选择一名敌方玩家。该玩家仅允许使用英文进行口头交流与叫牌宣告（包括吃、碰、杠、立直、和牌等）。若该玩家使用任何非英文语言进行交流或宣告，则每次违规须立即向技能卡使用者支付 3000 点。沉默或非语言肢体动作不视为违规。",
+      "flavorText": "“Pon! Chii! Kan! Ron! Riichi!—are English.”",
+      "summary": "限制一名敌方玩家只能用英语口头交流与宣告；每次违规支付使用者 3000 点。",
+      "timing": {
+        "playWindow": "使用时选择目标",
+        "activationTriggers": [
+          "目标使用非英文语言交流或宣告"
+        ],
+        "duration": "本局",
+        "expiry": "本局结束"
+      },
+      "targeting": {
+        "scope": "一名敌方玩家",
+        "factionRelations": [
+          "敌方"
+        ]
+      },
+      "constraints": [
+        "沉默与非语言肢体动作不违规",
+        "吃碰杠、立直与和牌等宣告也须使用英语"
+      ],
+      "structuredEffects": {
+        "scoreOperations": [
+          {
+            "operation": "transfer",
+            "amount": 3000,
+            "unit": "点",
+            "payer": "目标玩家",
+            "recipient": "技能卡使用者",
+            "per": "每次违规"
+          }
+        ],
+        "tileOperations": [],
+        "skillCardOperations": [],
+        "ruleOverrides": []
+      },
+      "stackability": "资料库未说明",
+      "factionAndMode": {
+        "usesFactionSemantics": true,
+        "requiresTeamAssignment": false,
+        "bloodBattleRulesRequired": false,
+        "playerCountNotes": [],
+        "physicalTableDependency": "强依赖现场语言判断；数字版需定义受限的语音／聊天输入或改写效果"
+      },
+      "ambiguities": [
+        "英语借词、牌谱符号、混合语言及裁判判定标准未写明"
+      ],
+      "source": {
+        "sheet": "技能卡资料库",
+        "row": 19,
+        "range": "A19:G19"
+      },
+      "artwork": "/cards/art/21_崇洋媚外.png"
+    },
+    {
+      "id": 19,
+      "name": "抗坏血酸",
+      "rarity": "稀有",
+      "type": {
+        "code": "团",
+        "name": "团队增益",
+        "guide": "【团｜团队增益】可对己方阵营使用",
+        "guideMatchesTypeDefinition": true
+      },
+      "effectDescription": "使用后在本局内生效：即刻消除己方阵营所有玩家当前的振听状态。且在本局内，己方阵营的玩家不会因振听条件而无法和牌（包括同巡振听、现物振听与立直振听）。本技能无法取消因规则或技能导致的禁胡效果。",
+      "flavorText": "“非常好还原剂，把我的振听还原成听牌了。”",
+      "summary": "清除己方当前振听，并使己方本局不再因振听而不能和牌。",
+      "timing": {
+        "playWindow": "使用后立即清除状态",
+        "activationTriggers": [
+          "使用技能",
+          "己方玩家后续进入任何振听条件"
+        ],
+        "duration": "本局",
+        "expiry": "本局结束"
+      },
+      "targeting": {
+        "scope": "己方所有玩家",
+        "factionRelations": [
+          "己方"
+        ]
+      },
+      "constraints": [
+        "覆盖同巡振听、现物振听与立直振听",
+        "不能取消规则或技能造成的禁胡"
+      ],
+      "structuredEffects": {
+        "scoreOperations": [],
+        "tileOperations": [],
+        "skillCardOperations": [],
+        "ruleOverrides": [
+          "己方忽略振听造成的和牌禁止"
+        ]
+      },
+      "stackability": "资料库未说明",
+      "factionAndMode": {
+        "usesFactionSemantics": true,
+        "requiresTeamAssignment": true,
+        "bloodBattleRulesRequired": false,
+        "playerCountNotes": [],
+        "physicalTableDependency": "无"
+      },
+      "ambiguities": [
+        "取消立直振听后是否仍保留立直的其他限制未单列"
+      ],
+      "source": {
+        "sheet": "技能卡资料库",
+        "row": 20,
+        "range": "A20:G20"
+      },
+      "artwork": "/cards/art/17_抗坏血酸.png"
+    },
+    {
+      "id": 20,
+      "name": "只狼",
+      "rarity": "稀有",
+      "type": {
+        "code": "攻",
+        "name": "负面攻击",
+        "guide": "【攻｜负面攻击】仅可对对手使用",
+        "guideMatchesTypeDefinition": true
+      },
+      "effectDescription": "使用后在本局内生效：选择一名敌方玩家。于本局内，该玩家仅允许使用单手完成所有与对局相关的操作（包括摸牌、理牌、出牌、叫牌宣告与和牌动作）。若该玩家在操作过程中同时使用双手，则每次违规须立即向技能卡使用者支付 3000 点。非对局相关行为（如整理身体姿势、饮水等）不视为违规。",
+      "flavorText": "“Sekiro : 死两次—单臂也得打牌。”",
+      "summary": "限制一名敌方玩家只能单手完成对局操作；每次双手违规支付使用者 3000 点。",
+      "timing": {
+        "playWindow": "使用时选择目标",
+        "activationTriggers": [
+          "目标在对局操作中同时使用双手"
+        ],
+        "duration": "本局",
+        "expiry": "本局结束"
+      },
+      "targeting": {
+        "scope": "一名敌方玩家",
+        "factionRelations": [
+          "敌方"
+        ]
+      },
+      "constraints": [
+        "适用于摸牌、理牌、出牌、叫牌与和牌动作",
+        "饮水、调整姿势等非对局行为不违规"
+      ],
+      "structuredEffects": {
+        "scoreOperations": [
+          {
+            "operation": "transfer",
+            "amount": 3000,
+            "unit": "点",
+            "payer": "目标玩家",
+            "recipient": "技能卡使用者",
+            "per": "每次违规"
+          }
+        ],
+        "tileOperations": [],
+        "skillCardOperations": [],
+        "ruleOverrides": []
+      },
+      "stackability": "资料库未说明",
+      "factionAndMode": {
+        "usesFactionSemantics": true,
+        "requiresTeamAssignment": false,
+        "bloodBattleRulesRequired": false,
+        "playerCountNotes": [],
+        "physicalTableDependency": "实体动作限定；数字版需改写，且实体规则需要无障碍例外"
+      },
+      "ambiguities": [
+        "何为“同时使用双手”、误触与身体辅助装置如何判定未写明"
+      ],
+      "source": {
+        "sheet": "技能卡资料库",
+        "row": 21,
+        "range": "A21:G21"
+      },
+      "artwork": "/cards/art/16_只狼.png"
+    },
+    {
+      "id": 21,
+      "name": "指鹿为马",
+      "rarity": "稀有",
+      "type": {
+        "code": "单",
+        "name": "个人增益",
+        "guide": "【单｜个人增益】仅可对自己使用",
+        "guideMatchesTypeDefinition": true
+      },
+      "effectDescription": "使用时，从手牌中选择一组「对子」或「顺子」并公开放置于桌面，视为待补全组合。在本局内：当任意玩家打出任意一张牌时，该牌被强制视为用于补全该公开组合所需的那一张牌，并立即获取以补全该组合；该行为不得拒绝。该效果的处理优先于其他吃、碰与杠判定，但不优先于荣和。若手牌因此形成合法和牌牌型，则立即和牌。",
+      "flavorText": "“这是俺拾的牌。”",
+      "summary": "公开一组待补全组合；随后任意玩家打出的牌被强制视为所需牌并由使用者取得。",
+      "timing": {
+        "playWindow": "使用时从手牌公开组合",
+        "activationTriggers": [
+          "使用技能后的任意玩家下一次打牌",
+          "取得牌后形成合法和牌"
+        ],
+        "duration": "直到取得用于补全的弃牌／本局结束",
+        "expiry": "取得弃牌并完成处理后；若未触发则本局结束"
+      },
+      "targeting": {
+        "scope": "自己；拦截任意玩家的弃牌",
+        "factionRelations": [
+          "自己",
+          "任意玩家"
+        ]
+      },
+      "constraints": [
+        "补全行为不得拒绝",
+        "优先于吃、碰、杠，但低于荣和"
+      ],
+      "structuredEffects": {
+        "scoreOperations": [],
+        "tileOperations": [
+          "公开一组对子或顺子作为待补全组合",
+          "任意弃牌被强制视为所需牌并由使用者取得",
+          "若形成合法和牌则立即和牌"
+        ],
+        "skillCardOperations": [],
+        "ruleOverrides": [
+          "改写弃牌牌种判定",
+          "改变鸣牌优先级"
+        ]
+      },
+      "stackability": "资料库未说明",
+      "factionAndMode": {
+        "usesFactionSemantics": false,
+        "requiresTeamAssignment": false,
+        "bloodBattleRulesRequired": false,
+        "playerCountNotes": [],
+        "physicalTableDependency": "无"
+      },
+      "ambiguities": [
+        "“顺子”本身已是三张完整组合，所谓待补全牌不明确，可能原意为两面子／搭子",
+        "对子被补全后应视为碰、副露还是手牌组成未写明",
+        "文本似乎会在下一张任意弃牌即触发，但未明确是否可等待选择",
+        "取得牌但未和牌时需弃几张牌、回合是否转移未写明"
+      ],
+      "source": {
+        "sheet": "技能卡资料库",
+        "row": 22,
+        "range": "A22:G22"
+      },
+      "artwork": "/cards/art/18_指鹿为马.png"
+    },
+    {
+      "id": 22,
+      "name": "镀锌方杠",
+      "rarity": "稀有",
+      "type": {
+        "code": "陷",
+        "name": "防守陷阱",
+        "guide": "【陷｜防守陷阱】暗置使用，满足条件时公开并生效",
+        "guideMatchesTypeDefinition": true
+      },
+      "effectDescription": "使用后在本局内生效：暗置使用。任意敌方玩家因你打出的牌而宣告明杠时技能卡发动。本次杠牌照常成立，但该刻子不计入该玩家的副露，而改为置入你的副露区，视为所拥有的副露杠子。随后，从自己的手牌中选择三张牌，交予该玩家加入其手牌。",
+      "flavorText": "“去邻居家找三大妈借点杠。”",
+      "summary": "敌方用自己的弃牌明杠时，把该杠转移到自己的副露区，再给对方三张手牌。",
+      "timing": {
+        "playWindow": "暗置使用；具体暗置窗口未单列",
+        "activationTriggers": [
+          "敌方玩家以技能卡使用者的弃牌宣告明杠"
+        ],
+        "duration": "本局",
+        "expiry": "资料库未说明触发后是否立即失效"
+      },
+      "targeting": {
+        "scope": "触发明杠的敌方玩家与自己",
+        "factionRelations": [
+          "敌方",
+          "自己"
+        ]
+      },
+      "constraints": [
+        "明杠照常成立",
+        "使用者须能从手牌交出三张牌"
+      ],
+      "structuredEffects": {
+        "scoreOperations": [],
+        "tileOperations": [
+          "杠子从目标副露转入使用者副露，视为使用者的副露杠",
+          "使用者选择 3 张手牌交给目标"
+        ],
+        "skillCardOperations": [],
+        "ruleOverrides": []
+      },
+      "stackability": "资料库未说明",
+      "factionAndMode": {
+        "usesFactionSemantics": true,
+        "requiresTeamAssignment": false,
+        "bloodBattleRulesRequired": false,
+        "playerCountNotes": [],
+        "physicalTableDependency": "无"
+      },
+      "ambiguities": [
+        "开杠补牌、宝牌翻开、岭上开花与责任支付归谁未写明",
+        "使用者不足三张手牌时的处理未写明",
+        "获得他人杠子后使用者手牌结构与和牌合法性未写明",
+        "未写明能否重复触发"
+      ],
+      "source": {
+        "sheet": "技能卡资料库",
+        "row": 23,
+        "range": "A23:G23"
+      },
+      "artwork": "/cards/art/15_镀锌方杠.png"
+    },
+    {
+      "id": 23,
+      "name": "关税政策",
+      "rarity": "稀有",
+      "type": {
+        "code": "陷",
+        "name": "防守陷阱",
+        "guide": "【陷｜防守陷阱】暗置使用，满足条件时公开并生效",
+        "guideMatchesTypeDefinition": true
+      },
+      "effectDescription": "使用后在本局内生效：暗置使用。任意敌方玩家以 6 番及以上 的和牌番数结算时技能卡发动。本次和牌结算改为：和牌者仅获得 当前应得点数的 80%，另 20% 的点数支付给技能卡使用者。本技能发动一次后立即失效。",
+      "flavorText": "“Tariff is a tax.”",
+      "summary": "敌方以至少 6 番和牌时，和牌者只获 80%，另 20% 支付给使用者。",
+      "timing": {
+        "playWindow": "暗置使用；具体暗置窗口未单列",
+        "activationTriggers": [
+          "敌方玩家以 6 番及以上和牌结算"
+        ],
+        "duration": "本局，最多发动一次",
+        "expiry": "发动一次后立即失效；未发动则本局结束"
+      },
+      "targeting": {
+        "scope": "触发和牌的敌方玩家与技能卡使用者",
+        "factionRelations": [
+          "敌方",
+          "自己"
+        ]
+      },
+      "constraints": [
+        "触发门槛为 6 番及以上"
+      ],
+      "structuredEffects": {
+        "scoreOperations": [
+          {
+            "operation": "splitAward",
+            "base": "当前应得点数",
+            "winnerShare": "80%",
+            "skillUserShare": "20%",
+            "condition": "敌方以至少 6 番和牌"
+          }
+        ],
+        "tileOperations": [],
+        "skillCardOperations": [],
+        "ruleOverrides": []
+      },
+      "stackability": "每张卡发动一次后失效；同一玩家能否暗置多张未说明",
+      "factionAndMode": {
+        "usesFactionSemantics": true,
+        "requiresTeamAssignment": false,
+        "bloodBattleRulesRequired": false,
+        "playerCountNotes": [],
+        "physicalTableDependency": "无"
+      },
+      "ambiguities": [
+        "20% 的实际付款者、荣和与自摸的分摊方式未写明",
+        "非整数点数的取整单位与顺序未写明",
+        "“当前应得点数”是否已包含场棒、立直棒和其他技能未写明"
+      ],
+      "source": {
+        "sheet": "技能卡资料库",
+        "row": 24,
+        "range": "A24:G24"
+      },
+      "artwork": "/cards/art/28_关税政策.png"
+    },
+    {
+      "id": 24,
+      "name": "优势在我",
+      "rarity": "稀有",
+      "type": {
+        "code": "团",
+        "name": "团队增益",
+        "guide": "【团｜团队增益】可对己方阵营使用",
+        "guideMatchesTypeDefinition": true
+      },
+      "effectDescription": "使用后在本局内生效。使用条件：发动时，己方阵营的总点数 高于 敌方阵营总点数。本局内，己方阵营任意玩家和牌时，番数 +2。",
+      "flavorText": "“那种勃勃生机、万物竞发的境界，犹在眼前。”",
+      "summary": "己方阵营领先时才能使用；本局己方所有和牌加 2 番。",
+      "timing": {
+        "playWindow": "使用时检查阵营总点数并立即生效",
+        "activationTriggers": [
+          "使用技能",
+          "己方玩家和牌"
+        ],
+        "duration": "本局",
+        "expiry": "本局结束"
+      },
+      "targeting": {
+        "scope": "己方所有玩家",
+        "factionRelations": [
+          "己方",
+          "敌方"
+        ]
+      },
+      "constraints": [
+        "使用时己方阵营总点数必须高于敌方阵营总点数"
+      ],
+      "structuredEffects": {
+        "scoreOperations": [
+          {
+            "operation": "addHan",
+            "amount": 2,
+            "unit": "番",
+            "recipient": "己方和牌者"
+          }
+        ],
+        "tileOperations": [],
+        "skillCardOperations": [],
+        "ruleOverrides": []
+      },
+      "stackability": "资料库未说明",
+      "factionAndMode": {
+        "usesFactionSemantics": true,
+        "requiresTeamAssignment": true,
+        "bloodBattleRulesRequired": false,
+        "playerCountNotes": [
+          "要求能够计算己方与敌方阵营总点数；多阵营或不对称人数需要比较规则"
+        ],
+        "physicalTableDependency": "无"
+      },
+      "ambiguities": [
+        "平分时不可使用可由“高于”确定；但存在三个以上阵营时比较对象未写明"
+      ],
+      "source": {
+        "sheet": "技能卡资料库",
+        "row": 25,
+        "range": "A25:G25"
+      },
+      "artwork": "/cards/art/30_优势在我.png"
+    },
+    {
+      "id": 25,
+      "name": "金坷垃",
+      "rarity": "稀有",
+      "type": {
+        "code": "单",
+        "name": "个人增益",
+        "guide": "【单｜个人增益】仅可对自己使用",
+        "guideMatchesTypeDefinition": true
+      },
+      "effectDescription": "使用后在本局内生效。当你和牌结算时：若本此和牌番数 小于 5 番，则额外 +3 番；若本此和牌番数 大于或等于 5 番，则额外 +1 番。此效果可与其他同名卡叠加。本卡之效果在本次和牌结算中 优先级最低，需在其他技能卡效果与规则结算完毕后，最后进行结算。",
+      "flavorText": "“含有60%的氮，90%的高磷高钾。”",
+      "summary": "自己和牌时，结算前番数低于 5 则加 3 番，否则加 1 番；最后结算且可叠加。",
+      "timing": {
+        "playWindow": "主动使用；具体窗口未单列",
+        "activationTriggers": [
+          "技能卡使用者和牌结算"
+        ],
+        "duration": "本局",
+        "expiry": "本局结束"
+      },
+      "targeting": {
+        "scope": "自己",
+        "factionRelations": [
+          "自己"
+        ]
+      },
+      "constraints": [
+        "必须在其他技能与规则结算后最后处理",
+        "低于 5 番加 3；大于等于 5 番加 1"
+      ],
+      "structuredEffects": {
+        "scoreOperations": [
+          {
+            "operation": "addHanConditional",
+            "condition": "处理本卡前番数 < 5",
+            "amount": 3,
+            "unit": "番",
+            "priority": "最低"
+          },
+          {
+            "operation": "addHanConditional",
+            "condition": "处理本卡前番数 >= 5",
+            "amount": 1,
+            "unit": "番",
+            "priority": "最低"
+          }
+        ],
+        "tileOperations": [],
+        "skillCardOperations": [],
+        "ruleOverrides": []
+      },
+      "stackability": "同名卡可叠加",
+      "factionAndMode": {
+        "usesFactionSemantics": false,
+        "requiresTeamAssignment": false,
+        "bloodBattleRulesRequired": false,
+        "playerCountNotes": [],
+        "physicalTableDependency": "无"
+      },
+      "ambiguities": [
+        "多张同名卡逐张结算时，后续卡是否按前一张加番后的新番数重新判断未写明",
+        "原文“本此”应为“本次”"
+      ],
+      "source": {
+        "sheet": "技能卡资料库",
+        "row": 26,
+        "range": "A26:G26"
+      },
+      "artwork": "/cards/art/27_金坷垃.png"
+    },
+    {
+      "id": 26,
+      "name": "管中窥牌",
+      "rarity": "稀有",
+      "type": {
+        "code": "攻",
+        "name": "负面攻击",
+        "guide": "【攻｜负面攻击】仅可对对手使用",
+        "guideMatchesTypeDefinition": true
+      },
+      "effectDescription": "使用后在本局内生效：选择一名敌方玩家。该玩家每次摸牌时，必须将所摸之牌正面公开于桌上展示，待全体玩家确认后，再收回至手牌。展示仅限于摸入瞬间，之后不需保持公开。",
+      "flavorText": "“有一说一，我摸到飞了，你们有压力了吗？”",
+      "summary": "一名敌方玩家每次摸牌都要短暂公开所摸牌。",
+      "timing": {
+        "playWindow": "使用时选择目标",
+        "activationTriggers": [
+          "目标每次摸牌"
+        ],
+        "duration": "本局",
+        "expiry": "本局结束"
+      },
+      "targeting": {
+        "scope": "一名敌方玩家",
+        "factionRelations": [
+          "敌方"
+        ]
+      },
+      "constraints": [
+        "只在摸入瞬间公开；确认后可收回，不需持续公开"
+      ],
+      "structuredEffects": {
+        "scoreOperations": [],
+        "tileOperations": [],
+        "skillCardOperations": [],
+        "ruleOverrides": [
+          "目标摸牌信息短暂公开"
+        ]
+      },
+      "stackability": "资料库未说明",
+      "factionAndMode": {
+        "usesFactionSemantics": true,
+        "requiresTeamAssignment": false,
+        "bloodBattleRulesRequired": false,
+        "playerCountNotes": [],
+        "physicalTableDependency": "实体牌桌需展示确认；数字版可弹出公开摸牌事件"
+      },
+      "ambiguities": [
+        "杠后补牌、技能额外摸牌、牌尾牌是否都算“摸牌”未单列"
+      ],
+      "source": {
+        "sheet": "技能卡资料库",
+        "row": 27,
+        "range": "A27:G27"
+      },
+      "artwork": "/cards/art/29_管中窥牌.png"
+    },
+    {
+      "id": 27,
+      "name": "ELO机制",
+      "rarity": "稀有",
+      "type": {
+        "code": "团",
+        "name": "团队增益",
+        "guide": "【团｜团队增益】可对己方阵营使用",
+        "guideMatchesTypeDefinition": true
+      },
+      "effectDescription": "使用后在本局内生效：于本局内：当任意玩家荣和任意己方玩家时，本技能立即发动；技能卡使用者立即抽取 2 张技能卡。",
+      "flavorText": "“ELO机制受益者。”",
+      "summary": "任意玩家荣和己方玩家时，使用者抽 2 张技能卡。",
+      "timing": {
+        "playWindow": "主动使用；具体窗口未单列",
+        "activationTriggers": [
+          "任意玩家对任意己方玩家荣和"
+        ],
+        "duration": "本局",
+        "expiry": "本局结束"
+      },
+      "targeting": {
+        "scope": "技能卡使用者；事件关联己方被荣和玩家",
+        "factionRelations": [
+          "己方",
+          "任意荣和者"
+        ]
+      },
+      "constraints": [],
+      "structuredEffects": {
+        "scoreOperations": [],
+        "tileOperations": [],
+        "skillCardOperations": [
+          "触发时技能卡使用者抽 2 张技能卡"
+        ],
+        "ruleOverrides": []
+      },
+      "stackability": "资料库未说明",
+      "factionAndMode": {
+        "usesFactionSemantics": true,
+        "requiresTeamAssignment": true,
+        "bloodBattleRulesRequired": false,
+        "playerCountNotes": [],
+        "physicalTableDependency": "无"
+      },
+      "ambiguities": [
+        "同队玩家荣和己方玩家是否也触发未写明",
+        "一次多家荣和按每名和牌者还是每次事件触发未写明",
+        "未写明是否可重复触发"
+      ],
+      "source": {
+        "sheet": "技能卡资料库",
+        "row": 28,
+        "range": "A28:G28"
+      },
+      "artwork": "/cards/art/25_ELO机制.png"
+    },
+    {
+      "id": 28,
+      "name": "立直禁止",
+      "rarity": "稀有",
+      "type": {
+        "code": "攻",
+        "name": "负面攻击",
+        "guide": "【攻｜负面攻击】仅可对对手使用",
+        "guideMatchesTypeDefinition": true
+      },
+      "effectDescription": "使用后在本局内生效：选择一名已宣告立直的敌方玩家。本技能立即发动。该玩家的立直状态立即取消，本手牌视为重新进入可变更状态；同时，该玩家进入振听状态（不视为立直振听，可随正常规则解除）。解除立直后，立直棒归技能卡发动者所有。该玩家可重新进入立直状态。",
+      "flavorText": "“你的觉悟还不够，我让你坐下。”",
+      "summary": "取消一名已立直敌人的立直，使其进入可解除的普通振听，并把立直棒转给使用者。",
+      "timing": {
+        "playWindow": "仅在存在已宣告立直的敌方目标时使用并立即生效",
+        "activationTriggers": [
+          "使用技能"
+        ],
+        "duration": "立即；振听持续到按通常规则解除",
+        "expiry": "立直取消与立直棒转移完成"
+      },
+      "targeting": {
+        "scope": "一名已立直敌方玩家",
+        "factionRelations": [
+          "敌方",
+          "自己"
+        ]
+      },
+      "constraints": [
+        "目标使用前必须已立直",
+        "取消后目标可重新立直",
+        "产生的振听不视为立直振听"
+      ],
+      "structuredEffects": {
+        "scoreOperations": [
+          {
+            "operation": "transferRiichiStick",
+            "amount": "目标已放置的立直棒",
+            "payer": "公共立直棒区",
+            "recipient": "技能卡使用者"
+          }
+        ],
+        "tileOperations": [],
+        "skillCardOperations": [],
+        "ruleOverrides": [
+          "取消立直",
+          "目标手牌恢复可变更状态",
+          "目标进入可正常解除的振听"
+        ]
+      },
+      "stackability": "资料库未说明",
+      "factionAndMode": {
+        "usesFactionSemantics": true,
+        "requiresTeamAssignment": false,
+        "bloodBattleRulesRequired": false,
+        "playerCountNotes": [],
+        "physicalTableDependency": "无"
+      },
+      "ambiguities": [
+        "目标立直后已通过的牌是否仍构成现物振听未单列",
+        "若立直棒已被其他效果移动则如何处理未写明"
+      ],
+      "source": {
+        "sheet": "技能卡资料库",
+        "row": 29,
+        "range": "A29:G29"
+      },
+      "artwork": "/cards/art/24_立直禁止.png"
+    },
+    {
+      "id": 29,
+      "name": "Ctrl + Z",
+      "rarity": "稀有",
+      "type": {
+        "code": "单",
+        "name": "个人增益",
+        "guide": "【单｜个人增益】仅可对自己使用",
+        "guideMatchesTypeDefinition": true
+      },
+      "effectDescription": "使用条件：你当前的副露区至少拥有一对刻子或顺子。使用后，从你的副露区中选择 一组刻子或一组顺子（不含明杠与暗杠），将该组合移出副露区并加入手牌。若技能结算后副露区为空，则重新进入门清状态。",
+      "flavorText": "“体型BIGの自机 撤回了一条消息。”",
+      "summary": "把自己副露区的一组刻子或顺子收回手牌；副露清空则恢复门清。",
+      "timing": {
+        "playWindow": "满足副露条件时使用并立即生效",
+        "activationTriggers": [
+          "使用技能"
+        ],
+        "duration": "立即",
+        "expiry": "组合移回手牌后"
+      },
+      "targeting": {
+        "scope": "自己",
+        "factionRelations": [
+          "自己"
+        ]
+      },
+      "constraints": [
+        "副露区至少有一组刻子或顺子",
+        "不能选择明杠或暗杠"
+      ],
+      "structuredEffects": {
+        "scoreOperations": [],
+        "tileOperations": [
+          "选择一组副露刻子或顺子移回手牌",
+          "副露区为空时恢复门清"
+        ],
+        "skillCardOperations": [],
+        "ruleOverrides": []
+      },
+      "stackability": "资料库未说明",
+      "factionAndMode": {
+        "usesFactionSemantics": false,
+        "requiresTeamAssignment": false,
+        "bloodBattleRulesRequired": false,
+        "playerCountNotes": [],
+        "physicalTableDependency": "无"
+      },
+      "ambiguities": [
+        "原文“至少拥有一对刻子或顺子”疑似应为“一组”",
+        "收回后手牌多出的牌何时、弃几张未写明",
+        "由碰／吃产生的牌回手后是否可拆分未写明"
+      ],
+      "source": {
+        "sheet": "技能卡资料库",
+        "row": 30,
+        "range": "A30:G30"
+      },
+      "artwork": "/cards/art/26_Ctrl-Z.png"
+    },
+    {
+      "id": 30,
+      "name": "名刀司命",
+      "rarity": "稀有",
+      "type": {
+        "code": "陷",
+        "name": "防守陷阱",
+        "guide": "【陷｜防守陷阱】暗置使用，满足条件时公开并生效",
+        "guideMatchesTypeDefinition": true
+      },
+      "effectDescription": "使用后在本局内生效：暗置使用。任意敌方玩家以你的出牌进行荣和时，本技能立即发动。本次荣和直接无效，该出牌改为正常弃牌进入弃牌池；该玩家仍视为未进入振听状态。本技能发动一次后立即失效。",
+      "flavorText": "“他出了一个名刀司命！”",
+      "summary": "敌方以自己的弃牌荣和时，使该次荣和无效且不让和牌者进入振听。",
+      "timing": {
+        "playWindow": "暗置使用；具体暗置窗口未单列",
+        "activationTriggers": [
+          "敌方玩家以技能卡使用者的弃牌荣和"
+        ],
+        "duration": "本局，最多发动一次",
+        "expiry": "发动一次后立即失效；未发动则本局结束"
+      },
+      "targeting": {
+        "scope": "触发荣和的敌方玩家",
+        "factionRelations": [
+          "敌方"
+        ]
+      },
+      "constraints": [
+        "只能取消以自己弃牌进行的荣和",
+        "取消后该牌正常进入牌河",
+        "目标不进入振听"
+      ],
+      "structuredEffects": {
+        "scoreOperations": [],
+        "tileOperations": [],
+        "skillCardOperations": [],
+        "ruleOverrides": [
+          "本次荣和直接无效"
+        ]
+      },
+      "stackability": "每张卡发动一次后失效；同一玩家能否暗置多张未说明",
+      "factionAndMode": {
+        "usesFactionSemantics": true,
+        "requiresTeamAssignment": false,
+        "bloodBattleRulesRequired": false,
+        "playerCountNotes": [],
+        "physicalTableDependency": "无"
+      },
+      "ambiguities": [
+        "多人同时荣和时取消一人、全部或由使用者选择未写明",
+        "和牌宣告无效后回合是否继续接受其他鸣牌未写明"
+      ],
+      "source": {
+        "sheet": "技能卡资料库",
+        "row": 31,
+        "range": "A31:G31"
+      },
+      "artwork": "/cards/art/23_名刀司命.png"
+    },
+    {
+      "id": 31,
+      "name": "辉月",
+      "rarity": "普通",
+      "type": {
+        "code": "陷",
+        "name": "防守陷阱",
+        "guide": "【陷｜防守陷阱】暗置使用，满足条件时公开并生效",
+        "guideMatchesTypeDefinition": true
+      },
+      "effectDescription": "使用后在本局内生效：暗置使用。当敌方玩家以你打出的牌进行鸣牌（吃、碰或杠） 时，本技能立即发动；本次鸣牌无效，该牌改为正常弃入牌河。本技能发动后立即失效；该敌方玩家之后仍可正常鸣牌。同一名玩家可暗置多张本卡；本技能不可用于取消荣和。",
+      "flavorText": "“高贵的无法选中。”",
+      "summary": "敌方用自己的弃牌吃碰杠时取消该次鸣牌；不能取消荣和。",
+      "timing": {
+        "playWindow": "暗置使用；具体暗置窗口未单列",
+        "activationTriggers": [
+          "敌方玩家以技能卡使用者的弃牌吃、碰或杠"
+        ],
+        "duration": "本局，单张卡最多发动一次",
+        "expiry": "该卡发动后立即失效；未发动则本局结束"
+      },
+      "targeting": {
+        "scope": "触发鸣牌的敌方玩家",
+        "factionRelations": [
+          "敌方"
+        ]
+      },
+      "constraints": [
+        "不能取消荣和",
+        "取消后该牌正常进入牌河",
+        "目标之后仍可正常鸣牌"
+      ],
+      "structuredEffects": {
+        "scoreOperations": [],
+        "tileOperations": [],
+        "skillCardOperations": [],
+        "ruleOverrides": [
+          "本次吃、碰或杠无效"
+        ]
+      },
+      "stackability": "同一玩家可暗置多张同名卡；每张发动一次",
+      "factionAndMode": {
+        "usesFactionSemantics": true,
+        "requiresTeamAssignment": false,
+        "bloodBattleRulesRequired": false,
+        "playerCountNotes": [],
+        "physicalTableDependency": "无"
+      },
+      "ambiguities": [
+        "同一弃牌出现多个鸣牌请求时，触发对象与优先顺序未写明"
+      ],
+      "source": {
+        "sheet": "技能卡资料库",
+        "row": 32,
+        "range": "A32:G32"
+      },
+      "artwork": "/cards/art/36_辉月.png"
+    },
+    {
+      "id": 32,
+      "name": "大东亚共荣",
+      "rarity": "普通",
+      "type": {
+        "code": "团",
+        "name": "团队增益",
+        "guide": "【团｜团队增益】可对己方阵营使用",
+        "guideMatchesTypeDefinition": true
+      },
+      "effectDescription": "使用后在本局内生效。己方阵营和牌时，和牌点数 +1000点。同名卡效果可叠加。仅对本局内之后的和牌生效",
+      "flavorText": "“24岁，是雀圣。”",
+      "summary": "己方之后每次和牌额外加 1000 点，可叠加。",
+      "timing": {
+        "playWindow": "主动使用；只影响本局之后发生的和牌",
+        "activationTriggers": [
+          "己方玩家和牌"
+        ],
+        "duration": "本局",
+        "expiry": "本局结束"
+      },
+      "targeting": {
+        "scope": "己方所有玩家",
+        "factionRelations": [
+          "己方"
+        ]
+      },
+      "constraints": [],
+      "structuredEffects": {
+        "scoreOperations": [
+          {
+            "operation": "addAward",
+            "amount": 1000,
+            "unit": "点",
+            "recipient": "己方和牌者",
+            "condition": "使用后发生的和牌"
+          }
+        ],
+        "tileOperations": [],
+        "skillCardOperations": [],
+        "ruleOverrides": []
+      },
+      "stackability": "同名卡可叠加",
+      "factionAndMode": {
+        "usesFactionSemantics": true,
+        "requiresTeamAssignment": true,
+        "bloodBattleRulesRequired": false,
+        "playerCountNotes": [],
+        "physicalTableDependency": "无"
+      },
+      "ambiguities": [
+        "额外 1000 点由放铳者、所有未和牌者、对方阵营或公共池支付未写明",
+        "自摸时的分摊方式未写明"
+      ],
+      "source": {
+        "sheet": "技能卡资料库",
+        "row": 33,
+        "range": "A33:G33"
+      },
+      "artwork": "/cards/art/38_大东亚共荣.png"
+    },
+    {
+      "id": 33,
+      "name": "打卡啦摸多",
+      "rarity": "普通",
+      "type": {
+        "code": "单",
+        "name": "个人增益",
+        "guide": "【单｜个人增益】仅可对自己使用",
+        "guideMatchesTypeDefinition": true
+      },
+      "effectDescription": "使用后，立即摸入 2 张牌；若摸入后，手牌形成合法和牌型并满足役条件，则从手牌中选择 1 张弃出，本手视为自摸成立；若未形成合法和牌型，则从手牌中弃出 2 张牌。",
+      "flavorText": "“MORE！JUMP！MORE！”",
+      "summary": "立即摸 2 张；若形成有役合法和牌，弃 1 张后视为自摸，否则弃 2 张。",
+      "timing": {
+        "playWindow": "使用后立即结算",
+        "activationTriggers": [
+          "使用技能后摸入两张牌"
+        ],
+        "duration": "立即",
+        "expiry": "完成自摸或弃牌处理"
+      },
+      "targeting": {
+        "scope": "自己",
+        "factionRelations": [
+          "自己"
+        ]
+      },
+      "constraints": [
+        "成立自摸须形成合法牌型并满足役条件"
+      ],
+      "structuredEffects": {
+        "scoreOperations": [],
+        "tileOperations": [
+          "立即摸 2 张牌",
+          "若可和牌则从手牌弃 1 张并视为自摸",
+          "否则从手牌弃 2 张"
+        ],
+        "skillCardOperations": [],
+        "ruleOverrides": [
+          "满足条件时把本手视为自摸"
+        ]
+      },
+      "stackability": "资料库未说明",
+      "factionAndMode": {
+        "usesFactionSemantics": false,
+        "requiresTeamAssignment": false,
+        "bloodBattleRulesRequired": false,
+        "playerCountNotes": [],
+        "physicalTableDependency": "无"
+      },
+      "ambiguities": [
+        "选择弃出的牌是否可属于和牌组成、实际和牌牌张是哪一张未写明",
+        "两张摸牌是否依次触发摸牌相关效果未写明",
+        "弃出的两张是否依序允许荣和／鸣牌未写明"
+      ],
+      "source": {
+        "sheet": "技能卡资料库",
+        "row": 34,
+        "range": "A34:G34"
+      },
+      "artwork": "/cards/art/35_打卡啦摸多.jpeg"
+    },
+    {
+      "id": 34,
+      "name": "门前积雪",
+      "rarity": "普通",
+      "type": {
+        "code": "攻",
+        "name": "负面攻击",
+        "guide": "【攻｜负面攻击】仅可对对手使用",
+        "guideMatchesTypeDefinition": true
+      },
+      "effectDescription": "使用后，选择一名敌方玩家。于本局内，该玩家不能在门清状态自摸/荣和。该玩家可以向技能卡使用者支付 1000 点取消该卡。",
+      "flavorText": "“恶心一下四暗刻玩家。”",
+      "summary": "令一名敌方玩家在门清状态不能和牌；目标可支付 1000 点给使用者取消。",
+      "timing": {
+        "playWindow": "使用时选择目标",
+        "activationTriggers": [
+          "目标在门清状态尝试自摸或荣和",
+          "目标选择支付取消"
+        ],
+        "duration": "本局，或目标付费取消前",
+        "expiry": "目标支付 1000 点取消或本局结束"
+      },
+      "targeting": {
+        "scope": "一名敌方玩家",
+        "factionRelations": [
+          "敌方",
+          "自己"
+        ]
+      },
+      "constraints": [
+        "只禁止门清状态下的自摸与荣和",
+        "目标可选择付费取消"
+      ],
+      "structuredEffects": {
+        "scoreOperations": [
+          {
+            "operation": "transfer",
+            "amount": 1000,
+            "unit": "点",
+            "payer": "目标玩家",
+            "recipient": "技能卡使用者",
+            "condition": "目标主动取消该卡"
+          }
+        ],
+        "tileOperations": [],
+        "skillCardOperations": [],
+        "ruleOverrides": [
+          "目标门清时禁胡"
+        ]
+      },
+      "stackability": "资料库未说明",
+      "factionAndMode": {
+        "usesFactionSemantics": true,
+        "requiresTeamAssignment": false,
+        "bloodBattleRulesRequired": false,
+        "playerCountNotes": [],
+        "physicalTableDependency": "无"
+      },
+      "ambiguities": [
+        "目标可以在何时支付、支付后能否对同一张牌立即和牌未写明",
+        "门清荣和保留门清的通常定义，但资料库未明确是否必须先副露才能解除"
+      ],
+      "source": {
+        "sheet": "技能卡资料库",
+        "row": 35,
+        "range": "A35:G35"
+      },
+      "artwork": "/cards/art/37_门前积雪.png"
+    },
+    {
+      "id": 35,
+      "name": "终极奉献",
+      "rarity": "普通",
+      "type": {
+        "code": "团",
+        "name": "团队增益",
+        "guide": "【团｜团队增益】可对己方阵营使用",
+        "guideMatchesTypeDefinition": true
+      },
+      "effectDescription": "使用后，你立即支付 1000 点；随后，己方阵营的 所有玩家各抽 1 张技能卡。本卡可多次发动，代价由使用者自行承担。",
+      "flavorText": "“抽卡，然后重新思考你的人生抉择。”",
+      "summary": "使用者支付 1000 点，随后己方所有玩家各抽 1 张技能卡；可多次发动。",
+      "timing": {
+        "playWindow": "使用后立即结算",
+        "activationTriggers": [
+          "使用技能"
+        ],
+        "duration": "立即",
+        "expiry": "付款与抽卡完成"
+      },
+      "targeting": {
+        "scope": "己方所有玩家",
+        "factionRelations": [
+          "自己",
+          "己方"
+        ]
+      },
+      "constraints": [],
+      "structuredEffects": {
+        "scoreOperations": [
+          {
+            "operation": "deduct",
+            "amount": 1000,
+            "unit": "点",
+            "payer": "技能卡使用者",
+            "recipient": "未说明"
+          }
+        ],
+        "tileOperations": [],
+        "skillCardOperations": [
+          "己方阵营所有玩家各抽 1 张技能卡"
+        ],
+        "ruleOverrides": []
+      },
+      "stackability": "明确可多次发动；每次由使用者支付代价",
+      "factionAndMode": {
+        "usesFactionSemantics": true,
+        "requiresTeamAssignment": true,
+        "bloodBattleRulesRequired": false,
+        "playerCountNotes": [],
+        "physicalTableDependency": "无"
+      },
+      "ambiguities": [
+        "支付的 1000 点归属未写明",
+        "“己方所有玩家”是否包含使用者按通常语义应包含，但未单列",
+        "技能卡牌库不足时的处理未写明"
+      ],
+      "source": {
+        "sheet": "技能卡资料库",
+        "row": 36,
+        "range": "A36:G36"
+      },
+      "artwork": "/cards/art/33_终极奉献.png"
+    },
+    {
+      "id": 36,
+      "name": "急速狂飙",
+      "rarity": "普通",
+      "type": {
+        "code": "攻",
+        "name": "负面攻击",
+        "guide": "【攻｜负面攻击】仅可对对手使用",
+        "guideMatchesTypeDefinition": true
+      },
+      "effectDescription": "使用后在本局内生效：指定一名敌方玩家。该玩家打牌时必须在 3 秒内完成弃牌动作。否则，需向技能卡使用者支付 1000 点，且后续技能卡失效。",
+      "flavorText": "“Right into your mind.”",
+      "summary": "令一名敌方玩家必须在 3 秒内弃牌；超时支付使用者 1000 点。",
+      "timing": {
+        "playWindow": "使用时选择目标",
+        "activationTriggers": [
+          "目标进入弃牌计时",
+          "目标超过 3 秒未完成弃牌"
+        ],
+        "duration": "本局；但首次超时后的持续性存在歧义",
+        "expiry": "本局结束，或按“后续技能卡失效”的解释在首次超时后失效"
+      },
+      "targeting": {
+        "scope": "一名敌方玩家",
+        "factionRelations": [
+          "敌方"
+        ]
+      },
+      "constraints": [
+        "目标每次打牌须在 3 秒内完成弃牌动作"
+      ],
+      "structuredEffects": {
+        "scoreOperations": [
+          {
+            "operation": "transfer",
+            "amount": 1000,
+            "unit": "点",
+            "payer": "目标玩家",
+            "recipient": "技能卡使用者",
+            "condition": "弃牌超时"
+          }
+        ],
+        "tileOperations": [],
+        "skillCardOperations": [],
+        "ruleOverrides": []
+      },
+      "stackability": "资料库未说明",
+      "factionAndMode": {
+        "usesFactionSemantics": true,
+        "requiresTeamAssignment": false,
+        "bloodBattleRulesRequired": false,
+        "playerCountNotes": [],
+        "physicalTableDependency": "实体局需要统一计时起点与裁判；数字版可实现倒计时器"
+      },
+      "ambiguities": [
+        "“且后续技能卡失效”语法不清：可能指本卡在首次罚款后失效，也可能指目标后续技能卡失效",
+        "3 秒从摸牌、整理完成、轮到行动还是系统提示开始未写明",
+        "网络延迟与动画是否计时未写明"
+      ],
+      "source": {
+        "sheet": "技能卡资料库",
+        "row": 37,
+        "range": "A37:G37"
+      },
+      "artwork": "/cards/art/32_急速狂飙.png"
+    },
+    {
+      "id": 37,
+      "name": "恭喜发财",
+      "rarity": "普通",
+      "type": {
+        "code": "单",
+        "name": "个人增益",
+        "guide": "【单｜个人增益】仅可对自己使用",
+        "guideMatchesTypeDefinition": true
+      },
+      "effectDescription": "使用后，在本局内生效：和牌时，和牌点数额外 +1000 点。同名卡效果可叠加。",
+      "flavorText": "“我恭喜你发财♫我恭喜你精彩♫”",
+      "summary": "自己本局和牌时额外加 1000 点，可叠加。",
+      "timing": {
+        "playWindow": "主动使用；具体窗口未单列",
+        "activationTriggers": [
+          "技能卡使用者和牌"
+        ],
+        "duration": "本局",
+        "expiry": "本局结束"
+      },
+      "targeting": {
+        "scope": "自己",
+        "factionRelations": [
+          "自己"
+        ]
+      },
+      "constraints": [],
+      "structuredEffects": {
+        "scoreOperations": [
+          {
+            "operation": "addAward",
+            "amount": 1000,
+            "unit": "点",
+            "recipient": "技能卡使用者"
+          }
+        ],
+        "tileOperations": [],
+        "skillCardOperations": [],
+        "ruleOverrides": []
+      },
+      "stackability": "同名卡可叠加",
+      "factionAndMode": {
+        "usesFactionSemantics": false,
+        "requiresTeamAssignment": false,
+        "bloodBattleRulesRequired": false,
+        "playerCountNotes": [],
+        "physicalTableDependency": "无"
+      },
+      "ambiguities": [
+        "额外 1000 点的支付来源以及荣和／自摸分摊未写明"
+      ],
+      "source": {
+        "sheet": "技能卡资料库",
+        "row": 38,
+        "range": "A38:G38"
+      },
+      "artwork": "/cards/art/34_恭喜发财.jpeg"
+    },
+    {
+      "id": 38,
+      "name": "反伤刺甲",
+      "rarity": "普通",
+      "type": {
+        "code": "陷",
+        "name": "防守陷阱",
+        "guide": "【陷｜防守陷阱】暗置使用，满足条件时公开并生效",
+        "guideMatchesTypeDefinition": true
+      },
+      "effectDescription": "使用后在本局内生效：暗置使用。敌方玩家以你的出牌进行荣和时，技能卡发动。本局和牌在结算时额外获得该次荣和应得点数的 20%。本技能发动后立即失效。同一名玩家在同一局内仅可暗置 1 张本卡。",
+      "flavorText": "“设计这张卡的人一定是没活了，就像设计反甲的人。”",
+      "summary": "敌方以自己的弃牌荣和时，结算额外增加该次应得点数的 20%；发动一次后失效。",
+      "timing": {
+        "playWindow": "暗置使用；具体暗置窗口未单列",
+        "activationTriggers": [
+          "敌方玩家以技能卡使用者的弃牌荣和"
+        ],
+        "duration": "本局，最多发动一次",
+        "expiry": "发动后立即失效；未发动则本局结束"
+      },
+      "targeting": {
+        "scope": "触发荣和的敌方玩家与技能卡使用者",
+        "factionRelations": [
+          "敌方",
+          "自己"
+        ]
+      },
+      "constraints": [
+        "同一玩家同一局只能暗置 1 张本卡"
+      ],
+      "structuredEffects": {
+        "scoreOperations": [
+          {
+            "operation": "addAwardPercent",
+            "amount": "本次荣和应得点数的 20%",
+            "recipient": "原文主语不明确",
+            "payer": "未说明"
+          }
+        ],
+        "tileOperations": [],
+        "skillCardOperations": [],
+        "ruleOverrides": []
+      },
+      "stackability": "同一玩家同一局最多暗置 1 张；发动一次后失效",
+      "factionAndMode": {
+        "usesFactionSemantics": true,
+        "requiresTeamAssignment": false,
+        "bloodBattleRulesRequired": false,
+        "playerCountNotes": [],
+        "physicalTableDependency": "无"
+      },
+      "ambiguities": [
+        "“本局和牌在结算时额外获得”缺少明确主语：可能是和牌者额外获得，也可能是技能卡使用者获得反伤收益",
+        "20% 的付款来源与取整规则未写明",
+        "卡名与类型暗示防守反伤，但不能据此替代原文"
+      ],
+      "source": {
+        "sheet": "技能卡资料库",
+        "row": 39,
+        "range": "A39:G39"
+      },
+      "artwork": "/cards/art/31_反伤刺甲.png"
+    },
+    {
+      "id": 39,
+      "name": "熠熠生辉",
+      "rarity": "普通",
+      "type": {
+        "code": "单",
+        "name": "个人增益",
+        "guide": "【单｜个人增益】仅可对自己使用",
+        "guideMatchesTypeDefinition": true
+      },
+      "effectDescription": "使用后，在本局内生效：和牌结算时，额外获得 +1000 点；并立即抽取 1 张技能卡（该技能卡不得在本巡内使用）。同名卡效果可叠加。",
+      "flavorText": "“核意味是什么意思。”",
+      "summary": "自己和牌时额外获 1000 点并抽 1 张技能卡；新卡本巡不能用，可叠加。",
+      "timing": {
+        "playWindow": "主动使用；具体窗口未单列",
+        "activationTriggers": [
+          "技能卡使用者和牌结算"
+        ],
+        "duration": "本局",
+        "expiry": "本局结束"
+      },
+      "targeting": {
+        "scope": "自己",
+        "factionRelations": [
+          "自己"
+        ]
+      },
+      "constraints": [
+        "抽到的技能卡不得在本巡使用"
+      ],
+      "structuredEffects": {
+        "scoreOperations": [
+          {
+            "operation": "addAward",
+            "amount": 1000,
+            "unit": "点",
+            "recipient": "技能卡使用者"
+          }
+        ],
+        "tileOperations": [],
+        "skillCardOperations": [
+          "和牌后技能卡使用者抽 1 张技能卡；本巡禁用"
+        ],
+        "ruleOverrides": []
+      },
+      "stackability": "同名卡可叠加",
+      "factionAndMode": {
+        "usesFactionSemantics": false,
+        "requiresTeamAssignment": false,
+        "bloodBattleRulesRequired": false,
+        "playerCountNotes": [],
+        "physicalTableDependency": "无"
+      },
+      "ambiguities": [
+        "额外 1000 点的支付来源未写明",
+        "多张叠加时每张是否各抽 1 张技能卡按通常字面应如此，但未单列",
+        "普通日麻和牌即结束时，“本巡禁用”没有实际意义；在继续对局模式下才重要"
+      ],
+      "source": {
+        "sheet": "技能卡资料库",
+        "row": 40,
+        "range": "A40:G40"
+      },
+      "artwork": "/cards/art/40_熠熠生辉.jpeg"
+    },
+    {
+      "id": 40,
+      "name": "刹那旅程",
+      "rarity": "普通",
+      "type": {
+        "code": "团",
+        "name": "团队增益",
+        "guide": "【团｜团队增益】可对己方阵营使用",
+        "guideMatchesTypeDefinition": true
+      },
+      "effectDescription": "使用后：若你当前打出的牌 无人鸣牌（吃、碰、杠），则本巡结束后，回合顺序直接交由 另一名己方玩家 进行摸牌与行动。若该牌被鸣牌，则本技能无效。若场上仅剩你一名己方玩家，则改为：你立即摸 1 张牌。若摸入后形成合法和牌型，则弃剩余 1 张并视为自摸。否则，从手牌弃出 2 张牌。",
+      "flavorText": "“下定决心不败的存活下去！”",
+      "summary": "当前弃牌无人鸣牌时，把下一行动交给另一名己方玩家；若只剩自己，则改为摸牌并按条件自摸或弃两张。",
+      "timing": {
+        "playWindow": "必须在已经存在“当前打出的牌”时使用；通用使用窗口未在资料库中定义",
+        "activationTriggers": [
+          "当前弃牌无人吃、碰或杠",
+          "当前弃牌被鸣牌",
+          "场上只剩使用者一名己方玩家"
+        ],
+        "duration": "当前弃牌及本巡处理完成前",
+        "expiry": "回合转移、自摸／弃牌处理完成，或当前牌被鸣牌后"
+      },
+      "targeting": {
+        "scope": "自己与另一名己方玩家",
+        "factionRelations": [
+          "己方",
+          "自己"
+        ]
+      },
+      "constraints": [
+        "当前弃牌被鸣牌则技能无效",
+        "只有使用者一名己方玩家时启用替代分支"
+      ],
+      "structuredEffects": {
+        "scoreOperations": [],
+        "tileOperations": [
+          "正常分支：本巡结束后由另一名己方玩家摸牌行动",
+          "仅剩自己时：立即摸 1 张；可和则弃剩余 1 张并视为自摸，否则弃 2 张"
+        ],
+        "skillCardOperations": [],
+        "ruleOverrides": [
+          "跳过通常座次，把行动权交给己方玩家"
+        ]
+      },
+      "stackability": "资料库未说明",
+      "factionAndMode": {
+        "usesFactionSemantics": true,
+        "requiresTeamAssignment": true,
+        "bloodBattleRulesRequired": true,
+        "playerCountNotes": [
+          "需要至少一名其他仍在局中的队友才可执行正常分支",
+          "“仅剩”措辞依赖玩家可在同一局中先后离场／和牌的模式"
+        ],
+        "physicalTableDependency": "无"
+      },
+      "ambiguities": [
+        "由使用者选择哪名己方玩家、还是固定对家未写明",
+        "荣和不在“鸣牌（吃碰杠）”括号中，当前牌被荣和时如何处理未写明",
+        "使用窗口与通常“摸牌前使用技能”的规则需要另行统一",
+        "替代分支摸牌后自摸判定与弃牌顺序同样存在牌张识别歧义"
+      ],
+      "source": {
+        "sheet": "技能卡资料库",
+        "row": 41,
+        "range": "A41:G41"
+      },
+      "artwork": "/cards/art/39_刹那旅程_普通版.jpeg"
+    }
+  ]
+}
