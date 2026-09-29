@@ -1,5 +1,13 @@
 apply plugin: 'com.android.application'
 
+def releaseStore = System.getenv('MAHJONG_SIGNING_STORE_FILE')
+def releaseStorePassword = System.getenv('MAHJONG_SIGNING_STORE_PASSWORD')
+def releaseKeyAlias = System.getenv('MAHJONG_SIGNING_KEY_ALIAS')
+def releaseKeyPassword = System.getenv('MAHJONG_SIGNING_KEY_PASSWORD')
+if (releaseStore && (!releaseStorePassword || !releaseKeyAlias || !releaseKeyPassword)) {
+    throw new GradleException('Release signing requires all MAHJONG_SIGNING_* variables')
+}
+
 android {
     namespace = "com.mahjongwushuang.table"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -7,7 +15,7 @@ android {
         applicationId "com.mahjongwushuang.table"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 48
+        versionCode 49
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
@@ -16,8 +24,19 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        if (releaseStore) {
+            compatibleRelease {
+                storeFile file(releaseStore)
+                storePassword releaseStorePassword
+                keyAlias releaseKeyAlias
+                keyPassword releaseKeyPassword
+            }
+        }
+    }
     buildTypes {
         release {
+            if (releaseStore) signingConfig signingConfigs.compatibleRelease
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }

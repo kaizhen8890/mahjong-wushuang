@@ -2,7 +2,7 @@
 
 同一套 Android 应用中的实体日本麻将计分台与虚拟日麻。实体模式由平板保存并裁定唯一的对局状态，手机通过同一 Wi-Fi 加入房间遥控自己的操作；虚拟模式由房间 Host 管理牌山、暗牌、摸打与结算，并向各设备发送各自可见的局面。
 
-本仓库是 **1.0 源码发布版**，不包含 APK、运行产生的数据或先前使用的第三方表情图片。表情发送功能仍可使用，仓库内附 8 张原创通用 SVG 示例。添加自己的图片请看 [表情添加教程](data/EMOTES.md)。
+本仓库是 **1.0 源码发布版**；可安装 APK 放在 [GitHub Releases](https://github.com/kaizhen8890/mahjong-wushuang/releases/tag/v1.0)，不把构建产物提交进源码。仓库不包含运行产生的数据或先前使用的第三方表情图片。表情发送功能仍可使用，仓库内附 8 张原创通用 SVG 示例。添加自己的图片请看 [表情添加教程](data/EMOTES.md)。
 
 ## 使用方式
 
@@ -29,7 +29,9 @@ cd android
 .\gradlew.bat :app:assembleDebug
 ```
 
-生成的调试 APK 位于 `android/app/build/outputs/apk/debug/app-debug.apk`。或者在 Windows 上运行 `pnpm android:apk` 完成上述检查和打包。公开源码不包含原安装包使用的签名密钥；新环境生成的调试 APK **不能直接覆盖安装**原有 1.0 APK。需要保留现有安装数据并发布升级包时，必须使用原签名密钥签名，并提高 `android/app/build.gradle` 中的 `versionCode`。
+生成的调试 APK 位于 `android/app/build/outputs/apk/debug/app-debug.apk`。或者在 Windows 上运行 `pnpm android:apk` 完成上述检查和打包。公开源码不包含原安装包使用的签名密钥；新环境生成的调试 APK **不能直接覆盖安装**原有 1.0 APK。
+
+GitHub v1.0 Release 的 APK 使用与原本地 1.0 APK 相同的签名证书，内部 `versionCode` 从 48 提至 49，具备覆盖安装所需的包名、签名和版本条件；当前发布包尚未经过真机覆盖安装验证。自行构建兼容升级包时，构建环境须提供原密钥，以及 `MAHJONG_SIGNING_STORE_FILE`、`MAHJONG_SIGNING_STORE_PASSWORD`、`MAHJONG_SIGNING_KEY_ALIAS`、`MAHJONG_SIGNING_KEY_PASSWORD` 四个环境变量，再运行 `android/gradlew.bat :app:assembleRelease`。不要把密钥或密码提交到仓库。
 
 代码测试入口：
 
