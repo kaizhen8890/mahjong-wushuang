@@ -11,7 +11,7 @@ import { tileName } from '../mahjong-tile';
 import { PresentationOverlay, WinParticles } from '../table-presentation';
 import { CenterDial } from './center-dial';
 import { useVirtualPresentation } from './use-presentation';
-import { useRiichiMusic, useCountdownSound, RIICHI_MUSIC, setTableSoundGain } from '@/app/hooks/use-game-audio';
+import { useRiichiMusic, useCountdownSound, setTableSoundGain } from '@/app/hooks/use-game-audio';
 import { playGameSound } from '@/app/hooks/use-game-audio';
 import { VIRTUAL_AUDIO } from '@/lib/virtual-mahjong/audio';
 import { ResultPresentation } from './result-presentation';
@@ -24,6 +24,7 @@ import './table.css';
 import { Table3D } from './table-3d';
 import './table-3d.css';
 import './theme.css';
+import './safe-area.css';
 import { tableClock } from '@/lib/virtual-mahjong/table-clock';
 import { CharacterAvatar, CharacterPicker } from '../character-picker';
 import type { CharacterChoice } from '@/lib/characters';
@@ -32,13 +33,15 @@ import { useTableEffects } from './use-table-effects';
 import { automaticIntent, DEFAULT_TABLE_ASSISTS, displayHandOrder, moveHandTile, type TableAssists } from './table-assists';
 import './table-assists.css';
 import './tenpai-guide.css';
+import { TableSettingsPanel } from './settings-panel';
+import { CallChoice } from './call-choice';
 
-import { DEFAULT_QUALITY, QUALITY_LEVELS, QUALITY_STORAGE_KEY, isTableQuality, type TableQuality } from './three/quality';
+import { DEFAULT_QUALITY, QUALITY_STORAGE_KEY, isTableQuality, type TableQuality } from './three/quality';
 
 const labels = { chi: '吃', pon: '碰', daiminkan: '杠', ankan: '暗杠', kakan: '加杠', ron: '荣' };
 
 export function VirtualTable({ view, now, send, next, exit, emotes, sendEmote, botIds = [], characters = {}, onChooseCharacter, error = '', roomLabel = '单机试打', canAdvance = true, animateEntrance = false }: {
-  view: PlayerVisibleGameState; now: number; send: (intent: RoundIntent) => void; next: () => void; exit: () => void; error?: string; roomLabel?: string; canAdvance?: boolean; animateEntrance?: boolean; emotes?: VirtualEmote[]; sendEmote?: (id: string) => void; botIds?: string[];
+  view: PlayerVisibleGameState; now: number; send: (intent: RoundIntent) => void; next: () => void; exit: () => void; error?: string; roomLabel?: string; canAdvance?: boolean; animateEntrance?: boolean; emotes?: VirtualEmote[]; sendEmote?: (id: string) => void | boolean | Promise<void | boolean>; botIds?: string[];
   characters?: Record<string, CharacterChoice>; onChooseCharacter?: (value: CharacterChoice) => void;
 }) {
   const [three, setThree] = useState(true);
@@ -150,12 +153,12 @@ export function VirtualTable({ view, now, send, next, exit, emotes, sendEmote, b
   };
   return <main ref={root} data-reduced={reduced} className={`vm-shell ${three ? 'vm-is-three' : ''}`} onClickCapture={event => { const target = event.target as HTMLElement; if (target.closest('button') && !target.closest('.vm-hand')) playGameSound(VIRTUAL_AUDIO.button, 0.4); }}>
     <PresentationOverlay sequence={presentation} characters={characters} />
-    <div className="vm-portrait"><span>麻将无双</span><strong>请横屏体验牌桌</strong><p>旋转手机后继续</p></div>
+    <div className="vm-portrait"><span>麻将无双</span><strong>请横屏体验牌桌</strong><p>旋转设备后继续；若系统限制旋转，可以先返回。</p><button type="button" onClick={exit}>返回</button></div>
     <section className="vm-stage" aria-label="虚拟麻将牌桌">
       {!view.result && <TableEmotes key={`${view.gameId}:${view.roundId}`} view={view} events={emotes} send={sendEmote} />}
       {three && <Table3D entrance={entrance} reduced={reduced} view={view} selection={{ selected, legal, riichi, highlight: hover }} quality={quality} pick={pickTile} fail={message => { setGraphicsError(message); setThree(false); }} />}
       <header className="vm-toolbar"><button aria-label="牌桌设置" onClick={() => setSettingsOpen(!settingsOpen)}>⚙</button><button aria-label="退出牌桌" onClick={exit}>退出</button></header>
-      {settingsOpen && <div className="vm-settings"><strong>牌桌设置</strong>{onChooseCharacter && <button onClick={() => setCharacterOpen(true)}>选择角色</button>}<button onClick={() => { setGraphicsError(''); setEntered(true); setThree(!three); }}>{three ? '切换平面牌桌' : '切换3D牌桌'}</button>{three && <fieldset className="vm-quality"><legend>画质</legend>{QUALITY_LEVELS.map(level => <button key={level.id} aria-pressed={quality === level.id} onClick={() => changeQuality(level.id)}>{level.label}</button>)}<small>高档位更清晰，也更耗电；运行不畅时可调低。</small></fieldset>}<label>音效音量<input aria-label="音效音量" type="range" min="0" max="1" step=".05" value={sound} onChange={e => setSound(Number(e.target.value))} /></label><label>音乐音量<input aria-label="音乐音量" type="range" min="0" max="1" step=".05" value={music} onChange={e => setMusic(Number(e.target.value))} /></label><label>立直曲目<select aria-label="立直曲目" value={track} onChange={e => setTrack(e.target.value)}><option value="random">随机播放</option>{RIICHI_MUSIC.map(item => <option key={item.id} value={item.id}>{item.label}</option>)}</select></label><strong>动态效果</strong><button aria-pressed={reduced} onClick={() => setReduced(!reduced)}>{reduced ? '减少动态效果' : '完整动态效果'}</button><strong>出牌方式</strong><button aria-pressed={confirmMode} onClick={() => setConfirmMode(!confirmMode)}>{confirmMode ? '选牌后确认' : '双击同一张牌'}</button><button onClick={() => setSettingsOpen(false)}>收起</button></div>}
+      {settingsOpen && <TableSettingsPanel close={() => setSettingsOpen(false)} three={three} toggleThree={() => { setGraphicsError(''); setEntered(true); setThree(!three); }} quality={quality} changeQuality={changeQuality} graphicsError={graphicsError} reduced={reduced} setReduced={setReduced} sound={sound} setSound={setSound} music={music} setMusic={setMusic} track={track} setTrack={setTrack} confirmMode={confirmMode} setConfirmMode={setConfirmMode} chooseCharacter={onChooseCharacter ? () => setCharacterOpen(true) : undefined} />}
       {characterOpen && onChooseCharacter && <CharacterPicker value={view.viewerId ? characters[view.viewerId] : undefined} onSelect={onChooseCharacter} onClose={() => setCharacterOpen(false)} />}
       <nav className="vm-auto-controls" aria-label="自动操作开关">{([['sort', '理', '自动理牌'], ['win', '和', '自动和牌'], ['call', '鸣', '自动鸣牌'], ['cut', '切', '自动摸切']] as const).map(([key, glyph, label]) => <button key={key} type="button" aria-label={label} title={label} aria-pressed={assists[key]} onClick={() => toggleAssist(key)}>{glyph}</button>)}</nav>
       <aside className="vm-dora-panel"><div className="vm-dora" aria-label="宝牌指示牌">{Array.from({ length: 5 }, (_, index) => <span key={view.doraIndicators[index]?.id ?? `back-${index}`}><TileFace tile={view.doraIndicators[index]} /></span>)}</div><div>{view.honba} 本场 <span>供托 {view.riichiSticks}</span></div><small>麻将无双 · {roomLabel}</small></aside>
@@ -242,7 +245,7 @@ export function VirtualTable({ view, now, send, next, exit, emotes, sendEmote, b
         }}><TileFace tile={tile} shine={isVisibleDora(tile, view.doraIndicators, view.rules.players)} /></button>)}{guide?.tenpai && <TenpaiSeal guide={guide} open={guideOpen} onOpenChange={setTenpaiOpen} />}</div>
       {own.furiten && !view.result && <output className="vm-furiten" aria-label="振听，不能荣和，仍可合法自摸"><strong>振听</strong><small>不能荣和</small></output>}
       {(error || graphicsError) && <footer className="vm-hint" aria-live="polite">{error || graphicsError}</footer>}
-      {choices.length > 0 && <dialog className="vm-choice" ref={element => { if (element && !element.open) element.showModal(); }} onCancel={() => setPicker(null)} aria-label="选择鸣牌组合"><strong>选择组合</strong><div>{choices.map(option => <button key={option.id} onClick={() => { setPicker(null); sendIntent({ kind: option.self ? 'KAN' : 'RESPOND', optionId: option.id }); }}><small>{labels[option.kind]}</small>{choiceTiles(own.hand!, option.tiles, option.self ? undefined : view.phase.call?.tile).map(tile => <TileFace key={tile.id} tile={tile} />)}</button>)}</div><button onClick={() => setPicker(null)}>返回牌桌</button></dialog>}
+      {choices.length > 0 && <CallChoice choices={choices.map(option => ({ id: option.id, self: option.self, label: labels[option.kind], tiles: choiceTiles(own.hand!, option.tiles, option.self ? undefined : view.phase.call?.tile) }))} close={() => setPicker(null)} choose={option => { setPicker(null); sendIntent({ kind: option.self ? 'KAN' : 'RESPOND', optionId: option.id }); }} />}
       {view.result && !presentation.pending && <ResultPresentation key={view.roundId} view={view} before={presentation.resultBefore} next={next} exit={exit} canAdvance={canAdvance} characters={characters} />}
     </section>
   </main>;

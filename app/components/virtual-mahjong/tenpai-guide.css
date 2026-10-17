@@ -12,3 +12,5 @@
 .vm-tenpai-wait b{font-size:1.15cqw;color:#ffe6ab;font-variant-numeric:tabular-nums}
 .vm-tenpai-note{display:block;color:#b9a988}
 @media(min-aspect-ratio:19/10){.vm-tenpai-pop{max-width:42cqw}}
+
+.vm-hand .vm-tenpai-stamp{min-height:42px;min-width:34px;gap:1px;line-height:1.05;padding:3px 1px}.vm-tenpai-stamp small{font:9px/1.1 var(--font-sans-ui);color:#e4d8b9;letter-spacing:0}

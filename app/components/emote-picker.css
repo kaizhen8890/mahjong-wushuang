@@ -1,0 +1,29 @@
+.emote-library{display:flex;flex-direction:column;min-height:0;max-height:65dvh;color:#f8ebc9;background:#282139;border:1px solid #a58a59;border-radius:12px;overflow:hidden}
+.emote-library .emote-library-tools{display:flex;align-items:center;justify-content:space-between;flex:none;gap:8px;padding:4px 8px}
+.emote-library input,.emote-library select{min-width:0;background:#191627;color:#f8ebc9;border:1px solid #776887;border-radius:6px;padding:6px}
+.emote-library button,.emote-management label{border:1px solid #80714f;background:#342b45;border-radius:6px;color:inherit;padding:6px;cursor:pointer}
+.emote-library button:disabled{opacity:.45}
+.emote-library .emote-library-tools>button{min-height:32px;padding:4px 8px;font-size:12px}
+.emote-library-body{display:flex;min-height:0;overflow:hidden;flex:1}
+.emote-library nav{width:80px;flex:none;display:flex;flex-direction:column;gap:6px;padding:6px;overflow:auto;background:#211b30}
+.emote-library nav button{overflow-wrap:anywhere}
+.emote-library nav button[aria-pressed=true]{background:#705835;color:#fff3cb;border-color:#e9c378}
+.emote-library-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));align-content:start;gap:8px;overflow:auto;padding:8px;flex:1;min-height:100px}
+.emote-library-grid article{position:relative;min-width:0;display:flex;flex-direction:column;gap:3px}
+.emote-library-grid article>button:first-child{width:100%;height:80px;background:#443850;padding:8px}
+.emote-library-grid img{width:100%;height:100%;object-fit:contain}
+.emote-library-grid small{font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.emote-library .emote-star,.emote-library .emote-close{display:grid;place-items:center;width:32px;height:32px;flex:none;padding:0;border:0;border-radius:0;background:none;box-shadow:none;color:#ffd77c;text-shadow:none}
+.emote-library .emote-star{position:absolute;right:0;top:0;filter:drop-shadow(0 1px 1px #1a102b)}
+.emote-library .emote-star svg{width:18px;height:18px;fill:none;stroke-width:1.8;pointer-events:none}
+.emote-library .emote-star[aria-pressed=true] svg{fill:currentColor}
+.emote-library .emote-close svg{width:18px;height:18px;pointer-events:none}
+.emote-library .emote-star:focus-visible,.emote-library .emote-close:focus-visible{outline:2px solid #ffd77c;outline-offset:-2px}
+.emote-management{display:flex;gap:6px;flex-wrap:wrap;padding:8px;max-height:27dvh;overflow:auto;border-block:1px solid #776044;font-size:12px}
+.emote-management input[type=file]{display:none}
+.emote-management small{width:100%;color:#c4b5ce}
+.emote-library-status{padding:5px 10px;font-size:12px}
+.vm-emote-picker:has(.emote-library){width:min(540px,90vw);max-height:75dvh;overflow:hidden}
+.vm-emote-picker>.emote-library{flex:1;max-height:100%}
+.remote-emote-drawer .emote-library{margin:8px 12px max(12px,env(safe-area-inset-bottom))}
+.night-mode .game-floating-emote{display:none}

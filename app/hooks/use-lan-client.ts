@@ -1,5 +1,6 @@
 'use client';
 
+import { EmoteRoomAssets } from '@/lib/emote-transfer';
 import { useRealtimeEvents } from './use-realtime-events';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -74,6 +75,10 @@ export function useLanClient() {
     timer: number;
   }>());
 
+  const emoteAssets = useRef<EmoteRoomAssets | null>(null);
+  emoteAssets.current ??= new EmoteRoomAssets(LAN_PROTOCOL_VERSION, () => snapshotRef.current?.roomId ?? '',
+    () => Boolean(connectedRef.current && snapshotRef.current), (_, text) => LanRoomNative.send({ text }),
+    cause => setConnectionMessage(cause instanceof Error ? cause.message : '表情同步失败'));
   const updateRooms = useCallback((rooms: readonly DiscoveredLanRoom[]) => {
     const unique = new Map<string, DiscoveredRoom>();
     for (const room of rooms) unique.set(`${room.host}:${room.port}`, roomFromNative(room));
@@ -94,6 +99,7 @@ export function useLanClient() {
     }
   }, [sendAsset]);
   const handleAsset = useCallback((text: string): boolean => {
+    if (emoteAssets.current!.handle('host', text)) return true;
     if (!text.includes('character.asset.')) return false;
     void (async () => {
       if (new TextEncoder().encode(text).length > MAX_WIRE_BYTES) throw new Error('MESSAGE_TOO_LARGE');
@@ -115,7 +121,10 @@ export function useLanClient() {
     if (!supported) return;
     const handles: Array<{ remove: () => Promise<void> }> = [];
     const installListeners = async () => {
-      handles.push(await LanRoomNative.addListener('roomsChanged', ({ rooms }) => updateRooms(rooms)));
+      handles.push(await LanRoomNative.addListener('roomsChanged', ({ rooms, error }) => {
+        updateRooms(rooms);
+        if (error) setConnectionMessage(error);
+      }));
       handles.push(await LanRoomNative.addListener('clientState', ({ state, message }) => {
         if (state === 'connecting') {
           setConnectionState('connecting');
@@ -135,7 +144,7 @@ export function useLanClient() {
             sentAt: Date.now(),
             requestId: helloRequestId,
             deviceId,
-            deviceName: `安卓遥控 ${deviceId.slice(-4).toUpperCase()}`,
+            deviceName: `手机遥控 ${deviceId.slice(-4).toUpperCase()}`,
             appVersion: '0.14.2',
           }).then(() => sendClientMessage({
             protocol: LAN_PROTOCOL_VERSION,
@@ -156,6 +165,7 @@ export function useLanClient() {
           setConnectionState('error');
           setConnectionMessage(message || '无法连接平板');
         } else {
+          emoteAssets.current?.clear();
           setConnectionState(snapshotRef.current ? 'disconnected' : 'idle');
           setConnectionMessage(message || (snapshotRef.current ? '与平板的连接已断开' : ''));
         }
@@ -186,7 +196,8 @@ export function useLanClient() {
           return;
         }
         if (message.type === 'room.join-accepted') {
-          pendingJoinRef.current = null;
+          emoteAssets.current?.clear();
+    pendingJoinRef.current = null;
           snapshotRef.current = message.snapshot;
           setSnapshot(message.snapshot);
           ensureAssets(message.snapshot);
@@ -265,7 +276,7 @@ export function useLanClient() {
   const refreshRooms = useCallback(async () => {
     if (!supported) {
       setConnectionState('error');
-      setConnectionMessage('局域网遥控只在安卓 APK 中可用');
+      setConnectionMessage('局域网遥控需要已启用本地网络功能的 App');
       return;
     }
     setConnectionState('discovering');
@@ -281,7 +292,7 @@ export function useLanClient() {
   }, [supported, updateRooms]);
 
   const joinRoom = useCallback(async (input: RemoteJoinInput) => {
-    if (!supported) throw new Error('请在安卓 APK 中使用手机遥控');
+    if (!supported) throw new Error('请在支持本地网络的 App 中使用手机遥控');
     if (connectedRef.current) await LanRoomNative.disconnect();
     pendingJoinRef.current = { ...input, requestId: createProtocolId('req') };
     setSnapshot(null);
@@ -295,7 +306,10 @@ export function useLanClient() {
   const sendCommand = useCallback(async (command: ControllerCommand) => {
     const current = snapshotRef.current;
     if (!current || !connectedRef.current) throw new Error('牌桌尚未连接');
-    const request = createCommandRequest(current, command);
+    if (command.kind === 'emote.send') await emoteAssets.current!.ensure('host', command.emoteId);
+    const latest = snapshotRef.current;
+    if (!latest || !connectedRef.current || latest.roomId !== current.roomId) throw new Error('房间已变化');
+    const request = createCommandRequest(latest, command);
     return new Promise<CommandResult>((resolve, reject) => {
       const timer = window.setTimeout(() => {
         commandWaitersRef.current.delete(request.commandId);
@@ -317,6 +331,7 @@ export function useLanClient() {
   }, [sendClientMessage]);
 
   const disconnect = useCallback(async () => {
+    emoteAssets.current?.clear();
     pendingJoinRef.current = null;
     connectedRef.current = false;
     for (const waiter of commandWaitersRef.current.values()) {

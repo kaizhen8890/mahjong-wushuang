@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "appVersion": "1.1.0-beta.6",
+  "fps": 30,
+  "frames": 192,
+  "durationSeconds": 6.4,
+  "impactSeconds": 3.2666666666666666,
+  "returnSeconds": 5.8,
+  "audioPeak": 0.5605422091735848,
+  "source": "Original procedural Blender geometry, materials, animation and synthesized audio; coins are presentation only",
+  "assets": [
+    {
+      "file": "intro-landscape.mp4",
+      "bytes": 5423887,
+      "sha256": "d1e8e1308ae2b69712e0f669383dc3f888ff19a2f6c48540dbafe5ed4048a487"
+    },
+    {
+      "file": "poster-landscape.jpg",
+      "bytes": 251337,
+      "sha256": "a2d2bf5145e74c92eb653c2a9b8d046c95b1426bc48102436dad0c381a79792e"
+    },
+    {
+      "file": "intro-portrait.mp4",
+      "bytes": 5484807,
+      "sha256": "2706484c0263c48ca3b70a8f6634e1529e452e75ad608b60c7cea6d58299ef97"
+    },
+    {
+      "file": "poster-portrait.jpg",
+      "bytes": 280519,
+      "sha256": "f5e4a7e0eb42eb76858694eac4b70845e74d9224517c02a6e20b6e04d7ee405f"
+    },
+    {
+      "file": "reveal.mp3",
+      "bytes": 30284,
+      "sha256": "fa308516405b50841a0040f0ca0e0b7d3ce0e2479935fa81bf42c338054c7c06"
+    }
+  ]
+}

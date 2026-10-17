@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
+import { NfcLauncher } from './components/nfc-launcher';
 import './sakura-theme.css';
 import './presentation.css';
 import './table-layout-tuning.css';
@@ -33,7 +34,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-Hans">
-      <body>{children}</body>
+      <body>{children}<NfcLauncher /></body>
     </html>
   );
 }

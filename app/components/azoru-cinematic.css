@@ -1,0 +1,30 @@
+.azoru-cinematic{position:fixed;inset:0;z-index:1100;overflow:hidden;pointer-events:none;isolation:isolate;color:#f6dfc0;font-family:inherit}
+.azoru-film,.azoru-still{position:absolute;inset:0;background:#0a0509;pointer-events:auto;transition:opacity .55s}
+.azoru-film video{display:block;width:100%;height:100%;object-fit:contain}
+.azoru-vignette{position:absolute;inset:0;background:linear-gradient(#10060a88,transparent 24%,transparent 78%,#10060ab0);pointer-events:none}
+.azoru-still{background-size:contain;background-position:center;background-repeat:no-repeat;opacity:.3}
+.azoru-heading{position:absolute;left:max(4vw,env(safe-area-inset-left));top:max(5vh,28px);text-shadow:0 2px 18px #000;opacity:0;transform:translateY(8px);transition:opacity .6s,transform .6s}
+.azoru-cinematic[data-playing=true] .azoru-heading,.azoru-cinematic[data-phase=fallback] .azoru-heading{opacity:1;transform:none}
+.azoru-heading small{color:#baa397;font-size:clamp(12px,1.5vmin,17px);letter-spacing:.15em}
+.azoru-heading h2{font-family:var(--font-serif-display,serif);font-weight:400;font-size:clamp(32px,5.3vmin,60px);letter-spacing:.18em;margin:.3em 0}
+.azoru-heading>span{font-size:12px;letter-spacing:.5em;color:#ce967c;padding-bottom:.6em;border-bottom:1px solid #94504466}
+.azoru-inscription{position:absolute;left:0;top:0;width:640px;height:960px;transform-origin:0 0;opacity:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:36px;color:#ffcf92;text-shadow:0 0 7px #ee5119,0 0 22px #c22516,0 2px 2px #321007;font-family:var(--font-serif-display,serif);will-change:transform;pointer-events:none}
+.azoru-inscription small{font:34px/1.4 serif;letter-spacing:.38em;color:#edac78}
+.azoru-inscription strong{font:400 490px/.98 var(--font-serif-display,serif);transform:scaleX(.90)}
+.azoru-inscription span{font:33px/1.4 serif;letter-spacing:.45em;color:#dc9466}
+.azoru-rule{position:absolute;bottom:max(5vh,env(safe-area-inset-bottom));left:5%;width:90%;text-align:center;opacity:0;transition:opacity .6s;text-shadow:0 2px 10px #000;font-size:clamp(14px,2vmin,21px);letter-spacing:.13em}
+.azoru-cinematic[data-playing=true] .azoru-rule{opacity:1}
+.azoru-rule>span{display:block;font-size:.70em;color:#c5917a;margin-bottom:.8em;letter-spacing:.35em}
+.azoru-rule small{display:block;font-size:.66em;color:#b2988c;letter-spacing:.16em;margin-top:.8em}
+.azoru-declaration{position:absolute;left:50%;top:50%;width:min(88vw,720px);transform:translate(-50%,-50%);text-align:center;opacity:0;transition:opacity .35s;background:radial-gradient(ellipse,#280b13f5,#140812dd 44%,transparent 73%);padding:35px 20px;text-shadow:0 2px 14px #000;box-sizing:border-box}
+.azoru-declaration small,.azoru-declaration>span{display:block;font-size:clamp(12px,1.6vmin,17px);color:#c2a798;letter-spacing:.15em}
+.azoru-declaration strong{display:block;font-family:var(--font-serif-display,serif);font-weight:400;line-height:1.15;font-size:clamp(60px,15vmin,160px);color:#ffbd83;text-shadow:0 0 28px #af172c66;margin:10px 0}
+.azoru-declaration b{display:block;font-weight:400;font-size:clamp(14px,2.3vmin,25px);margin-bottom:15px;line-height:1.7}
+.azoru-cinematic[data-phase=return] .azoru-film,.azoru-cinematic[data-phase=fallback] .azoru-film{opacity:0;pointer-events:none}
+.azoru-cinematic[data-phase=return] .azoru-heading,.azoru-cinematic[data-phase=return] .azoru-rule{opacity:0}
+.azoru-cinematic[data-phase=return] .azoru-declaration,.azoru-cinematic[data-phase=fallback] .azoru-declaration{opacity:1}
+.azoru-skip{position:absolute;right:max(18px,env(safe-area-inset-right));top:max(18px,env(safe-area-inset-top));pointer-events:auto;padding:9px 15px;border:1px solid #aa745b99;border-radius:5px;background:#170911bf;color:#ecd1b4;font:inherit;font-size:14px;z-index:4}
+.azoru-phone{background:radial-gradient(ellipse,#30121bed,#0a050ae6)}
+@media(orientation:portrait){.azoru-heading{top:10vh;left:8vw}.azoru-heading h2{font-size:clamp(34px,7vw,64px)}.azoru-rule{bottom:12vh;font-size:clamp(13px,2.6vw,22px)}}
+@media(prefers-reduced-motion:reduce){.azoru-cinematic *{transition:none!important;animation:none!important}}
+.night-mode .azoru-cinematic{display:none!important}

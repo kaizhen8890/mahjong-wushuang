@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { createMusicDirector } from '@/lib/music-priority';
 import riichiMusic from '@/data/riichi-music.json';
 import { VIRTUAL_AUDIO } from '@/lib/virtual-mahjong/audio';
 export const RIICHI_MUSIC = riichiMusic;
@@ -23,18 +24,36 @@ type GaplessClip = { buffer: AudioBuffer; loopStart: number; loopEnd: number };
 let loopContext: AudioContext | undefined;
 const decodedLoops = new Map<string, Promise<GaplessClip>>();
 let soundGain = 1;
+const cinematicPlayers = new Map<HTMLMediaElement, number>();
+let musicDirector: ReturnType<typeof createMusicDirector> | undefined;
+export function gameMusicDirector() {
+  if (!musicDirector) {
+    musicDirector = createMusicDirector({ create: src => new Audio(src), hidden: () => document.hidden, duck: () => cinematicPlayers.size ? .18 : 1 });
+    document.addEventListener('visibilitychange', musicDirector.sync);
+  }
+  return musicDirector;
+}
+function syncMusicDuck() { musicDirector?.sync(); }
+/** The film owns its synchronized soundtrack; clean up on skip/failure/unmount. */
+export function bindCinematicSound(player: HTMLMediaElement, volume = .85): () => void {
+  cinematicPlayers.set(player, volume);
+  player.volume = volume * soundGain;
+  syncMusicDuck();
+  return () => { cinematicPlayers.delete(player); syncMusicDuck(); };
+}
 const allowedSound = (src: string) => [...Object.values(GAME_AUDIO), ...Object.values(VIRTUAL_AUDIO)].some(allowed => allowed === src);
 /** Optional mounted-table preference; callers restore the default on leaving. */
 export function setTableSoundGain(gain: number) {
   soundGain = Math.max(0, Math.min(1, gain));
   if (!soundGain) soundPlayers.forEach(audio => audio.pause());
   loopingPlayers.forEach(player => player.sync());
+  cinematicPlayers.forEach((volume, player) => { player.volume = volume * soundGain; });
 }
 
 export function playGameSound(src: string, volume = 0.8) {
   if (typeof window === 'undefined' || document.hidden) return;
   // One voice per bundled effect prevents rapid messages from accumulating players.
-  if (!allowedSound(src)) return;
+  if (!allowedSound(src) || (src === GAME_AUDIO.emote && (document.documentElement.classList.contains('silence-mode') || document.documentElement.classList.contains('night-mode')))) return;
   const audio = soundPlayers.get(src) ?? new Audio(src);
   soundPlayers.set(src, audio);
   audio.pause();
@@ -191,7 +210,7 @@ export function useCountdownSound(active: boolean, remainingSeconds: number) {
 export function useRiichiMusic(active: boolean, selection = 'random', volume = 0.42) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const volumeRef = useRef(volume);
-  useEffect(() => { volumeRef.current = volume; if (audioRef.current) audioRef.current.volume = volume; }, [volume]);
+  useEffect(() => { volumeRef.current = volume; syncMusicDuck(); }, [volume]);
   useEffect(() => {
     if (!active) return;
     const selected = RIICHI_MUSIC.find((track) => track.id === selection);
@@ -201,17 +220,9 @@ export function useRiichiMusic(active: boolean, selection = 'random', volume = 0
     audio.loop = true;
     audio.volume = volumeRef.current;
     audioRef.current = audio;
-    const syncVisibility = () => {
-      if (document.hidden) audio.pause();
-      else void audio.play().catch(() => undefined);
-    };
-    syncVisibility();
-    document.addEventListener('visibilitychange', syncVisibility);
+    const remove = gameMusicDirector().addRiichi(audio, () => volumeRef.current);
     return () => {
-      document.removeEventListener('visibilitychange', syncVisibility);
-      audio.pause();
-      audio.removeAttribute('src');
-      audio.load();
+      remove();
       audioRef.current = null;
     };
   }, [active, selection]);

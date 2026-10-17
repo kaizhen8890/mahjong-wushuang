@@ -1,0 +1,60 @@
+/* Effect presentation uses public/local metadata; concealed cards render no artwork. */
+.effect-summary { display: grid; grid-template-columns: 86px minmax(0, 1fr); gap: 14px; padding: 16px; border: 1px solid #a899b044; border-radius: 13px; background: linear-gradient(140deg, #353149, #242b42); min-width: 0; }
+.effect-summary-art { align-self: start; }
+.effect-summary-art .skill-card-art { width: 100%; height: auto; }
+.effect-concealed-art { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; width: 100%; aspect-ratio: 717 / 1005; border: 1px solid #b29c7166; border-radius: 6px; color: #c7b796; background: linear-gradient(#272839ee,#272839ee), url('/art/mahjong-pattern.svg') center/220px; }
+.effect-concealed-art small { font-size: 12px; letter-spacing: .2em; }
+.effect-summary-content { min-width: 0; }
+.effect-summary-content h3 { margin: 8px 0 10px; color: #ffe3aa; font: 23px/1.3 var(--font-serif-display); overflow-wrap: anywhere; }
+.effect-state { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; font: 12px/1.5 var(--font-sans-ui, sans-serif); color: #c8bad3; }
+.effect-state > span { border: 1px solid #84afae55; color: #b6dfce; padding: 2px 7px; border-radius: 5px; background: #456b6322; }
+.effect-summary[data-hidden='true'] .effect-state > span { color: #d1c5d9; border-color: #b3a8bf55; }
+.effect-route { display: flex; align-items: center; flex-wrap: wrap; gap: 5px 8px; color: #cbbfd3; font: 13px/1.5 var(--font-sans-ui, sans-serif); overflow-wrap: anywhere; }
+.effect-route svg { width: 16px; height: 16px; color: #ba9b62; flex: none; }
+.effect-route strong { color: #f0dfbd; font-weight: 600; }
+.effect-copy { margin-top: 10px; }
+.effect-copy summary { list-style: none; cursor: pointer; }
+.effect-copy summary > span { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: #ccc2d5; font: 14px/1.7 var(--font-sans-ui, sans-serif); }
+.effect-copy summary > small { display: block; padding: 9px 0 3px; color: #e2c287; font-size: 12px; }
+.effect-copy[open] summary > span { display: none; }
+.effect-copy[open] summary > small { font-size: 0; }
+.effect-copy[open] summary > small::after { content: '收起完整说明'; font-size: 12px; }
+.effect-copy p, .effect-full-copy { white-space: pre-wrap; overflow-wrap: anywhere; color: #d7cbdf; font: 14px/1.8 var(--font-sans-ui, sans-serif); margin: 10px 0 0; }
+.effect-private-note { margin: 12px 0 0; color: #b7acbf; font: 13px/1.6 var(--font-sans-ui, sans-serif); }
+.effect-summary-actions { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; }
+.effect-summary-actions > button { flex: 1; min-height: 44px; height: auto; white-space: normal; }
+.effect-overview-dialog.effects-dialog { width: min(1180px, calc(100vw - 40px)) !important; max-width: 1180px !important; background: #24273d !important; }
+.effect-overview-dialog .ledger-group { display: grid; gap: 10px; padding: 0 3px 12px; border: 0; background: transparent; }
+.effect-overview-dialog .ledger-group > h3 { display: flex; justify-content: space-between; align-items: center; margin: 0; padding: 7px 2px; color: #e2c596; font-size: 15px; }
+.effect-overview-dialog .ledger-group > h3 span { color: #b9acc6; font: 12px var(--font-sans-ui,sans-serif); }
+.effect-manage-workspace.effect-manage-dialog, .remote-dialog.effect-manage-workspace { display: flex; flex-direction: column; gap: 0; padding: 0; width: min(780px, calc(100vw - 32px)) !important; max-width: 780px !important; max-height: 92dvh; overflow: hidden; background: #262940 !important; }
+.effect-manage-workspace > [data-slot='dialog-header'] { padding: 22px 50px 18px 22px; margin: 0; border-bottom: 1px solid #a8956b44; }
+.effect-manage-workspace > [data-slot='dialog-header'] > [data-slot='dialog-description'] { color: #c8bfd2; line-height: 1.65; }
+.effect-manage-body { padding: 20px; min-height: 0; overflow-y: auto; overscroll-behavior: contain; display: grid; gap: 18px; }
+.effect-manage-body .effect-summary { grid-template-columns: 116px minmax(0,1fr); }
+.effect-manage-workspace > [data-slot='dialog-footer'] { flex: none; display: flex; flex-wrap: wrap; gap: 10px; padding: 16px 20px; border-top: 1px solid #a8956b44; margin: 0; }
+.effect-manage-workspace > [data-slot='dialog-footer'] > button { min-height: 46px; height: auto; }
+.effect-action-feedback { flex: 0 0 100%; color: #f1cba0; font: 13px/1.6 var(--font-sans-ui,sans-serif); overflow-wrap: anywhere; }
+.effect-action-feedback:empty { display: none; }
+.effect-reveal-fields { display: grid; gap: 16px; }
+.effect-reveal-fields h3 { margin: 0; color: #e4cea5; font-size: 16px; }
+.effect-reveal-fields > label { display: grid; gap: 8px; }
+.effect-reveal-fields .target-toggle { min-height: 64px; gap: 8px; }
+.effect-reveal-fields .target-toggle .character-avatar { width: 38px; height: 38px; border-radius: 7px; flex: none; }
+.effect-reveal-fields .target-toggle span { overflow-wrap: anywhere; }
+.effect-reveal-fields .target-toggle small { display: block; font-size: 11px; margin-top: 5px; color: #b9acc6; }
+.effect-action-note { margin: 0; padding: 12px 14px; border-left: 3px solid #b59967; border-radius: 4px; background: #b5996711; color: #d7c9db; font: 14px/1.7 var(--font-sans-ui,sans-serif); }
+.remote-effect-list .remote-effect-group { min-width: 0; }
+.remote-effect-group > h3 { margin: 0 0 9px; font: 13px/1.5 var(--font-sans-ui,sans-serif); color: #c9b8d0; }
+.remote-effect-list .effect-summary { grid-template-columns: 74px minmax(0,1fr); padding: 13px; gap: 12px; }
+.remote-effect-list .effect-summary h3 { font-size: 21px; }
+.remote-impact-dialog .remote-impact-icon:has(.skill-card-art) { width: 88px; height: auto; margin: 0 auto; border: 0; background: transparent; }
+@media(max-width:600px) {
+  .remote-dialog.effect-manage-workspace { max-height: 94dvh; width: calc(100vw - 24px) !important; }
+  .effect-manage-body { padding: 14px; }
+  .effect-manage-body .effect-summary { grid-template-columns: 78px minmax(0,1fr); gap: 12px; padding: 12px; }
+  .effect-manage-workspace > [data-slot='dialog-footer'] { padding: 12px 14px max(12px,env(safe-area-inset-bottom)); flex-direction: row; }
+  .effect-manage-workspace > [data-slot='dialog-footer'] > button { flex: 1; min-width: 0; white-space: normal; }
+  .effect-manage-workspace > [data-slot='dialog-header'] { padding: 18px 46px 14px 16px; }
+}
+@media(max-height:500px) { .effect-manage-workspace > [data-slot='dialog-header'] { padding-block: 10px; } .effect-manage-workspace > [data-slot='dialog-footer'] { padding-block: 8px; } }

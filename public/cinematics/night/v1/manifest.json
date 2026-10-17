@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "appVersion": "1.1.0-beta.5",
+  "durationSeconds": 2,
+  "fps": 30,
+  "width": 1600,
+  "height": 1000,
+  "frames": 60,
+  "source": "User-provided night-intro-landscape.mp4, original unmodified 2-second movie",
+  "assets": [
+    {
+      "file": "intro-landscape.mp4",
+      "bytes": 891813,
+      "sha256": "cfe4427d4d8222b064f116c890bd0fb9ec0aa93283f7bd295c2a87a186a32f93"
+    },
+    {
+      "file": "poster.jpg",
+      "bytes": 39615,
+      "sha256": "6e428167bc3c2c6afdc068bcfcc029563188cf34d409a540e46722128031bf25"
+    }
+  ]
+}

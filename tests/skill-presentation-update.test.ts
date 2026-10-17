@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import { updateSkillPresentation, type PresentationUpdate } from '../lib/skill-presentation-update';
+import catalog from '../data/skill-cards.json';
+import type { SkillCard } from '../lib/mahjong';
+const card={...catalog.cards[0],flavorText:'旧台词'} as unknown as SkillCard;
+const updates:PresentationUpdate[]=[{id:card.id,field:'flavorText',before:'旧台词',after:'新台词'}];
+assert.equal(updateSkillPresentation(card,updates).flavorText,'新台词');
+assert.equal(updateSkillPresentation({...card,flavorText:'玩家自己的台词'},updates).flavorText,'玩家自己的台词');
+assert.equal(updateSkillPresentation({...card,custom:true},updates).flavorText,'旧台词');
+assert.deepEqual(updateSkillPresentation(updateSkillPresentation(card,updates),updates),updateSkillPresentation(card,updates));
+assert.equal(updateSkillPresentation(card,[{...updates[0],id:999}]),card);
+assert.equal(updateSkillPresentation(card,[...updates,{...updates[0],before:'新台词',after:'第三版'}]).flavorText,'第三版');
+console.log('Presentation-only updates preserve user wording and are idempotent.');

@@ -1,0 +1,85 @@
+{
+  "version": "1.0.0",
+  "name": "麻将无双 · 反面 · 神罚裁决",
+  "durationSeconds": 6,
+  "fps": 30,
+  "frames": 180,
+  "handoffSeconds": 5.3,
+  "cinematicStart": "Immediately after wushuang-coin/v1/tails with matching camera",
+  "outcome": "tails",
+  "presentationOnly": true,
+  "orientations": {
+    "landscape": [
+      1600,
+      1000
+    ],
+    "portrait": [
+      1000,
+      1600
+    ]
+  },
+  "audio": {
+    "source": "Original procedural stereo sound",
+    "sampleRate": 48000,
+    "channels": 2,
+    "peak": 0.88,
+    "rms": 0.09752695602625912
+  },
+  "timeline": [
+    {
+      "at": 0,
+      "event": "Continue settled tails coin"
+    },
+    {
+      "at": 0.8,
+      "event": "Monumental shrine gate rises"
+    },
+    {
+      "at": 1.8,
+      "event": "Sealed gate opens"
+    },
+    {
+      "at": 2.3,
+      "event": "Tsurugi and thunder charge"
+    },
+    {
+      "at": 4.33,
+      "event": "Brief suspension"
+    },
+    {
+      "at": 4.63,
+      "event": "Sword impact and ground shockwave"
+    },
+    {
+      "at": 5.3,
+      "event": "Optional target nameplate handoff"
+    },
+    {
+      "at": 6,
+      "event": "Restore live table"
+    }
+  ],
+  "provenance": "Original procedural Blender geometry, materials, camera, animation and synthesized audio, using the existing shrine and project font. No scoring or player identity in the movie.",
+  "assets": [
+    {
+      "file": "effect-landscape.mp4",
+      "bytes": 8893309,
+      "sha256": "17b0706d7bb9885770fff4ec63ba0ba4698b1e3a9227ef1bf1aff7b0d8a4e227"
+    },
+    {
+      "file": "effect-landscape.jpg",
+      "bytes": 332362,
+      "sha256": "5343a39337b95e01e1f711915dd2e20f9387599f1424fa1f21c2f5422b10480b"
+    },
+    {
+      "file": "effect-portrait.mp4",
+      "bytes": 9410022,
+      "sha256": "0648245797e5df2b12408326876d8d0cef62ba1a47902dbe979a11d4f712a578"
+    },
+    {
+      "file": "effect-portrait.jpg",
+      "bytes": 364853,
+      "sha256": "ea73581783a5fb2cad3734fed676dbb34e77e126a70e37b4f8caa676d254fffb"
+    }
+  ]
+}

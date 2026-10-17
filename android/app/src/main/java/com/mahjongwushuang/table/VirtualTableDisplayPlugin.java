@@ -10,6 +10,32 @@ import com.getcapacitor.annotation.CapacitorPlugin;
 @CapacitorPlugin(name = "VirtualTableDisplay")
 public class VirtualTableDisplayPlugin extends Plugin {
     private Integer previousOrientation;
+    private Float previousBrightness;
+    private boolean night;
+    @PluginMethod
+    public void setNight(PluginCall call) {
+        getActivity().runOnUiThread(() -> {
+            night = call.getBoolean("active", false);
+            if (night) dim(); else restoreBrightness();
+            call.resolve();
+        });
+    }
+    private void dim() {
+        android.view.WindowManager.LayoutParams attributes = getActivity().getWindow().getAttributes();
+        if (previousBrightness == null) previousBrightness = attributes.screenBrightness;
+        attributes.screenBrightness = 0.01f;
+        getActivity().getWindow().setAttributes(attributes);
+    }
+    private void restoreBrightness() {
+        if (previousBrightness == null) return;
+        android.view.WindowManager.LayoutParams attributes = getActivity().getWindow().getAttributes();
+        attributes.screenBrightness = previousBrightness;
+        getActivity().getWindow().setAttributes(attributes);
+        previousBrightness = null;
+    }
+    @Override protected void handleOnPause() { getActivity().runOnUiThread(this::restoreBrightness); }
+    @Override protected void handleOnResume() { getActivity().runOnUiThread(() -> { if (night) dim(); }); }
+
 
     @PluginMethod
     public void setActive(PluginCall call) {
@@ -32,6 +58,6 @@ public class VirtualTableDisplayPlugin extends Plugin {
 
     @Override
     protected void handleOnDestroy() {
-        getActivity().runOnUiThread(this::restore);
+        getActivity().runOnUiThread(() -> { night = false; restoreBrightness(); restore(); });
     }
 }

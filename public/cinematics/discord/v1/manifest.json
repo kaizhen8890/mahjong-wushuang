@@ -1,0 +1,83 @@
+{
+  "version": "1.0.0",
+  "name": "断序杂音 · 紫蓝碎界",
+  "durationSeconds": 8,
+  "fps": 30,
+  "frames": 240,
+  "handoffSeconds": 6.8,
+  "presentationOnly": true,
+  "orientations": {
+    "landscape": [
+      1600,
+      1000
+    ],
+    "portrait": [
+      1000,
+      1600
+    ]
+  },
+  "audio": {
+    "source": "Original procedural synchronized stereo",
+    "sampleRate": 48000,
+    "channels": 2,
+    "peak": 0.88,
+    "rms": 0.06651238849718909,
+    "silentBeat": [
+      4.03,
+      4.23
+    ]
+  },
+  "timeline": [
+    {
+      "at": 0,
+      "event": "Two symbolic attack costs dissolve"
+    },
+    {
+      "at": 1.2,
+      "event": "Crystal space folds around prismatic blade"
+    },
+    {
+      "at": 2.8,
+      "event": "Hostile lances approach"
+    },
+    {
+      "at": 4.23,
+      "event": "White cyan severance and fragmented space"
+    },
+    {
+      "at": 5.3,
+      "event": "Crystal panes assemble into protection"
+    },
+    {
+      "at": 6.8,
+      "event": "Live ally-nameplate handoff window"
+    },
+    {
+      "at": 8,
+      "event": "End film and audio"
+    }
+  ],
+  "provenance": "Original Blender geometry, materials, animation, camera and synthesized sound. Art direction follows the supplied card palette; no shrine, character identity, physical hand data, scoring or game randomness in the video.",
+  "assets": [
+    {
+      "file": "effect-landscape.mp4",
+      "bytes": 9055107,
+      "sha256": "a9737dbd3f2cbbeada414aa17aae0fcfa135a8ac12f6e2ac05d13760248c8c1d"
+    },
+    {
+      "file": "effect-landscape.jpg",
+      "bytes": 366393,
+      "sha256": "c450336b343166812b49c1cfc0659c8d0632ddf755eb4c5b526788fe4f05ff32"
+    },
+    {
+      "file": "effect-portrait.mp4",
+      "bytes": 7509915,
+      "sha256": "893523e0d3ed5aff330b9af6dfb10294a9398082bfad1484f401619873c3dc80"
+    },
+    {
+      "file": "effect-portrait.jpg",
+      "bytes": 345438,
+      "sha256": "2930aa87206a301e54a27b2efaf4c94be7ddff457a34ef565bfe965ad5699944"
+    }
+  ]
+}

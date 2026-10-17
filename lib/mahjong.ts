@@ -6,6 +6,7 @@ export type TurnPhase = 'skill' | 'discard';
 export type WinType = 'ron' | 'tsumo';
 
 export interface SkillCard {
+  randomRule?: import('./skill-random').RandomRule;
   id: number;
   name: string;
   rarity: string;
@@ -108,6 +109,11 @@ export interface GameEvent {
 }
 
 export interface ActiveSkillEffect {
+  wushuang?: import('./wushuang-session').WushuangSession;
+  environment?: import('./skill-experience').EnvironmentState;
+  randomResult?: import('./skill-random').RandomResult;
+  randomRule?: import('./skill-random').RandomRule | null;
+  activationKey?: string;
   id: string;
   cardId: number;
   /** 新版实体牌桌伴侣使用的可读快照；均为可选以兼容旧存档。 */
@@ -137,6 +143,8 @@ export interface VirtualState {
 }
 
 export interface GameState {
+  experienceEvents?: import('./skill-experience').SkillExperienceEvent[];
+  judgementAwarded?: boolean;
   presentations?: import('./presentation').TablePresentation[];
   settings: GameSettings;
   players: PlayerState[];
@@ -187,6 +195,8 @@ export interface SettlementInput {
   kiriageMangan: boolean;
   kazoeYakuman: boolean;
   sanmaTsumoLoss: boolean;
+  /** 实体阵营模式自摸免除队友付款；未传入时沿用普通日麻计分。 */
+  teamsEnabled?: boolean;
   /** 技能造成的固定额外得点；荣和由放铳者付，自摸由付款者平分。 */
   extraPoints?: number;
 }
@@ -603,7 +613,7 @@ export function calculateNagashiDraw(game: GameState, winnerIds: string[]): Reco
   for (const id of new Set(winnerIds)) {
     const winner=playing.find(p=>p.id===id);
     if(!winner)continue;
-    const result=calculateSettlement({winnerId:id,winType:'tsumo',han:5,fu:30,yakuman:0,honba:0,riichiSticks:0,dealer:winner.wind==='东',playerCount:game.settings.playerCount,kiriageMangan:game.settings.kiriageMangan,kazoeYakuman:game.settings.kazoeYakuman,sanmaTsumoLoss:game.settings.sanmaTsumoLoss},playing);
+    const result=calculateSettlement({winnerId:id,winType:'tsumo',han:5,fu:30,yakuman:0,honba:0,riichiSticks:0,dealer:winner.wind==='东',playerCount:game.settings.playerCount,kiriageMangan:game.settings.kiriageMangan,kazoeYakuman:game.settings.kazoeYakuman,sanmaTsumoLoss:game.settings.sanmaTsumoLoss,teamsEnabled:game.settings.teamsEnabled},playing);
     deltas[id]+=result.winnerGain;
     Object.entries(result.payments).forEach(([payer,amount])=>{deltas[payer]-=amount;});
   }
@@ -657,15 +667,20 @@ export function calculateSettlement(
     }
   }
 
+  // Exempt teammates after ordinary sanma/honba calculation: their share is not reassigned.
+  if (input.winType === 'tsumo' && input.teamsEnabled) {
+    for (const payer of payers) if (payer.team === winner.team) delete payments[payer.id];
+  }
+  const payingPlayers = payers.filter(payer => payments[payer.id] !== undefined);
   const extraPoints = Math.max(0, Math.trunc(input.extraPoints ?? 0));
-  if (extraPoints > 0 && payers.length > 0) {
+  if (extraPoints > 0 && payingPlayers.length > 0) {
     if (input.winType === 'ron') {
       const loserId = input.loserId as string;
       payments[loserId] = (payments[loserId] ?? 0) + extraPoints;
     } else {
-      const baseShare = Math.floor(extraPoints / payers.length);
-      let remainder = extraPoints - baseShare * payers.length;
-      for (const payer of payers) {
+      const baseShare = Math.floor(extraPoints / payingPlayers.length);
+      let remainder = extraPoints - baseShare * payingPlayers.length;
+      for (const payer of payingPlayers) {
         const addition = baseShare + (remainder > 0 ? 1 : 0);
         payments[payer.id] = (payments[payer.id] ?? 0) + addition;
         remainder = Math.max(0, remainder - 1);

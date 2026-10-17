@@ -6,6 +6,7 @@ import { Dialog as DialogPrimitive } from '@base-ui/react/dialog';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { XIcon } from 'lucide-react';
+import { NativeBackClose } from './native-back-close';
 
 function Dialog({ ...props }: DialogPrimitive.Root.Props) {
   return <DialogPrimitive.Root data-slot="dialog" {...props} />;
@@ -43,22 +44,42 @@ function DialogContent({
   className,
   children,
   showCloseButton = true,
+  nativeBack = true,
+  positioning = 'center',
+  style,
   ...props
 }: DialogPrimitive.Popup.Props & {
   showCloseButton?: boolean;
+  nativeBack?: boolean;
+  positioning?: 'center' | 'custom';
 }) {
   return (
     <DialogPortal>
       <DialogOverlay />
       <DialogPrimitive.Popup
         data-slot="dialog-content"
+        style={
+          positioning === 'custom'
+            ? (state) => ({
+                ...(typeof style === 'function' ? style(state) : style),
+                position: 'fixed',
+                inset: 'auto 0 0',
+                margin: '0 auto',
+                transform: 'none',
+                translate: 'none',
+              })
+            : style
+        }
         className={cn(
-          'fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 rounded-xl bg-popover p-4 text-sm text-popover-foreground ring-1 ring-foreground/10 duration-100 outline-none sm:max-w-sm data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95',
+          'fixed z-50 grid w-full max-w-[calc(100%-2rem)] gap-4 rounded-xl bg-popover p-4 text-sm text-popover-foreground ring-1 ring-foreground/10 duration-100 outline-none sm:max-w-sm data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95',
+          positioning === 'center' &&
+            'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2',
           className,
         )}
         {...props}
       >
         {children}
+        {nativeBack && <NativeBackClose close={DialogPrimitive.Close} />}
         {showCloseButton && (
           <DialogPrimitive.Close
             data-slot="dialog-close"
@@ -71,7 +92,7 @@ function DialogContent({
             }
           >
             <XIcon />
-            <span className="sr-only">Close</span>
+            <span className="sr-only">关闭</span>
           </DialogPrimitive.Close>
         )}
       </DialogPrimitive.Popup>

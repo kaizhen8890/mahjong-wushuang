@@ -44,3 +44,5 @@ next-env.d.ts
 /.github-android-home/
 *.jks
 *.keystore
+__pycache__/
+*.pyc

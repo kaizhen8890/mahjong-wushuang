@@ -1,4 +1,5 @@
 import type { GameState, SettlementInput, SettlementResult, SkillCard } from './mahjong';
+import { wushuangOutcome } from './wushuang-cinematic';
 
 export interface TablePresentation {
   id: string;
@@ -33,6 +34,7 @@ export function recordSkillTransitions(before: GameState, after: GameState, card
     const previous = before.effects.find(entry => entry.id === effect.id);
     if (previous && !(previous.faceDown || previous.visibility === 'face-down' || previous.state === 'armed')) continue;
     const card = cards.find(entry => entry.id === effect.cardId);
+    if (card && wushuangOutcome({ kind: 'random', cardName: card.name, random: effect.randomResult })) continue;
     if (!card || !['攻', '团', '单', '陷'].includes(card.type.code)) continue;
     const actor = after.players.find(player => player.id === (effect.sourcePlayerId || effect.ownerId));
     if (!actor) continue;
@@ -48,6 +50,7 @@ export function recordSkillTransitions(before: GameState, after: GameState, card
 
 /** 展示真实等级；不足满贯时以番数为主标题，不虚构等级。 */
 export function winHeadline(event: Pick<TablePresentation, 'yakuman' | 'limit' | 'han'>): string {
+  if (event.limit === '无双结算') return '无双结算';
   if (event.yakuman === 1) return '役满';
   if (event.yakuman > 1) {
     const names: Record<number, string> = { 2: '两', 3: '三', 4: '四', 5: '五', 6: '六' };

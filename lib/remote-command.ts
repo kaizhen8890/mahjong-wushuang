@@ -1,4 +1,9 @@
+import { godCardCost } from './god-card-cost';
+import { readRandomRule, randomRuleTemplate } from './skill-random';
+import { isWushuangCard } from './wushuang-session';
+import { pendingWushuang, startWushuangSession, updateWushuang, settleWushuang, isWushuangTarget } from './wushuang';
 import { recordWin } from './presentation';
+import { activeEnvironment, applyEnvironmentAction, makeEnvironment, usesDecisionCoin, finishSkillActivation, environmentBonus, awardLastSurvivor } from './skill-experience';
 import {
   YAKU,
   addEvent,
@@ -143,7 +148,10 @@ function validateWinDraft(game: GameState, actorId: string, draft: RemoteWinDraf
   }
 
   if (draft.analysis?.automatic && draft.tiles.length) {
-    const result = assessHandInput({tiles:draft.tiles,winningTile:draft.analysis.winningTile,meldText:draft.analysis.meldText,closed:draft.closed,winType:draft.winType,seatWind:actor.wind,roundWind:game.roundWind,selected:draft.selectedYakuIds,bonusHan:draft.dora+draft.uraDora+draft.akaDora+draft.flowerDora+draft.bonusHan,overrides:draft.yakuOverrides,openTanyao:game.settings.openTanyao,kiriage:game.settings.kiriageMangan,kazoe:game.settings.kazoeYakuman});
+    const bonus = environmentBonus(game, draft.selectedYakuIds, draft.closed, draft.environmentNumberCount ?? 0);
+    const envYaku = activeEnvironment(game);
+    const adjusted = envYaku?.kind === 'yaku' && envYaku.yakuId ? { ...draft.yakuOverrides, [envYaku.yakuId]: 5 } : draft.yakuOverrides;
+    const result = assessHandInput({tiles:draft.tiles,winningTile:draft.analysis.winningTile,meldText:draft.analysis.meldText,closed:draft.closed,winType:draft.winType,seatWind:actor.wind,roundWind:game.roundWind,selected:draft.selectedYakuIds,bonusHan:draft.dora+draft.uraDora+draft.akaDora+draft.flowerDora+draft.bonusHan+bonus.dora,overrides:adjusted,openTanyao:game.settings.openTanyao,kiriage:game.settings.kiriageMangan,kazoe:game.settings.kazoeYakuman});
     if(result.status==='invalid') throw new RemoteCommandError('INVALID_PAYLOAD',result.guidance);
     if(result.status==='ready' && result.best) draft = {...draft,selectedYakuIds:result.best.yaku,fu:result.best.fu};
   }
@@ -158,14 +166,15 @@ function validateWinDraft(game: GameState, actorId: string, draft: RemoteWinDraf
     return yaku;
   });
   const yakuman = selected.reduce((sum, yaku) => sum + (yaku.yakuman ?? 0), 0);
+  const environment = environmentBonus(game, draft.selectedYakuIds, draft.closed, draft.environmentNumberCount ?? 0);
   const yakuHan = selected.reduce((sum, yaku) => {
     if (yaku.yakuman) return sum;
-    return sum + (draft.yakuOverrides[yaku.id] ?? (draft.closed ? yaku.closedHan : yaku.openHan));
+    return sum + (environment.overrideId === yaku.id ? 5 : draft.yakuOverrides[yaku.id] ?? (draft.closed ? yaku.closedHan : yaku.openHan));
   }, 0);
   if (yakuman === 0 && yakuHan + draft.bonusHan <= 0) {
     throw new RemoteCommandError('INVALID_PAYLOAD', '仅有宝牌不能和牌，请至少选择一个役或填写技能加番');
   }
-  const han = yakuHan + draft.dora + draft.uraDora + draft.akaDora + draft.flowerDora + draft.bonusHan;
+  const han = yakuHan + draft.dora + draft.uraDora + draft.akaDora + draft.flowerDora + draft.bonusHan + environment.dora;
   const input: SettlementInput = {
     winnerId: actorId,
     ...(draft.winType === 'ron' ? { loserId: draft.loserPlayerId } : {}),
@@ -180,6 +189,7 @@ function validateWinDraft(game: GameState, actorId: string, draft: RemoteWinDraf
     kiriageMangan: game.settings.kiriageMangan,
     kazoeYakuman: game.settings.kazoeYakuman,
     sanmaTsumoLoss: game.settings.sanmaTsumoLoss,
+    teamsEnabled: game.settings.teamsEnabled,
     extraPoints: draft.extraPoints,
   };
   return { input, result: calculateSettlement(input, game.players), han, yakuman, yakuNames: selected.map(yaku => yaku.name), tiles: draft.tiles };
@@ -239,6 +249,17 @@ export function applyRemoteControllerCommand(
 ): RemoteCommandOutcome {
   const actor = game.players.find((player) => player.id === actorId);
   if (!actor) throw new RemoteCommandError('AUTH_FAILED', '遥控器没有绑定有效玩家');
+  if (command.kind === 'wushuang.update' || command.kind === 'wushuang.commit') {
+    try { const nextGame=command.kind==='wushuang.update'?updateWushuang(game,actorId,command):settleWushuang(game,actorId,command);
+      const message=command.kind==='wushuang.update'?'无双牌组已保存':nextGame===game?'本次无双已入账，无需重复':'无双结算已入账';
+      const notifications=command.kind==='wushuang.commit'&&nextGame!==game?game.players.map(p=>({playerId:p.id,notification:makeNotice(nextGame.history.at(-1)!.id,'麻将无双结算',nextGame.history.at(-1)!.detail,p.id!==actorId)})):[];
+      return {nextGame,changed:nextGame!==game,message,notifications}; }
+    catch(error){throw new RemoteCommandError('NOT_ALLOWED',error instanceof Error?error.message:'无双操作无效');}
+  }
+  if (command.kind === 'environment.action') {
+    try { return { nextGame: applyEnvironmentAction(game, actorId, command), changed: true, message: '环境操作已同步', notifications: [] }; }
+    catch (error) { throw new RemoteCommandError('NOT_ALLOWED', error instanceof Error ? error.message : '环境操作无效'); }
+  }
 
   if (command.kind === 'character.select') {
     if (!validCharacterChoice(command.character)) throw new RemoteCommandError('INVALID_PAYLOAD', '角色资料无效');
@@ -283,6 +304,8 @@ export function applyRemoteControllerCommand(
   }
 
   if (command.kind === 'emote.send') {
+    const environment = activeEnvironment(game);
+    if (environment?.kind === 'night' || environment?.kind === 'silence') throw new RemoteCommandError('NOT_ALLOWED', environment.kind === 'night' ? '暗夜期间暂停表情' : '寂静之地期间暂停表情交流');
     if (!GAME_EMOTES_BY_ID.has(command.emoteId)) throw new RemoteCommandError('INVALID_PAYLOAD', '这个表情不在当前表情清单中');
     return {
       nextGame: game,
@@ -349,10 +372,25 @@ export function applyRemoteControllerCommand(
 
   if (command.kind === 'skill.activate') {
     if (!game.settings.wushuang) throw new RemoteCommandError('NOT_ALLOWED', '当前没有开启麻将无双模式');
-    if (game.handEnded || !actor.active || actor.participation !== 'playing') throw new RemoteCommandError('NOT_ALLOWED', '该玩家当前不能发动技能');
     const card = cards.find((entry) => entry.id === command.input.cardId);
     if (!card) throw new RemoteCommandError('INVALID_PAYLOAD', '技能卡不在当前资料库中');
+    const activationKey = command.input.activationId ? `${actorId}:${command.input.activationId}` : undefined;
+    if (activationKey && game.effects.some(e => e.activationKey === activationKey)) return { nextGame: game, changed: false, message: '该次技能已发动，无需重复', notifications: [] };
+    if (game.handEnded || !actor.active || actor.participation !== 'playing') throw new RemoteCommandError('NOT_ALLOWED', '该玩家当前不能发动技能');
+    const physicalCost = godCardCost(card);
+    if (physicalCost && command.input.wushuangCostConfirmed !== true) throw new RemoteCommandError('INVALID_PAYLOAD', '请先一次确认实体代价已交出');
+    const wushuang=isWushuangCard(card);
+    if(wushuang){
+      if(command.input.wushuangCostConfirmed!==true||!command.input.activationId)throw new RemoteCommandError('INVALID_PAYLOAD','请一次确认单、团、攻、陷四类实体代价');
+      if(pendingWushuang(game).length)throw new RemoteCommandError('NOT_ALLOWED','请先完成牌桌上待结算的麻将无双');
+      if(command.input.coinDecision===undefined)throw new RemoteCommandError('INVALID_PAYLOAD','请选择正面、反面或掷币');
+      if(command.input.targetPlayerIds.length>1||command.input.targetPlayerIds.some(id=>!isWushuangTarget(game,actorId,id)))throw new RemoteCommandError('INVALID_TARGET','请选择一名仍在局中的敌方');
+      if(command.input.coinDecision==='tails'&&command.input.targetPlayerIds.length!==1)throw new RemoteCommandError('INVALID_TARGET','请先选择一名仍在局中的敌方');
+    }
+    const environment = makeEnvironment(card, command.input.environment);
     const hidden = card.type.code === '陷' && command.input.faceDown;
+    if (hidden && command.input.coinDecision !== undefined) throw new RemoteCommandError('INVALID_PAYLOAD', '暗置时不能录入硬币结果，请在揭示时选择');
+    if (command.input.coinDecision !== undefined && (!usesDecisionCoin(card) || !['heads', 'tails', 'toss'].includes(command.input.coinDecision))) throw new RemoteCommandError('INVALID_PAYLOAD', '此选择只适用于单枚硬币判定');
     const validTargetIds = new Set(game.players.map((player) => player.id));
     if (command.input.targetPlayerIds.some((id) => !validTargetIds.has(id))) throw new RemoteCommandError('INVALID_TARGET', '技能目标不在当前牌桌中');
     const targets = card.type.code === '单'
@@ -366,6 +404,9 @@ export function applyRemoteControllerCommand(
       throw new RemoteCommandError('INVALID_TARGET', '这张技能卡需要选择受影响玩家');
     }
     const effect: ActiveSkillEffect = {
+      ...(activationKey ? { activationKey } : {}),
+      ...(environment ? { environment } : {}),
+      randomRule: wushuang ? randomRuleTemplate('coin') : card.randomRule ? readRandomRule(card.randomRule) : null,
       id: createProtocolId('effect'),
       cardId: card.id,
       cardName: card.name,
@@ -376,7 +417,7 @@ export function applyRemoteControllerCommand(
       scope: card.type.code === '单' ? 'self' : card.type.code === '团' ? 'team' : card.type.code === '环' ? 'table' : 'player',
       visibility: hidden ? 'face-down' : 'public',
       state: hidden ? 'armed' : 'active',
-      duration: command.input.duration,
+      duration: environment ? 'hand' : command.input.duration,
       note: command.input.effectText || card.effectDescription,
       createdAt: new Date().toISOString(),
       ownerId: actorId,
@@ -388,7 +429,7 @@ export function applyRemoteControllerCommand(
       ? game.effects.map((entry) => entry.scope === 'table' && isLiveEffect(entry) ? { ...entry, state: 'resolved' as const, status: 'resolved' as const } : entry)
       : game.effects;
     const hadCard = actor.skillHand.includes(card.id);
-    const nextGame = addEvent({
+    const activatedGame = addEvent({
       ...game,
       environmentSkillId: card.type.code === '环' ? card.id : game.environmentSkillId,
       effects: [...baseEffects, effect],
@@ -401,15 +442,21 @@ export function applyRemoteControllerCommand(
     }, hidden ? '暗置陷阱' : '记录技能发动', hidden
       ? `${actor.name}通过手机暗置了一张陷阱卡`
       : `${actor.name}通过手机发动「${card.name}」${targets.length ? `，影响${targets.map((id) => game.players.find((player) => player.id === id)?.name).filter(Boolean).join('、')}` : '，作用于牌桌'}`);
+    const costGame=wushuang?addEvent(activatedGame,'无双代价确认',`${actor.name}已交出单、团、攻、陷各一张实体技能卡；仅作代价，不发动效果`):activatedGame;
+    const confirmedGame = physicalCost ? addEvent(costGame, '神卡代价确认', `${actor.name}已交出${physicalCost}作为「${card.name}」代价；代价卡效果不发动`) : costGame;
+    const judgedGame = finishSkillActivation(confirmedGame, effect.id, card, command.input.coinDecision);
+    const nextGame = wushuang ? startWushuangSession(judgedGame,effect.id,command.input.activationId!) : judgedGame;
     return {
       nextGame,
       changed: true,
       message: hidden ? '陷阱已暗置，仅你的手机可见' : `「${card.name}」已同步`,
-      notifications: skillNotices(nextGame, actorId, effect, hidden),
+      notifications: skillNotices(nextGame, actorId, nextGame.effects.find(e => e.id === effect.id)!, hidden),
     };
   }
 
   if (command.kind === 'skill.reveal') {
+    if (game.handEnded || !actor.active || actor.participation !== 'playing') throw new RemoteCommandError('NOT_ALLOWED', '该玩家当前不能发动陷阱');
+    if (command.input.targetPlayerIds.some(id => !game.players.some(p => p.id === id && p.active))) throw new RemoteCommandError('INVALID_TARGET', '请选择仍在本局中的目标');
     const effect = game.effects.find((entry) => entry.id === command.input.effectId && isLiveEffect(entry));
     if (!effect || effectSourceId(effect) !== actorId || !(effect.faceDown || effect.visibility === 'face-down')) {
       throw new RemoteCommandError('NOT_ALLOWED', '只能揭示自己仍在场上的暗置陷阱');
@@ -426,16 +473,20 @@ export function applyRemoteControllerCommand(
       note: command.input.effectText || effect.note,
       effectText: command.input.effectText || effect.effectText,
     };
-    const nextGame = addEvent({
+    const revealedGame = addEvent({
       ...game,
       effects: game.effects.map((entry) => entry.id === effect.id ? revealed : entry),
     }, '陷阱发动', `${actor.name}通过手机揭示「${effect.cardName || '陷阱卡'}」`);
-    return { nextGame, changed: true, message: '陷阱已揭示并通知目标', notifications: skillNotices(nextGame, actorId, revealed, false) };
+    const card = cards.find(c => c.id === effect.cardId);
+    if (command.input.coinDecision !== undefined && (!usesDecisionCoin({ name: effect.cardName ?? card?.name ?? '', randomRule: card?.randomRule }, effect.randomRule) || !['heads', 'tails', 'toss'].includes(command.input.coinDecision))) throw new RemoteCommandError('INVALID_PAYLOAD', '此选择只适用于单枚硬币判定');
+    const nextGame = finishSkillActivation(revealedGame, effect.id, card ?? { name: effect.cardName || '陷阱卡', summary: '', effectDescription: effect.effectText || '', randomRule: effect.randomRule ?? undefined }, command.input.coinDecision);
+    return { nextGame, changed: true, message: '陷阱已揭示并通知目标', notifications: skillNotices(nextGame, actorId, nextGame.effects.find(e => e.id === effect.id)!, false) };
   }
 
   if (command.kind === 'effect.resolve-own') {
     const effect = game.effects.find((entry) => entry.id === command.effectId && isLiveEffect(entry));
     if (!effect || effectSourceId(effect) !== actorId) throw new RemoteCommandError('NOT_ALLOWED', '只能结束自己发动的效果');
+    if(effect.wushuang?.status==='pending')throw new RemoteCommandError('NOT_ALLOWED','请在无双专属面板完成结算，不能直接结束效果');
     const nextGame = addEvent({
       ...game,
       environmentSkillId: game.environmentSkillId === effect.cardId ? null : game.environmentSkillId,
@@ -445,12 +496,13 @@ export function applyRemoteControllerCommand(
   }
 
   if (command.kind === 'win.preview' || command.kind === 'win.commit') {
+    if(command.kind==='win.commit'&&pendingWushuang(game).length)throw new RemoteCommandError('NOT_ALLOWED','请先完成牌桌上的麻将无双结算');
     const { input, result, han, yakuman, yakuNames, tiles } = validateWinDraft(game, actorId, command.draft);
     const preview = scorePreview(result, input, han, yakuman);
     if (command.kind === 'win.preview') {
       return { nextGame: game, changed: false, message: result.summary, preview, notifications: [] };
     }
-    const nextGame = recordWin(game, applySettlement(game, input, result), input, result, yakuNames, tiles);
+    const nextGame = recordWin(game, awardLastSurvivor(game, applySettlement(game, input, result)), input, result, yakuNames, tiles);
     const eventId = createProtocolId('event');
     const notifications = game.players.map((player) => ({
       playerId: player.id,

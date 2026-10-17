@@ -25,4 +25,4 @@ registerHooks({
     return next(url, context);
   },
 });
-await import(pathToFileURL(path.resolve('tests/virtual-table-render.test.tsx')).href);
+await import(pathToFileURL(path.resolve(process.argv[2] ?? 'tests/virtual-table-render.test.tsx')).href);

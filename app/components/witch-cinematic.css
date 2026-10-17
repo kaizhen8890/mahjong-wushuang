@@ -1,0 +1,36 @@
+.witch-cinematic{position:fixed;inset:0;z-index:1100;overflow:hidden;pointer-events:none;color:#f7e8cd;font-family:inherit;isolation:isolate}
+.witch-film,.witch-still{position:absolute;inset:0;background:#08070c;pointer-events:auto;transition:opacity .55s ease-out}
+.witch-film video{display:block;width:100%;height:100%;object-fit:cover}
+.witch-vignette{position:absolute;inset:0;background:linear-gradient(0deg,#06050be8,transparent 28%,transparent 85%,#06050b80),radial-gradient(ellipse at 50% 45%,transparent 40%,#05040970)}
+.witch-still{background-position:center;background-size:cover;opacity:.6}
+.witch-caption{position:absolute;inset:auto 12% max(4vh,24px);text-align:center;opacity:0;text-shadow:0 2px 10px #000,0 2px 30px #000;transform:translateY(12px);transition:opacity .65s,transform .65s}
+.witch-cinematic[data-playing=true] .witch-caption,.witch-cinematic[data-phase=fallback] .witch-caption{opacity:1;transform:none}
+.witch-caption small{font-size:clamp(12px,1.6vmin,18px);letter-spacing:.22em;color:#cbb79b}
+.witch-caption h2{font-size:clamp(36px,6.8vmin,78px);letter-spacing:.28em;margin:10px 0 6px;padding-left:.28em;color:#f0d5a1;font-family:var(--font-serif-display,serif);font-weight:400}
+.witch-caption>span{display:inline-block;letter-spacing:.65em;font-size:clamp(10px,1.4vmin,16px);color:#b69e83;padding:.25em .5em .6em;border-bottom:1px solid #a5844a70}
+.witch-caption p{font-size:clamp(12px,1.7vmin,20px);margin:10px auto 0;max-width:46em;line-height:1.65;color:#d1c8d4}
+.witch-cinematic[data-phase=return] .witch-film{opacity:0;pointer-events:none}
+.witch-judgement .witch-film{transition-duration:.22s}
+.witch-cinematic[data-phase=return] .witch-caption{background:linear-gradient(90deg,transparent,#110a20d9,transparent);padding:10px 16px}
+.witch-skip{position:absolute;right:max(18px,env(safe-area-inset-right));top:max(18px,env(safe-area-inset-top));pointer-events:auto;padding:9px 15px;border:1px solid #95784c99;border-radius:5px;background:#120e18b8;color:#d9c39a;font:inherit;font-size:14px;z-index:4}
+.witch-target-impact{position:absolute;left:var(--witch-x);top:var(--witch-y);width:var(--witch-w);height:var(--witch-h);transform:translate(-50%,-50%)}
+.witch-target-frame{position:absolute;inset:-6px;border:1px solid #eed2a9;border-radius:18px;box-shadow:0 0 20px #d994f38a,inset 0 0 25px #9763b36b;animation:witch-lock .8s ease-out both}
+.witch-cut{position:absolute;left:50%;top:50%;width:5px;height:max(170px,var(--witch-h));background:linear-gradient(transparent,#faf0df,#bb8eff,transparent);box-shadow:0 0 12px #e4c6ff;transform:translate(-50%,-50%) rotate(16deg);animation:witch-cleave .45s ease-out both}
+.witch-shock{position:absolute;left:50%;top:50%;width:180px;height:180px;border-radius:50%;background:radial-gradient(ellipse,#fce9c699,transparent 67%);animation:witch-shock .8s ease-out both}
+.witch-target-impact i{position:absolute;left:50%;top:50%;width:3px;height:12px;background:linear-gradient(#f5d6a3,#916575);animation:witch-splinter .85s ease-out both}
+.witch-target-impact b{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);white-space:nowrap;letter-spacing:.2em;padding:8px 18px;background:#140d20d9;border-block:1px solid #b58aa8;color:#ead9e7;font-size:clamp(19px,3vmin,34px);text-shadow:0 2px 8px #000;animation:witch-verdict .85s both}
+.witch-phone{background:radial-gradient(ellipse at center,#302037ee,#08070dc9);animation:witch-phone-arrive .25s both}
+.witch-phone .witch-caption,.witch-cinematic[data-phase=fallback] .witch-caption{bottom:30%}
+.witch-phone .witch-caption h2{font-size:clamp(34px,10vw,58px)}
+.witch-award{position:absolute;left:50%;top:36%;transform:translate(-50%,-50%);text-align:center;white-space:nowrap;padding:22px 55px;background:radial-gradient(ellipse,#39291ce8,transparent 72%);text-shadow:0 0 25px #daa14f80;animation:witch-award-arrive .5s .3s both}
+.witch-award small,.witch-award span{display:block;color:#e5c797;letter-spacing:.18em;font-size:14px}.witch-award strong{display:block;font-size:clamp(48px,9vmin,85px);color:#ffe0a4;font-weight:500;margin:8px 0}
+@media(orientation:portrait){.witch-caption{inset:auto 6% max(8vh,24px)}.witch-caption h2{font-size:clamp(34px,8vw,68px)}.witch-caption p{max-width:26em}.witch-judgement[data-phase=return] .witch-caption{bottom:5%}}
+@keyframes witch-lock{0%{opacity:0;scale:1.12}18%{opacity:1;scale:1}100%{opacity:0;scale:1.03}}
+@keyframes witch-cleave{0%{opacity:0;scale:.2 2.5}20%{opacity:1;scale:1}100%{opacity:0;scale:2 .8}}
+@keyframes witch-shock{0%{opacity:1;transform:translate(-50%,-50%) scale(.2)}100%{opacity:0;transform:translate(-50%,-50%) scale(2.8)}}
+@keyframes witch-splinter{0%{opacity:1;transform:translate(0,0) rotate(var(--spin))}100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(calc(var(--spin) + 110deg))}}
+@keyframes witch-verdict{0%,12%{opacity:0;filter:blur(4px)}30%,100%{opacity:1;filter:blur(0)}}
+@keyframes witch-phone-arrive{from{opacity:0}to{opacity:1}}
+@keyframes witch-award-arrive{from{opacity:0;filter:blur(6px);translate:0 14px}to{opacity:1;filter:blur(0);translate:0 0}}
+@media(prefers-reduced-motion:reduce){.witch-cinematic *{animation:none!important;transition:none!important}.witch-still{opacity:.3}}
+.night-mode .witch-cinematic{display:none!important}

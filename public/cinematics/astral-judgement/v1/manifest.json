@@ -1,0 +1,101 @@
+{
+  "version": "1.0.0",
+  "cardId": 43,
+  "name": "宿星审判 · 百合星裁",
+  "durationSeconds": 10,
+  "fps": 30,
+  "frames": 300,
+  "presentationOnly": true,
+  "orientations": {
+    "landscape": [
+      1600,
+      1000
+    ],
+    "portrait": [
+      1000,
+      1600
+    ]
+  },
+  "title": {
+    "text": "宿星审判",
+    "font": "STZhongsong / 华文中宋",
+    "face": "white",
+    "outline": "violet",
+    "at": 8.22,
+    "fontFileDistributed": false
+  },
+  "audio": {
+    "source": "Original procedural stereo sound, no sampled music or voice",
+    "sampleRate": 48000,
+    "channels": 2,
+    "peak": 0.88,
+    "rms": 0.10002421495520367,
+    "silentBeat": [
+      6.6,
+      6.8
+    ],
+    "beam": 6.8,
+    "title": 8.22
+  },
+  "timeline": [
+    {
+      "at": 0,
+      "event": "White lily falls through violet cosmos"
+    },
+    {
+      "at": 1.85,
+      "event": "Celestial golden-violet annuli awaken"
+    },
+    {
+      "at": 2.8,
+      "event": "Floral, spiral and depth-lance projectile waves"
+    },
+    {
+      "at": 5.7,
+      "event": "Stars collapse into the flower core"
+    },
+    {
+      "at": 6.6,
+      "event": "Held breath"
+    },
+    {
+      "at": 6.8,
+      "event": "Giant axial beam rushes toward camera"
+    },
+    {
+      "at": 7.9,
+      "event": "Whiteout"
+    },
+    {
+      "at": 8.22,
+      "event": "White face, violet outline STZhongsong title lands"
+    },
+    {
+      "at": 10,
+      "event": "End"
+    }
+  ],
+  "provenance": "Original Blender flower meshes, shader nebula, danmaku choreography, beam, cameras and procedural sound. Style based on supplied card. Existing local STZhongsong used for rendered title only; font file not bundled. No player identity or game state.",
+  "assets": [
+    {
+      "file": "effect-landscape.mp4",
+      "bytes": 13006703,
+      "sha256": "e6f42b46b6956f03ec481b82a796aded8ddd2daeaa2525485e91fcb3a3332168"
+    },
+    {
+      "file": "effect-landscape.jpg",
+      "bytes": 707973,
+      "sha256": "74e35fe98e85691be11d455c2a9102d2c920be489da7ac822025533144a9fd29"
+    },
+    {
+      "file": "effect-portrait.mp4",
+      "bytes": 10855190,
+      "sha256": "05d8b456ddbf80ede5d5a087bdfa84ff9cf00e0d273172c1f4d2ce27bb56a6f4"
+    },
+    {
+      "file": "effect-portrait.jpg",
+      "bytes": 560476,
+      "sha256": "aa3cf986a186f429b120e1fc317d558a1484e3f485ac1468a12e856e105ac25a"
+    }
+  ]
+}

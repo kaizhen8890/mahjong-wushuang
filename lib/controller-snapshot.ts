@@ -1,5 +1,6 @@
 import type { ActiveSkillEffect, GameState, PlayerState, SkillCard } from '@/lib/mahjong';
 import { calculateTurnClock } from '@/lib/mahjong';
+import { activeEnvironment, usesDecisionCoin } from './skill-experience';
 import type {
   ControllerEffect,
   ControllerEffectDirection,
@@ -110,6 +111,7 @@ function toControllerEffect(
     duration: effectDuration(effect),
     state: effectState(effect),
     hidden,
+    ...(hidden ? { coinDecisionAvailable: usesDecisionCoin({ name: effect.cardName ?? card?.name ?? '', randomRule: card?.randomRule }, effect.randomRule) } : {}),
     ...(createdAt ? { createdAt: truncateText(createdAt) } : {}),
   };
 }
@@ -121,7 +123,7 @@ function toControllerEffect(
 export function createSkillCatalogRevision(cards: readonly SkillCard[]) {
   const canonical = [...cards]
     .sort((left, right) => left.id - right.id)
-    .map((card) => `${card.id}\u001f${card.name}\u001f${card.type.code}\u001f${card.effectDescription}`)
+    .map((card) => `${card.id}\u001f${card.name}\u001f${card.type.code}\u001f${card.rarity}\u001f${card.effectDescription}\u001f${JSON.stringify(card.randomRule ?? null)}`)
     .join('\u001e');
   let hash = 0x811c9dc5;
   for (let index = 0; index < canonical.length; index += 1) {
@@ -140,7 +142,9 @@ export function createControllerSkillCatalog(cards: readonly SkillCard[]): Contr
       id: card.id,
       name: truncateText(card.name),
       typeCode: truncateText(card.type.code),
+      rarity: card.rarity.slice(0, 32),
       effectDescription: truncateText(card.effectDescription),
+      ...(card.randomRule ? { randomRule: card.randomRule } : {}),
     }));
 }
 
@@ -165,7 +169,10 @@ export function createControllerSnapshot(
     .filter((effect): effect is ControllerEffect => effect !== null);
 
   return {
+    wushuangSessions: game.effects.filter(e => e.ownerId === player.id && e.wushuang && (e.wushuang.status === 'settled' || effectIsLive(e))).slice(-2).map(e => e.wushuang!),
     roomId: context.roomId,
+    environment: activeEnvironment(game),
+    experienceEvents: (game.experienceEvents ?? []).filter(e => Date.now() - e.createdAt < 20000),
     matchId: context.matchId,
     handId: context.handId,
     revision: context.revision,
@@ -191,6 +198,7 @@ export function createControllerSnapshot(
       handEnded: game.handEnded,
       isMyTurn: game.players[game.turnIndex]?.id === player.id,
       wushuang: game.settings.wushuang,
+      playerCount: game.settings.playerCount, akaDora: game.settings.akaDora,
       openTanyao: game.settings.openTanyao,
       kiriageMangan: game.settings.kiriageMangan,
       kazoeYakuman: game.settings.kazoeYakuman,
@@ -207,9 +215,10 @@ export function createControllerSnapshot(
     targetOptions: game.players
       .filter((candidate) => candidate.id !== player.id)
       .map((candidate) => ({
-        playerId: candidate.id,
+        playerId: candidate.id, name: candidate.name, character: candidate.character,
         wind: candidate.wind,
         active: candidate.active && playerParticipation(candidate) === 'playing',
+        enemy: !game.settings.teamsEnabled || candidate.team !== player.team,
       })),
     controls: {
       canDraw: canAct && !game.timerPaused && game.wallCount > 0 && !(game.turnState === 'thinking' && game.players[game.turnIndex]?.id === player.id),

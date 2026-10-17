@@ -1,0 +1,2573 @@
+{
+  "schemaVersion": 1,
+  "publicFiles": {
+    "art/ART-NOTES.md": {
+      "bytes": 2210,
+      "sha256": "84e29d5801687ca14bc16970d61abb8e106d19e0421761d983be8ec143192107"
+    },
+    "art/mahjong-pattern.jpg": {
+      "bytes": 44482,
+      "sha256": "0af40b7c2c485aa29968d167aa1b9781559fd2ffbdac0ff2c0bdf158d0ea2038"
+    },
+    "art/mahjong-pattern.svg": {
+      "bytes": 406201,
+      "sha256": "ed06504e2e403d2116652a11894c3301c044102397395c5addfd08b367ac71cb"
+    },
+    "art/sakura-courtyard-v2.png": {
+      "bytes": 1348803,
+      "sha256": "0841d75257ce010e9d4334bb5076491625641c34c88729a7b13dd4fd641e971e"
+    },
+    "art/sakura-crest.svg": {
+      "bytes": 483,
+      "sha256": "d00a7daffedf63b5c04a24a42e63c92e5bcff460b09df46e3a358309211c4b05"
+    },
+    "art/sakura-petal.svg": {
+      "bytes": 170,
+      "sha256": "dddbb91d418db5a62cfa5a3cd289577c4e1a17595a3f8aeb94e348e0eb43ed2f"
+    },
+    "art/sakura-shrine.png": {
+      "bytes": 2972419,
+      "sha256": "6feb3db91ba342f61c0950ca650c80081b5ef6bec93022e4858e529b5bfb25b2"
+    },
+    "art/signboard-long.png": {
+      "bytes": 2055709,
+      "sha256": "466f7b7fb71d9408b23e15f4a6cdacc307fb9a80f6fef314ec853ee9145dd887"
+    },
+    "art/signboard-short.png": {
+      "bytes": 126524,
+      "sha256": "dedd56fb2774b2a0c981fbcd614acee0dac73b2a4a44b92665fd6ecb1e1fc628"
+    },
+    "art/soft-signboard-transparent.png": {
+      "bytes": 1700649,
+      "sha256": "20148c7590f46901fa786cd18a5daf115586a485586aa920330ac4732bf35dc3"
+    },
+    "art/soft-signboard.png": {
+      "bytes": 1809744,
+      "sha256": "d091c314b711ecd50316ca4fb3159111f0453f88e2762991acae8715e28d7963"
+    },
+    "art/virtual-table-backdrop.jpg": {
+      "bytes": 31390,
+      "sha256": "787293421e019cd3e67ac4cb0f7d229feb3d08d58bd03bab384ac5826c0d98c2"
+    },
+    "art/winds/east.svg": {
+      "bytes": 4866,
+      "sha256": "3d7def8411dfe1a3bce593069ef5fc85bace47ada851c53d6faa4a67f9ba7682"
+    },
+    "art/winds/north.svg": {
+      "bytes": 4423,
+      "sha256": "756b785da47b48a53f54556c297133d27940aa13b4ff9529f45a2fefcfb74fc0"
+    },
+    "art/winds/south.svg": {
+      "bytes": 6871,
+      "sha256": "e99d3d78d0e7f7ba38502b608d10368695a0ee48666d9ed4a7ce8764c7e081a7"
+    },
+    "art/winds/west.svg": {
+      "bytes": 4923,
+      "sha256": "2065b28c62d034b3e58103e64095b794853b9773ca9c361f3692d1cb27080cea"
+    },
+    "audio/countdown5.mp3": {
+      "bytes": 5458,
+      "sha256": "ba32fd31774324e53f9689df06adfbc465599230be910306767cac7b5ae698a5"
+    },
+    "audio/draw-confirm.mp3": {
+      "bytes": 3369,
+      "sha256": "fdc4b7a9ad8c078a2371fb89d2e784a10e16be3ce422d5dda98629a997b588c3"
+    },
+    "audio/emote-pop.mp3": {
+      "bytes": 9218,
+      "sha256": "71d567d192fb970aab925e38d0417357713147c4196c83208f7927053c8739e9"
+    },
+    "audio/riichi/calm.mp4": {
+      "bytes": 540647,
+      "sha256": "f0f177339494b7c4a6a7e80da2641bf8db1502a5f0551154e46d5377605f6f95"
+    },
+    "audio/riichi/duel-1997.mp4": {
+      "bytes": 554461,
+      "sha256": "fea76078365393cd2c34ef341d62b12956dd8f9f54bfbaafb24f2504f3211b61"
+    },
+    "audio/riichi/duel.mp4": {
+      "bytes": 451241,
+      "sha256": "b8cf4f59ea881bf14974e45f49718f6fde12bd0475d21a5bb89a411db5123dca"
+    },
+    "audio/riichi/finale.mp4": {
+      "bytes": 254319,
+      "sha256": "7176a5399d375c9633fa334cf35f113924d566e6696ad2ca0b3cd56b51244bb7"
+    },
+    "audio/riichi/momentum.mp4": {
+      "bytes": 346760,
+      "sha256": "22cd80d97ca9c89a0f4aacc164aba13dc43102e7d9454c04e3e12dad1258f9e1"
+    },
+    "audio/riichi/prelude.mp4": {
+      "bytes": 377430,
+      "sha256": "033ecd4f6582c12737c43509c7ce6f9643acfdc5b2c058a7a297bf1053462007"
+    },
+    "audio/riichi/soaring.mp4": {
+      "bytes": 512674,
+      "sha256": "7941fc6baf9493c03344ddf771321811f2d19cf314d45ce3eb9b25f227fdeda0"
+    },
+    "audio/riichi/sortie.mp3": {
+      "bytes": 547589,
+      "sha256": "8c99898087abb6f32eb4b12041524e80f74a5249260cd346287dc8d59d2dcdd3"
+    },
+    "audio/riichi/trigger.mp4": {
+      "bytes": 465785,
+      "sha256": "4a8c24f8ceaa71ee6a4e788e46ce4a630d08f9b2cf251b9c90e2ede38bcbf818"
+    },
+    "audio/riichi-cue.wav": {
+      "bytes": 37528,
+      "sha256": "7ee0b5962c6f7c1271bbbaff444ada355afebac0e806d9b1e2922484eef08a46"
+    },
+    "audio/skill-attack-absorb.mp3": {
+      "bytes": 8755,
+      "sha256": "c4cfa9ec9c8f58097d06632d0dc32d0a3804470109e0982f0841a32c20b130f2"
+    },
+    "audio/skill-card-shatter.mp3": {
+      "bytes": 42631,
+      "sha256": "4dbf73da4b797ccb02c6993f4434e38c16b4c22ff6d02c382816dcb9a9c13334"
+    },
+    "audio/skill-particle-absorb.mp3": {
+      "bytes": 19869,
+      "sha256": "46d4a1ef6348c96d81a98e755058e6e6e6107e3d9b06bae7361f754d5623bb95"
+    },
+    "audio/virtual/beiman_manguan_yiman.mp3": {
+      "bytes": 24809,
+      "sha256": "a5ba4a8ac6115db7a94973393ae1a0ebad03a0830180de29a531027f6c06de3d"
+    },
+    "audio/virtual/btn_appear.mp3": {
+      "bytes": 6452,
+      "sha256": "177957330ed7b7946bb8bf23bb85de46b314a4471e7e55be2096aa14631f8b33"
+    },
+    "audio/virtual/btn_click.mp3": {
+      "bytes": 2884,
+      "sha256": "30449499c0572c43eb766f2c5060bfd5497b0079262ab7e43956df8d2c123b86"
+    },
+    "audio/virtual/click_pai.mp3": {
+      "bytes": 9367,
+      "sha256": "ff7c24659bca772db6198e9b15644cfe92dc6de121678284f70a16a81a9b9c47"
+    },
+    "audio/virtual/discard_tile.mp3": {
+      "bytes": 3369,
+      "sha256": "fdc4b7a9ad8c078a2371fb89d2e784a10e16be3ce422d5dda98629a997b588c3"
+    },
+    "audio/virtual/fu_fan_appear.mp3": {
+      "bytes": 12897,
+      "sha256": "7382ed6d6fb9476a4755433ceff1244b5fce2411402f16cbb768db99e1e2a157"
+    },
+    "audio/virtual/newround_pais.mp3": {
+      "bytes": 6941,
+      "sha256": "d11abe6a119a0c2de956143427653e7ea57cf5a26b48dca8bf29555e1b496e4b"
+    },
+    "audio/virtual/rank1.mp3": {
+      "bytes": 25926,
+      "sha256": "5df5795dc9c3c8837c4d2c96eefade60cefac4b84509449f7c07aa9bd4d07c93"
+    },
+    "audio/virtual/rank234.mp3": {
+      "bytes": 11841,
+      "sha256": "375b5462b9d62f6cc9654af44662b4499bd5e53a39f19473cb886e5de1c05687"
+    },
+    "audio/virtual/ron_ko.mp3": {
+      "bytes": 18852,
+      "sha256": "d38f62ddf5764d221e598cfa8d789d421b170aef396e5909fa0e2d7afbc5adc0"
+    },
+    "audio/virtual/score_appear.mp3": {
+      "bytes": 18853,
+      "sha256": "f37c314b9dccc67a8129d4481e284e7d4ae29d35ac8eeb53fb59cc58b8d92e61"
+    },
+    "audio/virtual/score_change.mp3": {
+      "bytes": 2239,
+      "sha256": "b662f86282ae2ec1e5ad816f2cc9589f43dae8ecac62fb37a671b18d5b18b4d8"
+    },
+    "audio/virtual/showtile.mp3": {
+      "bytes": 12897,
+      "sha256": "15c6ef791c1bdfef1d05e145104704d2a911833e1ccf33bdd593c80c80f10be9"
+    },
+    "audio/win-reveal.mp3": {
+      "bytes": 44928,
+      "sha256": "5ce97f1008d8b2acde3571c9f43fcd334fd4514ec1423690634fc45af94382be"
+    },
+    "audio/win-thunder.mp3": {
+      "bytes": 32786,
+      "sha256": "cb116dd3e3915b6a181e2c3f3ba08eaa9046a5f601d5ade4b6097d234ca26517"
+    },
+    "brand/mahjong-wushuang-logo-transparent.png": {
+      "bytes": 1925013,
+      "sha256": "2cc5da6d710bec8e93c34f171a406131243d49ff14858b293e7807797a64c0ae"
+    },
+    "brand/mahjong-wushuang-logo.png": {
+      "bytes": 1925013,
+      "sha256": "2cc5da6d710bec8e93c34f171a406131243d49ff14858b293e7807797a64c0ae"
+    },
+    "cards/art/01_飞升天堂.png": {
+      "bytes": 113392,
+      "sha256": "6dc02ad69723cbfc51d5e1683dba20284768b6d2f0516af83cdbee9126ce59fa"
+    },
+    "cards/art/02_釜底抽薪.png": {
+      "bytes": 37928,
+      "sha256": "a42934c6492bb754f7f6f2473e161516578da97a7fcbd6a8149f495ef30e7f35"
+    },
+    "cards/art/03_顺手牵羊.png": {
+      "bytes": 1028987,
+      "sha256": "910ca85c9ddd9f6ae869db4a66f00796d2f99389ac68d5e52653353e061a4cce"
+    },
+    "cards/art/04_破釜沉舟.jpeg": {
+      "bytes": 16266,
+      "sha256": "55373f74676f966df8d3d72cbb3cc9c2ca3e6bacd64c3f6d7ccdf714c3b3af5d"
+    },
+    "cards/art/05_背水一战.png": {
+      "bytes": 100672,
+      "sha256": "a7ab33531211ff00a4a60b172e77e82fb9ec5c493151f4c45c771d769d49ad66"
+    },
+    "cards/art/06_借刀杀人.png": {
+      "bytes": 1680215,
+      "sha256": "da0aeab93c0dba1ac3b055151f3f8327c877a029032d4fa9efbf1069b878ffdd"
+    },
+    "cards/art/07_万剑齐发.png": {
+      "bytes": 81859,
+      "sha256": "46f98a991f1d23c81719ed4ac19975eef86956e1a731000eee97aa7b5ee27b81"
+    },
+    "cards/art/08_祸水东引.png": {
+      "bytes": 124255,
+      "sha256": "637002774f1869304975df8c12a0bfa37aa1bee7839d462a12e03be8a380fc44"
+    },
+    "cards/art/09_偶氮玉红.png": {
+      "bytes": 40758,
+      "sha256": "53fec42f841fbcb63f31c5b0b0ccab549bde9166777a7d8a92764e386ce53910"
+    },
+    "cards/art/10_规则怪谈.png": {
+      "bytes": 1363670,
+      "sha256": "c0a818367f2472a1f900cb4ad6b4d5eb0fce2ef0b5475db0825e175f7347d4c2"
+    },
+    "cards/art/11_暗夜之战.png": {
+      "bytes": 352486,
+      "sha256": "5d5af1c55f8769b7eaa8e30284d16fd2ac59aa5505735a6f460d8eec400ac23b"
+    },
+    "cards/art/12_魔女审判.jpeg": {
+      "bytes": 16594,
+      "sha256": "ece60ee08be68babd266b5bf3a97809220d55be6c8ce38ac8602f98b7bf8bbb8"
+    },
+    "cards/art/13_寂静之地.png": {
+      "bytes": 348026,
+      "sha256": "2f19351df87af179517ee8649f01782a3d9d6d0597767f902f5622d373941bfb"
+    },
+    "cards/art/14_宝箱猎人.jpeg": {
+      "bytes": 28836,
+      "sha256": "879ca1140e661eb8429539f485f31c0804bb0364da4194dc074c516a6459306e"
+    },
+    "cards/art/15_镀锌方杠.png": {
+      "bytes": 101713,
+      "sha256": "c85236f4e13ff99661fd8e691207ba8b57fd96d3ed83a17e1cf233ad1ab441ac"
+    },
+    "cards/art/16_只狼.png": {
+      "bytes": 277606,
+      "sha256": "8f7b81f83b2cf4c35163da3dd981c6fce1c9c11514cc0d60c204a051bfeb5e38"
+    },
+    "cards/art/17_抗坏血酸.png": {
+      "bytes": 74041,
+      "sha256": "76a13f409b2a14a85e52f1d1316ba496f928968bab45a6732ca2cc27406b8736"
+    },
+    "cards/art/18_指鹿为马.png": {
+      "bytes": 792923,
+      "sha256": "483424b617fe207e5618aa9257a2c82798ea2bc8600ae13dfdfde0fa29cc6a62"
+    },
+    "cards/art/19_哈耶克的大手.png": {
+      "bytes": 188624,
+      "sha256": "ae9339e6e188ee49fe0d5605a42f24d2d49b364ef0e80b2877c2d999b2e8e789"
+    },
+    "cards/art/20_立直仙人.png": {
+      "bytes": 73208,
+      "sha256": "2e3f9d764235a9afca3f5a88e8b5aee53860c865a51b17244c8254fbc39a4968"
+    },
+    "cards/art/21_崇洋媚外.png": {
+      "bytes": 231985,
+      "sha256": "f8d0ff4e607d094fbee7a51533227024ac89b36d13a1e180db9ff6f9cd03329e"
+    },
+    "cards/art/22_御风之使.jpeg": {
+      "bytes": 30163,
+      "sha256": "00f118e110fde9914b52c5f9d04fe8cc818db33580f2e6e72def4d8500df8b6a"
+    },
+    "cards/art/23_名刀司命.png": {
+      "bytes": 736290,
+      "sha256": "9e6193e9ac374788923d09e50a6f0cb68a380d3a68dd40f118f6fb6fd1521ade"
+    },
+    "cards/art/24_立直禁止.png": {
+      "bytes": 1102607,
+      "sha256": "f4d2d58b1d3e2de1fec6284f6f920e497b2dde0a4eba17807a39fb286218cee7"
+    },
+    "cards/art/25_ELO机制.png": {
+      "bytes": 80778,
+      "sha256": "4b71903934895b6a7f5255018ff0a4d3f87f96b6c92576d6888f371662535105"
+    },
+    "cards/art/26_Ctrl-Z.png": {
+      "bytes": 86742,
+      "sha256": "de79cd96daadf024c5f182a7650cfe5329594e8977aeaa1e195aaf5b7865a255"
+    },
+    "cards/art/27_金坷垃.png": {
+      "bytes": 449846,
+      "sha256": "7ee8646e7c223b7d21d80d8ba8a243a1530f8420a187413f368181f164765adb"
+    },
+    "cards/art/28_关税政策.png": {
+      "bytes": 80893,
+      "sha256": "13d4779de1a7ae9e76f564a5f865865d920387fbb512c71a9040b000cdeac24d"
+    },
+    "cards/art/29_管中窥牌.png": {
+      "bytes": 591448,
+      "sha256": "2fbb8411cefba7c93845346be0e5ccfe2d05e10d8ea81993695522d95b4fe430"
+    },
+    "cards/art/30_优势在我.png": {
+      "bytes": 236829,
+      "sha256": "e2e2bc576273428b5e758b7166b5c38ba08e8642d8fba40a048e3584bca31ca9"
+    },
+    "cards/art/31_反伤刺甲.png": {
+      "bytes": 567932,
+      "sha256": "b802ad4992940e67df463f8cdaab6383a1fe12cfb73c2a7fdad4f1f5854206bc"
+    },
+    "cards/art/32_急速狂飙.png": {
+      "bytes": 437473,
+      "sha256": "4061d83de7c652eec5175210a23ede816753eb712d67094dc5f602c5d1c97f28"
+    },
+    "cards/art/33_终极奉献.png": {
+      "bytes": 101383,
+      "sha256": "7761da4c640582935e53f49a7aa6326c50133024299cee096a4287ec77f7d950"
+    },
+    "cards/art/34_恭喜发财.jpeg": {
+      "bytes": 84287,
+      "sha256": "7fc0cf48ca342f9498165d51bf44d77148cb0da2b4ea6e15e1c4ba3c2ca00db1"
+    },
+    "cards/art/35_打卡啦摸多.jpeg": {
+      "bytes": 17491,
+      "sha256": "075d97eed017f021757de4ed7e2f24f9e86caed04aef0ff22b61d37aa300769f"
+    },
+    "cards/art/36_辉月.png": {
+      "bytes": 35962,
+      "sha256": "9fda63ef390e49eb24d565a6e8b668ffeb9a748478e3de2e7610297b70c3906a"
+    },
+    "cards/art/37_门前积雪.png": {
+      "bytes": 93947,
+      "sha256": "19b65a649619b7dfbb0c41b8dd1b36404db0efa9b8734a74971bdea227e32ac6"
+    },
+    "cards/art/38_大东亚共荣.png": {
+      "bytes": 123791,
+      "sha256": "5c0b786d94ad4c37b918678af2a3430d724ffaff0a5c3ed95450bd4e8c4dd3fa"
+    },
+    "cards/art/39_刹那旅程_普通版.jpeg": {
+      "bytes": 20864,
+      "sha256": "7441c911a40ee8b4365cd53c0e6e98672c22e063cb114ade2d72e361d75eac8e"
+    },
+    "cards/art/40_熠熠生辉.jpeg": {
+      "bytes": 64262,
+      "sha256": "afb3423d78e1cc0cb07f4733f8072162c2985b0321059da587ffdd86bfcb7c9f"
+    },
+    "cards/art/41_刹那旅程_Setsuna-Trip_特别版.png": {
+      "bytes": 757642,
+      "sha256": "cbfd208c5232f3c48807c6c5800f72de6eab909234ce493d9b519c1763cf6e19"
+    },
+    "cards/core/card-regular-inner-texture.png": {
+      "bytes": 719283,
+      "sha256": "9426d2dbf271caefb2098ee57b07e6c4dba3ab6497db86479cb87a52ccbdc4f4"
+    },
+    "cards/core/card-regular-outer-texture.png": {
+      "bytes": 632136,
+      "sha256": "0f5b9c5a148cbfe2dad76e6ac667a63bc75debf73642aedafb5c36891973276d"
+    },
+    "cards/core/card-special-inner-texture.png": {
+      "bytes": 2940809,
+      "sha256": "097a7aff15fd77dc14e31b714098352ccffc50f84397bc6ab867ae0eb1bfea2b"
+    },
+    "cards/core/card-special-outer-texture.png": {
+      "bytes": 569093,
+      "sha256": "e178d314dbeec67690c8928951e239a6b0c1e3272eb58a998f394848e83a12e7"
+    },
+    "cards/core/mahjong-wushuang-logo.png": {
+      "bytes": 1925013,
+      "sha256": "2cc5da6d710bec8e93c34f171a406131243d49ff14858b293e7807797a64c0ae"
+    },
+    "characters/claude/avatar.png": {
+      "bytes": 2717746,
+      "sha256": "0b364a564ad60a0599d4e644ea650806e0321bf05c74ae485af981871fa1fc0d"
+    },
+    "characters/claude/portrait.png": {
+      "bytes": 1932461,
+      "sha256": "5b36b9bc172c3bd57473c726d59d1662cbc7c70fac22f00e57d4317b00ec7fc6"
+    },
+    "characters/deepseek/avatar.png": {
+      "bytes": 2437811,
+      "sha256": "dd668c5dafc9eb231a8f87e045c5906f4d788e8b6437bff549355114af84d572"
+    },
+    "characters/deepseek/portrait.png": {
+      "bytes": 1539372,
+      "sha256": "04f9ac30e31f8766af8cbdfc6e766f412f5e738e160b5a4cc9d621a01d6ce0d4"
+    },
+    "characters/gemini/avatar.png": {
+      "bytes": 2482955,
+      "sha256": "9a79ae7a1b304b169479675aee4bbb2a1b07a6e04e39e3b4044c5e9c80b77f2f"
+    },
+    "characters/gemini/portrait.png": {
+      "bytes": 1712058,
+      "sha256": "6a3341e16d89ed4466c46feb16dac8d702b17f39ed969ed0a065d4e633a9bed9"
+    },
+    "characters/glm/avatar.png": {
+      "bytes": 2602166,
+      "sha256": "884953c20ceb030f050bd6eb5ab3d77015cb74ab548045afed21cfca5960a70c"
+    },
+    "characters/glm/portrait.png": {
+      "bytes": 1701336,
+      "sha256": "8ace221e1bf4d6bbd06f6750c679f5192323a48e15dd3956ec206c74d7c9476c"
+    },
+    "characters/gpt/avatar.png": {
+      "bytes": 2285746,
+      "sha256": "254eea87676ae6f2444def7a4e905a00170040bd2a5323e7ffe149fcb89b662b"
+    },
+    "characters/gpt/portrait.png": {
+      "bytes": 1833374,
+      "sha256": "d550f24bb49c2cd4cf151a530984b23b2e4eed26ea143fd9fa81989c730e0a40"
+    },
+    "characters/grok/avatar.png": {
+      "bytes": 2424837,
+      "sha256": "6bab9f9ab8444dbe7babb05c5dee3831077b9dc47c5d2dd48c056a008b06c2b2"
+    },
+    "characters/grok/portrait.png": {
+      "bytes": 1785681,
+      "sha256": "c58cfeb9172ca8bf06e20297be3def6a170ed8dd81f872b4a459f5e24ca673dd"
+    },
+    "characters/kimi/avatar.png": {
+      "bytes": 2873292,
+      "sha256": "52cd550faa527373de7225d4a34f8f2a46610f105d9a135dd50c2c14e31d438e"
+    },
+    "characters/kimi/portrait.png": {
+      "bytes": 1767064,
+      "sha256": "8fe3f08309c9e1663f336c9352662070cb0c5f02a100099e2d7e0682d0fc0591"
+    },
+    "characters/manifest.json": {
+      "bytes": 1063,
+      "sha256": "cf747909beef8cb88ab1b043f9813082a8c331a20e54eac37c46a3bbca4ed597"
+    },
+    "characters/qwen/avatar.png": {
+      "bytes": 2194610,
+      "sha256": "f2d6b172b2aea1ac5cbe01746503c2371a25b730f2e2f991faeb320b6d85b632"
+    },
+    "characters/qwen/portrait.png": {
+      "bytes": 1809053,
+      "sha256": "26b355456c1c1415a4967b0b430b26db814bcd9e1ec03849b16cedc39996b2cc"
+    },
+    "characters/README.md": {
+      "bytes": 1284,
+      "sha256": "fdcdc2e3f92cba226ee08550d76ec992154ed107063e0410229369b8584e64b6"
+    },
+    "cinematics/astral-judgement/v1/effect-landscape.jpg": {
+      "bytes": 707973,
+      "sha256": "74e35fe98e85691be11d455c2a9102d2c920be489da7ac822025533144a9fd29"
+    },
+    "cinematics/astral-judgement/v1/effect-landscape.mp4": {
+      "bytes": 13006703,
+      "sha256": "e6f42b46b6956f03ec481b82a796aded8ddd2daeaa2525485e91fcb3a3332168"
+    },
+    "cinematics/astral-judgement/v1/effect-portrait.jpg": {
+      "bytes": 560476,
+      "sha256": "aa3cf986a186f429b120e1fc317d558a1484e3f485ac1468a12e856e105ac25a"
+    },
+    "cinematics/astral-judgement/v1/effect-portrait.mp4": {
+      "bytes": 10855190,
+      "sha256": "05d8b456ddbf80ede5d5a087bdfa84ff9cf00e0d273172c1f4d2ce27bb56a6f4"
+    },
+    "cinematics/astral-judgement/v1/manifest.json": {
+      "bytes": 2476,
+      "sha256": "acea4bb92d165bf1caf380d3fb596bdfbf3142090c8b7f2d3d72767d8c6c605d"
+    },
+    "cinematics/astral-judgement/v2/effect-landscape.jpg": {
+      "bytes": 975754,
+      "sha256": "1a51b314315cc8cca3d5ce5eddcf2200535e2909b44b154be8f72c4396f71a32"
+    },
+    "cinematics/astral-judgement/v2/effect-landscape.mp4": {
+      "bytes": 23607580,
+      "sha256": "8cc8a46088f0b2e8a032003c4b65481f6ba377c1ef74e221a4aba7d8c1196ab4"
+    },
+    "cinematics/astral-judgement/v2/effect-portrait.jpg": {
+      "bytes": 843283,
+      "sha256": "9af8a099dffd993129a097d4ff895509a5fbec066db47931073debcefe759221"
+    },
+    "cinematics/astral-judgement/v2/effect-portrait.mp4": {
+      "bytes": 19635948,
+      "sha256": "e20b74532db4b31ed3f45b876f9f81c39be81b3aaae32d21588a7671002a4233"
+    },
+    "cinematics/astral-judgement/v2/manifest.json": {
+      "bytes": 3006,
+      "sha256": "744bd3460c70062ad5fc0a046d483a0f19f6440ba13eca453a5132b7c17cf0f1"
+    },
+    "cinematics/azoru/v1/anchors-landscape.json": {
+      "bytes": 10608,
+      "sha256": "0ffc61b821dbac8cd49e3f637c56a2318885d214842ea8c2fd226ffdfaa48865"
+    },
+    "cinematics/azoru/v1/anchors-portrait.json": {
+      "bytes": 10593,
+      "sha256": "c25b2d42c99e9ffd7e09f14eeb0af1f8a319596756b114a3bb88cc8f657494c5"
+    },
+    "cinematics/azoru/v1/intro-landscape.mp4": {
+      "bytes": 3497806,
+      "sha256": "ceb9d860c75bed8ab733c4c2dfdc96e0b9a1920b4a9e7048177b573c7ced0dfa"
+    },
+    "cinematics/azoru/v1/intro-portrait.mp4": {
+      "bytes": 3125093,
+      "sha256": "09c979d06517b56635a03cdecedf683673135a7327f8d4c343b9d59271278609"
+    },
+    "cinematics/azoru/v1/manifest.json": {
+      "bytes": 1217,
+      "sha256": "38dab490ff21bd8159ebe03be0f410ceacafca21f213280c13f9311f977dbc03"
+    },
+    "cinematics/azoru/v1/poster-landscape.jpg": {
+      "bytes": 130743,
+      "sha256": "9e89eb30e6bf6cab751ef65bd98a7f873fd4df4af35532eb250a4fc53324e2d1"
+    },
+    "cinematics/azoru/v1/poster-portrait.jpg": {
+      "bytes": 115214,
+      "sha256": "ecd94444909239363440227e4bd6b4be56e5345d1b825421e25ef550f96b3815"
+    },
+    "cinematics/discord/v1/effect-landscape.jpg": {
+      "bytes": 366393,
+      "sha256": "c450336b343166812b49c1cfc0659c8d0632ddf755eb4c5b526788fe4f05ff32"
+    },
+    "cinematics/discord/v1/effect-landscape.mp4": {
+      "bytes": 9055107,
+      "sha256": "a9737dbd3f2cbbeada414aa17aae0fcfa135a8ac12f6e2ac05d13760248c8c1d"
+    },
+    "cinematics/discord/v1/effect-portrait.jpg": {
+      "bytes": 345438,
+      "sha256": "2930aa87206a301e54a27b2efaf4c94be7ddff457a34ef565bfe965ad5699944"
+    },
+    "cinematics/discord/v1/effect-portrait.mp4": {
+      "bytes": 7509915,
+      "sha256": "893523e0d3ed5aff330b9af6dfb10294a9398082bfad1484f401619873c3dc80"
+    },
+    "cinematics/discord/v1/manifest.json": {
+      "bytes": 2064,
+      "sha256": "bec9eebb0f577cd200b186e45d9d2727671025d7d00c7274fc4a9519441935d5"
+    },
+    "cinematics/discord/v2/effect-landscape.jpg": {
+      "bytes": 506247,
+      "sha256": "1da1065fbee3418d3755d341095bd5e5e9efa764f081f6b1b444c7dfd5401b23"
+    },
+    "cinematics/discord/v2/effect-landscape.mp4": {
+      "bytes": 10905304,
+      "sha256": "dd0c7b89b9b401e3de8fe1a5c4c8d0d6b13ff847c661e27043ae3071f172799b"
+    },
+    "cinematics/discord/v2/effect-portrait.jpg": {
+      "bytes": 523266,
+      "sha256": "904bf1d23cb92e9aecb1499a8bae5439370feb8e6bfd792da1be441457cbc07c"
+    },
+    "cinematics/discord/v2/effect-portrait.mp4": {
+      "bytes": 10562008,
+      "sha256": "c13f1be82a4900baabf11c4dc92a8d9560d4a3209e369c1ff500fd775ff656e5"
+    },
+    "cinematics/discord/v2/manifest.json": {
+      "bytes": 2786,
+      "sha256": "c01a61a32532abd4e6c8fb8f35456e88fbdd769a06d95f884b616cb357e47965"
+    },
+    "cinematics/heavens-sword/v1/effect-heads-landscape.jpg": {
+      "bytes": 492774,
+      "sha256": "1e73025cf2ffe28313c45b29823db676756e7f5914e9743d3b7ba04ec1df91a5"
+    },
+    "cinematics/heavens-sword/v1/effect-heads-landscape.mp4": {
+      "bytes": 21884266,
+      "sha256": "b45c3cf759568031073860dd645c01df20db8dd0ef2afad410a577ffd66418f7"
+    },
+    "cinematics/heavens-sword/v1/effect-heads-portrait.jpg": {
+      "bytes": 383828,
+      "sha256": "5b74aa016087b11cec98d4f997ebb545066620a0ba066bb2f71eb21c256225f9"
+    },
+    "cinematics/heavens-sword/v1/effect-heads-portrait.mp4": {
+      "bytes": 15296543,
+      "sha256": "3ab518d51b1c33ec3a8cebb1e79c3c17aafe971b9a927e4d60de831987c82049"
+    },
+    "cinematics/heavens-sword/v1/effect-tails-landscape.jpg": {
+      "bytes": 492774,
+      "sha256": "1e73025cf2ffe28313c45b29823db676756e7f5914e9743d3b7ba04ec1df91a5"
+    },
+    "cinematics/heavens-sword/v1/effect-tails-landscape.mp4": {
+      "bytes": 22253309,
+      "sha256": "e74606d9456e0c97a3adce0dbf6add764246e527ea5c49e23b59af7a39b8fb3e"
+    },
+    "cinematics/heavens-sword/v1/effect-tails-portrait.jpg": {
+      "bytes": 383828,
+      "sha256": "5b74aa016087b11cec98d4f997ebb545066620a0ba066bb2f71eb21c256225f9"
+    },
+    "cinematics/heavens-sword/v1/effect-tails-portrait.mp4": {
+      "bytes": 15540400,
+      "sha256": "453f757c2d98d1bf2e5b83ff14a0540e6aafa56e2e3238d1a52141f505cdec15"
+    },
+    "cinematics/heavens-sword/v1/manifest.json": {
+      "bytes": 3361,
+      "sha256": "9ef89eae20bcedf12c45a77ef3a9dcb8be42e4f84f262cbfc7f1317e6a841665"
+    },
+    "cinematics/night/v1/intro-landscape.mp4": {
+      "bytes": 891813,
+      "sha256": "cfe4427d4d8222b064f116c890bd0fb9ec0aa93283f7bd295c2a87a186a32f93"
+    },
+    "cinematics/night/v1/manifest.json": {
+      "bytes": 572,
+      "sha256": "e8155e85847c2db68f1d6203006adda750821e135d2fc26242fca4aa5d2f9c99"
+    },
+    "cinematics/night/v1/poster.jpg": {
+      "bytes": 39615,
+      "sha256": "6e428167bc3c2c6afdc068bcfcc029563188cf34d409a540e46722128031bf25"
+    },
+    "cinematics/rulebook/v1/anchors-landscape.json": {
+      "bytes": 8829,
+      "sha256": "8b00ccd4f340d2d1f6a144201a67f1c0f7daf095d1c5091c21ca43f43aef7469"
+    },
+    "cinematics/rulebook/v1/anchors-portrait.json": {
+      "bytes": 8882,
+      "sha256": "1c59e989f402a24ab8c81146bda28c91220dddda36d590555b6107a4c7955865"
+    },
+    "cinematics/rulebook/v1/intro-landscape.mp4": {
+      "bytes": 5109104,
+      "sha256": "1f4798eed943a5e670a17a4b30a939e4e765a51cb4b57106ad0ba1c94b63483a"
+    },
+    "cinematics/rulebook/v1/intro-portrait.mp4": {
+      "bytes": 4703649,
+      "sha256": "db5ebec214d40c0ad9e04ede91d1206fe241279a97516aeac234b810d16fd7f6"
+    },
+    "cinematics/rulebook/v1/manifest.json": {
+      "bytes": 1181,
+      "sha256": "708e98a85e209c473c09602502a0c58ffd5bb4514ea6b6207d8ac4d1af8fbfc2"
+    },
+    "cinematics/rulebook/v1/poster-landscape.jpg": {
+      "bytes": 262231,
+      "sha256": "a9c36cedd879e13a9e27a7dca936ee8c785e1102dde29850d0a3048b064ad0a6"
+    },
+    "cinematics/rulebook/v1/poster-portrait.jpg": {
+      "bytes": 202273,
+      "sha256": "13fc260c8913d2a93e8a694774d4f4b1a93f28a4452e194253317b320f04448f"
+    },
+    "cinematics/silence/v2/intro-landscape.mp4": {
+      "bytes": 6286242,
+      "sha256": "6a5b9d081d453e0244fe9d052f97ac13f33ba94159de10ff9bfddb93875ff44a"
+    },
+    "cinematics/silence/v2/intro-portrait.mp4": {
+      "bytes": 6444816,
+      "sha256": "cef05c68bb364a1d1427a11e63c9d8f329a0afab226ec771bb991ad87d0bffe8"
+    },
+    "cinematics/silence/v2/manifest.json": {
+      "bytes": 1251,
+      "sha256": "95bca268774d84c9acb70c173ebf931c6b56f2261aeb1e986feca465d31a1eb0"
+    },
+    "cinematics/silence/v2/poster-landscape.jpg": {
+      "bytes": 416861,
+      "sha256": "98fba3ef7dbccf4f18bcf202d8944c84c8d61cd443946d64dc55f0125b1be9e9"
+    },
+    "cinematics/silence/v2/poster-portrait.jpg": {
+      "bytes": 434522,
+      "sha256": "80db5834eb0a91da9806df7071cfab210c7deafea46d8d145943e39cf8abb860"
+    },
+    "cinematics/treasure/v1/intro-landscape.mp4": {
+      "bytes": 5423887,
+      "sha256": "d1e8e1308ae2b69712e0f669383dc3f888ff19a2f6c48540dbafe5ed4048a487"
+    },
+    "cinematics/treasure/v1/intro-portrait.mp4": {
+      "bytes": 5484807,
+      "sha256": "2706484c0263c48ca3b70a8f6634e1529e452e75ad608b60c7cea6d58299ef97"
+    },
+    "cinematics/treasure/v1/manifest.json": {
+      "bytes": 1158,
+      "sha256": "e9f4547e794e98ac21f385e79e4e072eab24319cb2c94039e7198cf4e86eb6aa"
+    },
+    "cinematics/treasure/v1/poster-landscape.jpg": {
+      "bytes": 251337,
+      "sha256": "a2d2bf5145e74c92eb653c2a9b8d046c95b1426bc48102436dad0c381a79792e"
+    },
+    "cinematics/treasure/v1/poster-portrait.jpg": {
+      "bytes": 280519,
+      "sha256": "f5e4a7e0eb42eb76858694eac4b70845e74d9224517c02a6e20b6e04d7ee405f"
+    },
+    "cinematics/treasure/v1/reveal.mp3": {
+      "bytes": 30284,
+      "sha256": "fa308516405b50841a0040f0ca0e0b7d3ce0e2479935fa81bf42c338054c7c06"
+    },
+    "cinematics/witch/v1/intro-landscape.mp4": {
+      "bytes": 4591950,
+      "sha256": "f5bfe4206d3708cbd960c79607329b11b1a79004e953033eb867b326ac8d7dae"
+    },
+    "cinematics/witch/v1/intro-portrait.mp4": {
+      "bytes": 5320485,
+      "sha256": "0d59e059d55b1f75a6a91c663bc56f91e5ffe53bf7b3b1fa279315c463f7396e"
+    },
+    "cinematics/witch/v1/judgement-landscape.mp4": {
+      "bytes": 2379920,
+      "sha256": "9ecd12ba3d7eb71b45e16bf0b1c8f918822e4a0aff0f1f3eb3a400aa049a4126"
+    },
+    "cinematics/witch/v1/judgement-portrait.mp4": {
+      "bytes": 2559913,
+      "sha256": "b50d4d055f32fd91fcc3363a040e26b90a31a1f558ee7e3eb0f2bf0295aa148c"
+    },
+    "cinematics/witch/v1/manifest.json": {
+      "bytes": 1197,
+      "sha256": "5907df1f65f16e80919695b15d910f7fff8e8fb575e877abb8e2bbc97732ffbc"
+    },
+    "cinematics/witch/v1/poster-landscape.jpg": {
+      "bytes": 239159,
+      "sha256": "8cd98a6da0d5e5401cc6ee32d0962b94ef55b1c71133a6013882829c152ddfe1"
+    },
+    "cinematics/witch/v1/poster-portrait.jpg": {
+      "bytes": 285713,
+      "sha256": "a7bcd09636ab023a98376bbf2efcc1b75cf468c748cb8803ca0bdf4c543da76c"
+    },
+    "cinematics/wushuang-coin/v1/heads-landscape.jpg": {
+      "bytes": 423999,
+      "sha256": "a8417168e470075d7759418a1f9f9f8dd9672b03577d9c6523283a047481fab4"
+    },
+    "cinematics/wushuang-coin/v1/heads-landscape.mp4": {
+      "bytes": 17649912,
+      "sha256": "03d5c2e49a226a99925de53b5f9206f59ec405b4a1c09387a587dff6c467439b"
+    },
+    "cinematics/wushuang-coin/v1/heads-portrait.jpg": {
+      "bytes": 391042,
+      "sha256": "d21783652467d4730d32a831e23e98ddf7d164151fda324f1ad77add521afa6d"
+    },
+    "cinematics/wushuang-coin/v1/heads-portrait.mp4": {
+      "bytes": 16577352,
+      "sha256": "f97ba5497422fe86da58f29f8c8989c1da58c8944b746fe3c414bcb7a868a17b"
+    },
+    "cinematics/wushuang-coin/v1/manifest.json": {
+      "bytes": 2263,
+      "sha256": "263db28f5b56f925341e1fbba7a53244ba26dfd1c55ac890abf8bca07b6a5aba"
+    },
+    "cinematics/wushuang-coin/v1/tails-landscape.jpg": {
+      "bytes": 409700,
+      "sha256": "e889d816a1bb51dcd930f94e90b705c2f990071c6c8d40248d2fa68cb6315f08"
+    },
+    "cinematics/wushuang-coin/v1/tails-landscape.mp4": {
+      "bytes": 17659580,
+      "sha256": "3026cf90ffef54e60efff15c36a465c14ec284212aad9ed1aeb6dd5876067d1f"
+    },
+    "cinematics/wushuang-coin/v1/tails-portrait.jpg": {
+      "bytes": 376720,
+      "sha256": "27e5168c0c0638351057692f1053ec3b95fb32c7aa47560f7738d1dd0179b19a"
+    },
+    "cinematics/wushuang-coin/v1/tails-portrait.mp4": {
+      "bytes": 16425457,
+      "sha256": "d18a510f39de3155a6b862b66952f1136492abf64985dd0eeba39e46b1b38e98"
+    },
+    "cinematics/wushuang-coin/v2/heads-landscape.jpg": {
+      "bytes": 423999,
+      "sha256": "a8417168e470075d7759418a1f9f9f8dd9672b03577d9c6523283a047481fab4"
+    },
+    "cinematics/wushuang-coin/v2/heads-landscape.mp4": {
+      "bytes": 20010168,
+      "sha256": "07e73b0d543994b00460577e6d88d774c0accea4faeec059ee39276898d702cd"
+    },
+    "cinematics/wushuang-coin/v2/heads-portrait.jpg": {
+      "bytes": 391042,
+      "sha256": "d21783652467d4730d32a831e23e98ddf7d164151fda324f1ad77add521afa6d"
+    },
+    "cinematics/wushuang-coin/v2/heads-portrait.mp4": {
+      "bytes": 16996136,
+      "sha256": "20317ef2354e1874143ac9ba30b62b6a1bddfab16a08b7a58ec34af16784f07d"
+    },
+    "cinematics/wushuang-coin/v2/manifest.json": {
+      "bytes": 2554,
+      "sha256": "54d1da3e5be6ed37f65b99c0439c5d5893c79f9eae9aa699a6dc986739296edf"
+    },
+    "cinematics/wushuang-coin/v2/tails-landscape.jpg": {
+      "bytes": 409700,
+      "sha256": "e889d816a1bb51dcd930f94e90b705c2f990071c6c8d40248d2fa68cb6315f08"
+    },
+    "cinematics/wushuang-coin/v2/tails-landscape.mp4": {
+      "bytes": 20062876,
+      "sha256": "09a5103fbd517a716ce5d99a43af0ebb25f74851a460a93d2ecef55d6ea041a3"
+    },
+    "cinematics/wushuang-coin/v2/tails-portrait.jpg": {
+      "bytes": 376720,
+      "sha256": "27e5168c0c0638351057692f1053ec3b95fb32c7aa47560f7738d1dd0179b19a"
+    },
+    "cinematics/wushuang-coin/v2/tails-portrait.mp4": {
+      "bytes": 16958633,
+      "sha256": "95e6888dad5f6f73e6f8cecb6e2cbca685eac866fc93c43954ef16b1dbcf1368"
+    },
+    "cinematics/wushuang-coin/v3/heads-landscape.jpg": {
+      "bytes": 423999,
+      "sha256": "a8417168e470075d7759418a1f9f9f8dd9672b03577d9c6523283a047481fab4"
+    },
+    "cinematics/wushuang-coin/v3/heads-landscape.mp4": {
+      "bytes": 10683886,
+      "sha256": "e26177657db41eff448a4c9a2f8f9aa68e5ee5ad53ac16d9d21d97b151b62c33"
+    },
+    "cinematics/wushuang-coin/v3/heads-portrait.jpg": {
+      "bytes": 391042,
+      "sha256": "d21783652467d4730d32a831e23e98ddf7d164151fda324f1ad77add521afa6d"
+    },
+    "cinematics/wushuang-coin/v3/heads-portrait.mp4": {
+      "bytes": 9650571,
+      "sha256": "d20944f6d0b3750d4ef402bb82bba5c21975a7c7891c0dbd60256658f7294b19"
+    },
+    "cinematics/wushuang-coin/v3/manifest.json": {
+      "bytes": 2790,
+      "sha256": "481d8a84f8d266444fa1330d94cfe1654b28f363d3a32ef3cd23a9e9e8b4a4ba"
+    },
+    "cinematics/wushuang-coin/v3/tails-landscape.jpg": {
+      "bytes": 409700,
+      "sha256": "e889d816a1bb51dcd930f94e90b705c2f990071c6c8d40248d2fa68cb6315f08"
+    },
+    "cinematics/wushuang-coin/v3/tails-landscape.mp4": {
+      "bytes": 10656957,
+      "sha256": "31c5b0de3588d93e87e15d7983a0bafe81c23a1aa7ed502f8597c2431250c16d"
+    },
+    "cinematics/wushuang-coin/v3/tails-portrait.jpg": {
+      "bytes": 376720,
+      "sha256": "27e5168c0c0638351057692f1053ec3b95fb32c7aa47560f7738d1dd0179b19a"
+    },
+    "cinematics/wushuang-coin/v3/tails-portrait.mp4": {
+      "bytes": 9546500,
+      "sha256": "940d68c5e0d780117f5082b432538ebb7e22c2cbf6a74636b1ce118bbc3e805f"
+    },
+    "cinematics/wushuang-heads/v1/effect-landscape.jpg": {
+      "bytes": 529946,
+      "sha256": "de75646d93c7926c37c04b5c629fbaaafe2c4870e5577f1d38720386f7648f04"
+    },
+    "cinematics/wushuang-heads/v1/effect-landscape.mp4": {
+      "bytes": 13946831,
+      "sha256": "98f4dd77a4cc6fb00f56fba73da1bd6e6c2d47db1f6f7b47992f719c7b04c437"
+    },
+    "cinematics/wushuang-heads/v1/effect-portrait.jpg": {
+      "bytes": 471733,
+      "sha256": "d3539bf3a6fc8c0e2c991e584ee78613e68c27baaf6f7bbdae2a7a58ccccd304"
+    },
+    "cinematics/wushuang-heads/v1/effect-portrait.mp4": {
+      "bytes": 11990301,
+      "sha256": "fc3f48757c4f6f10e5a6a7664488f059f7fd3c7ba3574bb16fa10c44d85e1139"
+    },
+    "cinematics/wushuang-heads/v1/manifest.json": {
+      "bytes": 2064,
+      "sha256": "26c5bc0e7ef96e87fd527eb6e644864ce365cf6c6195ae0eaabd8addaa88baaa"
+    },
+    "cinematics/wushuang-tails/v1/effect-landscape.jpg": {
+      "bytes": 332362,
+      "sha256": "5343a39337b95e01e1f711915dd2e20f9387599f1424fa1f21c2f5422b10480b"
+    },
+    "cinematics/wushuang-tails/v1/effect-landscape.mp4": {
+      "bytes": 8893309,
+      "sha256": "17b0706d7bb9885770fff4ec63ba0ba4698b1e3a9227ef1bf1aff7b0d8a4e227"
+    },
+    "cinematics/wushuang-tails/v1/effect-portrait.jpg": {
+      "bytes": 364853,
+      "sha256": "ea73581783a5fb2cad3734fed676dbb34e77e126a70e37b4f8caa676d254fffb"
+    },
+    "cinematics/wushuang-tails/v1/effect-portrait.mp4": {
+      "bytes": 9410022,
+      "sha256": "0648245797e5df2b12408326876d8d0cef62ba1a47902dbe979a11d4f712a578"
+    },
+    "cinematics/wushuang-tails/v1/manifest.json": {
+      "bytes": 2101,
+      "sha256": "74b8da8f18ee1ccebb7b3c61a56d01a5780a1bb24bcb2b39240dbd75c9e0a5a5"
+    },
+    "favicon.svg": {
+      "bytes": 712,
+      "sha256": "e6d2e59b7b5bbb0342e0fb496dfc262decbfe4426bbb7b047aec8d467d1dc6f7"
+    },
+    "fonts/Wushuang-Jianghu.ttf": {
+      "bytes": 12584484,
+      "sha256": "f66b087af532b37ebbb40bfdef06636220c4abe32c5721dcfb3d844f25d2b269"
+    },
+    "manifest.webmanifest": {
+      "bytes": 575,
+      "sha256": "c0d58abe22f205d4694d5974e8281084f85951831b3e4d347f8753eb79eb0c70"
+    },
+    "skill-cards/gen2-astral-judgement.png": {
+      "bytes": 1411224,
+      "sha256": "34ceda19b17f0a440402dc61ec9ee78ac36adc539ed2b84bbff5fe4cba70b125"
+    },
+    "skill-cards/gen2-discord.png": {
+      "bytes": 1474713,
+      "sha256": "d27d4d1e2f9fe0c9ac59a8a70cf8d7ae29fdc253f7e76df4892f40f61de4a9fa"
+    },
+    "skill-cards/gen2-heavens-sword.png": {
+      "bytes": 1500408,
+      "sha256": "0bc236b25dbac640ab85525280352647f7752269d11593cea809d6b45a9151ca"
+    },
+    "skill-cards/gen2-mahjong-wushuang.png": {
+      "bytes": 1313513,
+      "sha256": "a1f8a217af1475d617e8c539b00d35da833524a3a2113c6cb17a84b308ce0f98"
+    },
+    "skill-cards/manifest.json": {
+      "bytes": 14552,
+      "sha256": "8bd50ab343e0e94fc89b5972f97365149c88cc14cabde90b7fe48375aa28d2b2"
+    },
+    "skill-cards/pdf-p01-card01.png": {
+      "bytes": 652514,
+      "sha256": "2f2fb54e5e62caaaa9c0ea3ba7130a71ed5626dd6225662142634447e892c9b8"
+    },
+    "skill-cards/pdf-p01-card02.png": {
+      "bytes": 562645,
+      "sha256": "b168e96f041c2822bf55a5f411995338dc0163a4867834f52f3ff745f4519d1e"
+    },
+    "skill-cards/pdf-p01-card03.png": {
+      "bytes": 530333,
+      "sha256": "996501f0a0a1951a342d18dc70812e2197725747a1752775df88f7fa9da38145"
+    },
+    "skill-cards/pdf-p01-card04.png": {
+      "bytes": 695481,
+      "sha256": "89301b741b4bb1ce6dcb5f4c00531e0c7b763af5b63919d4cbb0f43c74aa1de8"
+    },
+    "skill-cards/pdf-p01-card05.png": {
+      "bytes": 340257,
+      "sha256": "9126c4802831af1966b8ab11f8dd3b9f4e03b90ac720f3b4121fd36d89efeebb"
+    },
+    "skill-cards/pdf-p01-card06.png": {
+      "bytes": 514830,
+      "sha256": "3fce22e12abd5b84b3992d453c191f20815d1cd05bbb3b0b187f9f064275c7f6"
+    },
+    "skill-cards/pdf-p01-card07.png": {
+      "bytes": 254158,
+      "sha256": "8279edae0df78f0d5641db27cc3ed4b7df103ecce9f85eb0d273e32d89acc6ee"
+    },
+    "skill-cards/pdf-p01-card08.png": {
+      "bytes": 356932,
+      "sha256": "1db172d877cda2197a4cb9ccf3698f3188fe3e6b8d1126966879d648753d64f7"
+    },
+    "skill-cards/pdf-p02-card01.png": {
+      "bytes": 448393,
+      "sha256": "5f0b1f76af3e7a5a57c519f210f03a917175f917d39b8889873309fde0440ff0"
+    },
+    "skill-cards/pdf-p02-card02.png": {
+      "bytes": 462763,
+      "sha256": "fae60785ae6e8f02cd38bf8c4ad0cd33133704f23f617020fe32d5023229ffaf"
+    },
+    "skill-cards/pdf-p02-card03.png": {
+      "bytes": 343674,
+      "sha256": "f958ee4394ce0186650f5f8b46794d456adca8581cf35b2ebfbad0163dab1b7e"
+    },
+    "skill-cards/pdf-p02-card04.png": {
+      "bytes": 349104,
+      "sha256": "b53ed8fa0895701cb1f4a2f57a79e34131c5bd319f1b5d75278ee8525aeee2c0"
+    },
+    "skill-cards/pdf-p02-card05.png": {
+      "bytes": 655426,
+      "sha256": "964c69aed353afa5c825eb23d82d741c8ff0a4ed74e276db644af9ca9bd24ebb"
+    },
+    "skill-cards/pdf-p02-card06.png": {
+      "bytes": 306633,
+      "sha256": "408e4b1f505469ee9a56b91e3ae5f42505afa5c10d8c00c3d73e6f124abac3df"
+    },
+    "skill-cards/pdf-p03-card01.png": {
+      "bytes": 570252,
+      "sha256": "532f24c5c18b7e1f90bce9fbc5041144b54626573cf42a5242a51cff49dd8cb6"
+    },
+    "skill-cards/pdf-p03-card02.png": {
+      "bytes": 514653,
+      "sha256": "3a2d38c27358f03640a6b54fa9f186a65460925f9bdcbc2d0861d05773c8cefc"
+    },
+    "skill-cards/pdf-p03-card03.png": {
+      "bytes": 589125,
+      "sha256": "9d45afe7348f7410bcc0fdaee85cf53b3e2e82487b7d035c9e311102fe7d5428"
+    },
+    "skill-cards/pdf-p03-card04.png": {
+      "bytes": 405375,
+      "sha256": "3a10b18ef785e4a2331681cb18d11e5cd65f35c9a0f322460e4f018e0373c82f"
+    },
+    "skill-cards/pdf-p03-card05.png": {
+      "bytes": 443412,
+      "sha256": "4460dd4e213ffc7e7d373be88b8a0c848db01c8a140ec47b2221a933fe28ef3d"
+    },
+    "skill-cards/pdf-p03-card06.png": {
+      "bytes": 301126,
+      "sha256": "405754db283a4bb77dfa195db70efee4da797df568c78972908395cb26ee278e"
+    },
+    "skill-cards/pdf-p03-card07.png": {
+      "bytes": 485549,
+      "sha256": "00a04e21fa0a530d5c7fdb9cabe5ad8b475006c84f93429c76190ee679eacd2f"
+    },
+    "skill-cards/pdf-p03-card08.png": {
+      "bytes": 701436,
+      "sha256": "67dbd7ce3d033fb8e6a67999f3d203291bc508da994a8306c7d91d605bf72067"
+    },
+    "skill-cards/pdf-p04-card01.png": {
+      "bytes": 628821,
+      "sha256": "f2d32bd3663760c576347b97e554617da6d8c6aa6658b95ffef1f1c5d020ea9c"
+    },
+    "skill-cards/pdf-p04-card02.png": {
+      "bytes": 424371,
+      "sha256": "6f1b5752c7ca7a82bd74320fe5f6d6f3d6c6cb2fd87ae83e35ca0058e3cc7b37"
+    },
+    "skill-cards/pdf-p04-card03.png": {
+      "bytes": 415156,
+      "sha256": "f7dae8a58dba78b13da83ff323b7d4177a3430dd9b62125db798370130d9d089"
+    },
+    "skill-cards/pdf-p04-card04.png": {
+      "bytes": 342074,
+      "sha256": "57088d80e814d8634c9ee07ff076e870ac56d2da1c9bc436ca70a4734aabd1a7"
+    },
+    "skill-cards/pdf-p04-card05.png": {
+      "bytes": 370489,
+      "sha256": "bcb2577b8f7b4cfbf7890c9f2c5cdb87637f239b212fb78be8375f1e2948d403"
+    },
+    "skill-cards/pdf-p04-card06.png": {
+      "bytes": 324926,
+      "sha256": "011ec93c0ffe4c5c28b3bdd44b522530df0019a2c11e4cf66264934079bcc25d"
+    },
+    "skill-cards/pdf-p04-card07.png": {
+      "bytes": 647790,
+      "sha256": "74789148aac0b9654fff5b81877d54ee87636f301d506e0bdfd0a082a0116773"
+    },
+    "skill-cards/pdf-p04-card08.png": {
+      "bytes": 582239,
+      "sha256": "274992263a766b274df14c03b431dcb769c1ad8c96370eba35f5be5ea88344ea"
+    },
+    "skill-cards/pdf-p05-card01.png": {
+      "bytes": 581164,
+      "sha256": "e99c4013e9707a1ba4027345b7b8e703c801297f9adbe709bd1ff5a053e4601c"
+    },
+    "skill-cards/pdf-p05-card02.png": {
+      "bytes": 330746,
+      "sha256": "5a4a653027dc72712525efd820bd41a52a15919498c1ab6a1dd55028334b1cd0"
+    },
+    "skill-cards/pdf-p05-card03.png": {
+      "bytes": 490409,
+      "sha256": "b99a35573ec19a9e46f906c4c0767d336265e85cfc24bacbcc7183da4c9091d0"
+    },
+    "skill-cards/pdf-p05-card04.png": {
+      "bytes": 269323,
+      "sha256": "b4548f2b2ae11befcf270eb0e738ea15de24c401961e3fe17e9ddadb961aaf42"
+    },
+    "skill-cards/pdf-p05-card05.png": {
+      "bytes": 591326,
+      "sha256": "c93e98eb4c5a0771f976ba613b41f487942424aaba9d6c1c0c4c7a43b00f1b3a"
+    },
+    "skill-cards/pdf-p05-card06.png": {
+      "bytes": 487767,
+      "sha256": "17f511f008a0f009de14120ac0b341b8079cd47af66ca669740b0e91bb444190"
+    },
+    "skill-cards/pdf-p05-card07.png": {
+      "bytes": 477295,
+      "sha256": "5bac3659eb72f03184c4a132ca3efb07c2457113149a3ee520fffa0e1c2e2418"
+    },
+    "skill-cards/pdf-p05-card08.png": {
+      "bytes": 537611,
+      "sha256": "687c02cdd97281e09b54ec4ae6ab352c42a11d9b5ec8cf6a2f742bf53faf3a17"
+    },
+    "skill-cards/pdf-p06-card01.png": {
+      "bytes": 712101,
+      "sha256": "ec116352fa6c25405201870b142affa119b0ddba5ed66150dba449213b72065e"
+    },
+    "skill-cards/pdf-p06-card02.png": {
+      "bytes": 1219978,
+      "sha256": "745689da882d72ab710e783a6555f741dc32f6f3ae30bbe95b2653fa0c6dcb69"
+    },
+    "skill-cards/pdf-p06-card03.png": {
+      "bytes": 335789,
+      "sha256": "e3800e2f03f4388b0b5a7927a4a569731f5b9de518218684a67b68185def809f"
+    },
+    "skill-cards/README.md": {
+      "bytes": 2143,
+      "sha256": "7a1c4fdce98df2b7cae367aab7e47a532aad4fd7a611699f1884c7d18a215076"
+    },
+    "sw.js": {
+      "bytes": 3399,
+      "sha256": "1f214509095bca618edbe695d32407e05d2b795eb085afa2683d6e88b3eb4bec"
+    },
+    "tiles/0m.png": {
+      "bytes": 31755,
+      "sha256": "239c804c9abecaaf99bb33d54188f5db89ced76d9cf89c4fc4ceccf540ec98bd"
+    },
+    "tiles/0p.png": {
+      "bytes": 42813,
+      "sha256": "20f3da00eb7fcdfe8157433208d2f2b7da5498dca3a3a66aac92416e57b96b45"
+    },
+    "tiles/0s.png": {
+      "bytes": 30899,
+      "sha256": "5b60aa4f3395ceebae26fda9c6f70a000d0559bd42a56575410ec3df733fc70a"
+    },
+    "tiles/1m.png": {
+      "bytes": 27942,
+      "sha256": "fd9c772bc5d7ad22ed45407bf45c3c3d45d09ea1073b64bd7be2ab994d1186f3"
+    },
+    "tiles/1p.png": {
+      "bytes": 45509,
+      "sha256": "0bdec6513fdbb887418c004591dff501d72cd357a00c75e436bc285547a7936f"
+    },
+    "tiles/1s.png": {
+      "bytes": 47219,
+      "sha256": "a55f3a17e6a99b89ae12d55481d94b57baa99a6f581c848cf0fc178ba58a70b6"
+    },
+    "tiles/1z.png": {
+      "bytes": 27343,
+      "sha256": "6f701c5d25dc666c8e0dc4adb6fed74ebd2322a30869eaac69414cd7e831db5f"
+    },
+    "tiles/2m.png": {
+      "bytes": 28831,
+      "sha256": "88b43fd20dffbaee5d0914243daddb8299a8535d6a1b21eccd1cbcaaefe315f9"
+    },
+    "tiles/2p.png": {
+      "bytes": 37508,
+      "sha256": "6765fc17dc542c47f222cd1272793f35f897b557b2521c9f369a2b680e2eee43"
+    },
+    "tiles/2s.png": {
+      "bytes": 24920,
+      "sha256": "6279fe9ff35ebd4400f8a0e3d2fbcca7597b37fc95671a324196eb63a983adab"
+    },
+    "tiles/2z.png": {
+      "bytes": 28526,
+      "sha256": "79839cecc8d3cf116421fbc5f864720760aef504070cb5308c901d5ed76f6ae0"
+    },
+    "tiles/3m.png": {
+      "bytes": 29885,
+      "sha256": "f02e272854058ceb4db297ae49905261047458d5085170132d79510f6ed69739"
+    },
+    "tiles/3p.png": {
+      "bytes": 35465,
+      "sha256": "83c6e49d71217e60a97adb1479d016a2dd38d05604ab23a6c8140689ee237cca"
+    },
+    "tiles/3s.png": {
+      "bytes": 25907,
+      "sha256": "0150700a3951dffdfe9dd84cd9fc54d0ed178305e6926f619bd73a12426ce248"
+    },
+    "tiles/3z.png": {
+      "bytes": 26188,
+      "sha256": "b2c2b3523917f1e3748d90e807336515f35416f5aa737ddbdd1c3b575def5130"
+    },
+    "tiles/4m.png": {
+      "bytes": 30940,
+      "sha256": "70bbd90bd1334f80f27119eb9ac2395adc318f8b0c8ddaeff45362b85beed702"
+    },
+    "tiles/4p.png": {
+      "bytes": 38242,
+      "sha256": "d8ca067360451f748b1d0df26c63902cb5994bd724c4b6c7f52d54bcd52c77a9"
+    },
+    "tiles/4s.png": {
+      "bytes": 28916,
+      "sha256": "4dc1004e0d4313c0ba82018f7042bb45f88b4d825fcfbef1dcb160bcfe05bc98"
+    },
+    "tiles/4z.png": {
+      "bytes": 25720,
+      "sha256": "dbd6fc67a28e9050f9ee432557ece5f2f477b140a7edfd56076857d1dc2faa52"
+    },
+    "tiles/5m.png": {
+      "bytes": 31829,
+      "sha256": "e871f16d94941a6d4929d9e6da41dd65b46b85e6c5e0cd935dd37ab568df37fe"
+    },
+    "tiles/5p.png": {
+      "bytes": 42972,
+      "sha256": "c444c09cd627f227a00a6ec4dcfa0ab00aadd698efa730c6c14a40a7cc3a2f54"
+    },
+    "tiles/5s.png": {
+      "bytes": 31361,
+      "sha256": "9d3f3dab9b803a3855b26889f961e74cb63fb4243b36078670d504f0272ba53e"
+    },
+    "tiles/5z.png": {
+      "bytes": 19843,
+      "sha256": "61df12004d24da4a1833bb3665a758c7cacf43b5810229cdaecd4f24fb90e5a9"
+    },
+    "tiles/6m.png": {
+      "bytes": 31036,
+      "sha256": "2926d78805f0b891e9028d2a02f1a2b6ec02b3e4844d4e1399ea6341b8dc51cf"
+    },
+    "tiles/6p.png": {
+      "bytes": 43878,
+      "sha256": "b1adfef09f846af2beb59b4fbb3182b0db3a6aaf49ac63199aa186ed5035ad10"
+    },
+    "tiles/6s.png": {
+      "bytes": 32050,
+      "sha256": "fbd427ccb1ba6269754ace3fc4f50aed34fa1bf8bacef3bb8b76fd5b0e8f0c00"
+    },
+    "tiles/6z.png": {
+      "bytes": 29767,
+      "sha256": "02e86fe546d2236d7ebcbcb774b858df86d2976527e36b4c4fbeb47ee508dfbb"
+    },
+    "tiles/7m.png": {
+      "bytes": 29824,
+      "sha256": "9dd1407dfc8a8a5da99e1b78a84e83e5bd4cd28577a3935cdfae5dcb26a75409"
+    },
+    "tiles/7p.png": {
+      "bytes": 47373,
+      "sha256": "a6adde78ed04bdb2351c5b04789dda5760d0ac81539eb5931f0e7f90c786f628"
+    },
+    "tiles/7s.png": {
+      "bytes": 30799,
+      "sha256": "2be673ed24e1f27ec0f093f4e39608610e59d1d262e8cbf63172e78f27b4e33e"
+    },
+    "tiles/7z.png": {
+      "bytes": 24331,
+      "sha256": "c2fdaae9f5fddb4609b8a67fb7a807e9e62e9adf56f94a318f0519fd5dc461dc"
+    },
+    "tiles/8m.png": {
+      "bytes": 29372,
+      "sha256": "700420bb022c0ceb5e3697f84f6793022693c5a146aa048a6fd2ca2dd95964ec"
+    },
+    "tiles/8p.png": {
+      "bytes": 46667,
+      "sha256": "249396e0a303af852b71a63619da3aa4b2bdf823f4f2b0103bab4eba86327499"
+    },
+    "tiles/8s.png": {
+      "bytes": 34652,
+      "sha256": "453c8c9e4d61ab175678255f7f44e65f20de770d869969e4dffe9e60fbcbd0ba"
+    },
+    "tiles/9m.png": {
+      "bytes": 30396,
+      "sha256": "cbc23ee00cc0a01fe41ce780a5720a8c51984e195a0a50ee5ac5cf06ea7cf22b"
+    },
+    "tiles/9p.png": {
+      "bytes": 50296,
+      "sha256": "035dcff72017b93349f24fd0b0ad1c1893def169db4451633ccbf76762a74336"
+    },
+    "tiles/9s.png": {
+      "bytes": 34330,
+      "sha256": "513f7f17c3e868696bdb8ca1c361ecb5be2c8620aae82fa04dae25c5d16d249e"
+    },
+    "tiles/chun.png": {
+      "bytes": 40921,
+      "sha256": "bda6bffa6cac847f8ace3db39fe92802e0e5724104ef225a33f28228dfc9824a"
+    },
+    "tiles/dong.png": {
+      "bytes": 40240,
+      "sha256": "e6b8ca6a3e1ecd538f10c8f910a06186ff0e966cd91d6f51e7ecc4ea36c71721"
+    },
+    "tiles/ju.png": {
+      "bytes": 43629,
+      "sha256": "6d3a0fe3cc15962c57f03f4e3730f6916aa13b14aec05afb6e12b62e643d71b0"
+    },
+    "tiles/lan.png": {
+      "bytes": 41045,
+      "sha256": "3ba7028d0f6f3b31818de472d47527804ae1cc0fe70ef66eaea371f5f081627a"
+    },
+    "tiles/mei.png": {
+      "bytes": 36957,
+      "sha256": "44ffe9d512c3841bc9d2048d6a0984c4e3a65b05c5df97aaae4922e4c7d3e8fa"
+    },
+    "tiles/qiu.png": {
+      "bytes": 41254,
+      "sha256": "5dd92f222aa3139c5b47ccd711ecd30f9fde95ea3e5c77ecbb7e04a11b2e623f"
+    },
+    "tiles/xia.png": {
+      "bytes": 40451,
+      "sha256": "c36d6058805c91a0af825a4861dee23a775e545d6cd3c136b813e6921ec9b076"
+    },
+    "tiles/zu.png": {
+      "bytes": 34551,
+      "sha256": "9030ce287f2fdefc3a5bd08202af7fa2c9ea1d24c05bb03c2c5c4f0ac7d3d887"
+    },
+    "virtual-tiles/0m.svg": {
+      "bytes": 437,
+      "sha256": "c48d4cf1b4539c6483c78cf665f8ce53f7a8bd46749317fb62196081ca8b578b"
+    },
+    "virtual-tiles/0p.svg": {
+      "bytes": 854,
+      "sha256": "90e6ee18b3d80495b4abfa5e017a011a09d408f434681e293d1a50865953837b"
+    },
+    "virtual-tiles/0s.svg": {
+      "bytes": 709,
+      "sha256": "87155042a12d50c87a66a34812cf46eb3a35d9de7cd263337c260438b5598a89"
+    },
+    "virtual-tiles/1m.svg": {
+      "bytes": 437,
+      "sha256": "bbdeefef534e8a484fb874b1f5bf2661d22c7a212762daacacda9d5805e72868"
+    },
+    "virtual-tiles/1p.svg": {
+      "bytes": 358,
+      "sha256": "4bfe36a61ba414f77311e04f0b6649207c0b3843225a181e233d302c10978688"
+    },
+    "virtual-tiles/1s.svg": {
+      "bytes": 329,
+      "sha256": "c82d6976b043b0663b3da567e6dd6cfabb3db78b0057ed86052c0298ff10402b"
+    },
+    "virtual-tiles/1z.svg": {
+      "bytes": 335,
+      "sha256": "27f3e9d3e1e1ca705e8d42dd44191f0eb0c0a11b87a3eb80d5752aaa34f35b37"
+    },
+    "virtual-tiles/2m.svg": {
+      "bytes": 437,
+      "sha256": "7f5875c5ac804cba9639300621e13c34c32c04a0f4bf4ccff4e42775ba00e74f"
+    },
+    "virtual-tiles/2p.svg": {
+      "bytes": 482,
+      "sha256": "649b6a2b3681783c4dd06b8f461b521121b5b68f3f2de9c8f670bdd2517a96d3"
+    },
+    "virtual-tiles/2s.svg": {
+      "bytes": 424,
+      "sha256": "94e2876725f56b872fc562ccb68459cbf48da74de3c3a8fc27fafd0f5dec66c5"
+    },
+    "virtual-tiles/2z.svg": {
+      "bytes": 335,
+      "sha256": "668656d7e767477b9f505491cbef9638f8876731793151784864295243234d66"
+    },
+    "virtual-tiles/3m.svg": {
+      "bytes": 437,
+      "sha256": "364b9d11342e893cdf74762d44183ff9bd363a3aff515c8d67fd40c600416276"
+    },
+    "virtual-tiles/3p.svg": {
+      "bytes": 606,
+      "sha256": "6dec6f067b9bd16c0438daeb67cc76a3d6ea3860feecd573dda7e6fb4bdf0c59"
+    },
+    "virtual-tiles/3s.svg": {
+      "bytes": 519,
+      "sha256": "e1a16a5a074017fbca50ba8f5d300190ad98b3e0d8a86221b65f82571223b663"
+    },
+    "virtual-tiles/3z.svg": {
+      "bytes": 335,
+      "sha256": "8884bb5d9f0388f4e72dd09d3dabfdae4c2a9f3fb9aed61f9f4cd009b9341dac"
+    },
+    "virtual-tiles/4m.svg": {
+      "bytes": 437,
+      "sha256": "eb3f58e2c046dd2f4092cce88ef444dba67dd907731a1392d2e71b0a932b281c"
+    },
+    "virtual-tiles/4p.svg": {
+      "bytes": 730,
+      "sha256": "5635329752f644ca2b340a661828caca3edff5763d1529e52e473dfeeadbb8d0"
+    },
+    "virtual-tiles/4s.svg": {
+      "bytes": 614,
+      "sha256": "8c7ef684bb5eb1132fc1012d5fb935856da079a8a80a57879f3dd9290aada68f"
+    },
+    "virtual-tiles/4z.svg": {
+      "bytes": 335,
+      "sha256": "5360335780112e9fe9b4846374fba2d1ad10569a7d7fcd9ddfa4f9a31110cb0d"
+    },
+    "virtual-tiles/5m.svg": {
+      "bytes": 437,
+      "sha256": "1d8c86ce331694dfcc8210ef2a46b68972ba1165f8bd5babe89f4f362bf1a566"
+    },
+    "virtual-tiles/5p.svg": {
+      "bytes": 854,
+      "sha256": "82cd8cfdc479ed0b191a2e68e6c951ab5ee53ed66715607a95ed6a1bb370cf3a"
+    },
+    "virtual-tiles/5s.svg": {
+      "bytes": 709,
+      "sha256": "b2fd5a773d3097731fc42f8f0de9c362afab11946bf96c4d89dd178b7c5face1"
+    },
+    "virtual-tiles/5z.svg": {
+      "bytes": 331,
+      "sha256": "c70e6cea87e76e8f2d9b79c6ed6c35c2b0305466558903df5f28c410ab2c8e4b"
+    },
+    "virtual-tiles/6m.svg": {
+      "bytes": 437,
+      "sha256": "8229c7439a5f2ebb2f3a0830758ec1285d0bb583a5588128144d95b9c594e577"
+    },
+    "virtual-tiles/6p.svg": {
+      "bytes": 982,
+      "sha256": "891683435ca0790d20d22d766efafbcbe5ab8bfabad830cfd487496939d96469"
+    },
+    "virtual-tiles/6s.svg": {
+      "bytes": 804,
+      "sha256": "67397c8e19af84b058e9786779d5fd6f771a250796d83280108afb939f32ed48"
+    },
+    "virtual-tiles/6z.svg": {
+      "bytes": 335,
+      "sha256": "a2d432cc6ae24e3bc342cdea62eb123431c527c362146c6e60ae65791e6f5f3a"
+    },
+    "virtual-tiles/7m.svg": {
+      "bytes": 437,
+      "sha256": "83ff202a0fcaac8d5346b8adf9e7c93ff442c9292be930466a925912bd30d5f5"
+    },
+    "virtual-tiles/7p.svg": {
+      "bytes": 1099,
+      "sha256": "f819050935f222a27b6f1919cdfccafeae4cb056b5d187651122d555ededc544"
+    },
+    "virtual-tiles/7s.svg": {
+      "bytes": 899,
+      "sha256": "2feb8970bbee52efb266805c4b9db50694d2f54b5e078af0bdb3efd263a4ede5"
+    },
+    "virtual-tiles/7z.svg": {
+      "bytes": 335,
+      "sha256": "5271bd3df5ae6aa971d83f68670b310bd0ce9cb7d023515f5cba4a12c80e3420"
+    },
+    "virtual-tiles/8m.svg": {
+      "bytes": 437,
+      "sha256": "074ab7cf28a7357007dbd922405bbe9ee9e570eb4d6b58cbd3863fb0774c4215"
+    },
+    "virtual-tiles/8p.svg": {
+      "bytes": 1222,
+      "sha256": "e6ef066931e05e01dc123640934cfb08e5eb619e05a70e8aa628aaa7c8033ff3"
+    },
+    "virtual-tiles/8s.svg": {
+      "bytes": 994,
+      "sha256": "5a07620a5942af08671e4332f138915ed28e59b1a2321811030d4da7f431e4ee"
+    },
+    "virtual-tiles/9m.svg": {
+      "bytes": 437,
+      "sha256": "41cf8c2bff6d37bbe3099617f592ab4962d67e0e4ee74801186750671ef0c7f5"
+    },
+    "virtual-tiles/9p.svg": {
+      "bytes": 1347,
+      "sha256": "9605187ab16c61e4954022764635eb92f5f984ab653c5d6d88e25ed1325a2d98"
+    },
+    "virtual-tiles/9s.svg": {
+      "bytes": 1089,
+      "sha256": "1a865a4389311a547cff1b97ad9ca21f1e12bc727e1a5a26584bfd5968abdb56"
+    },
+    "virtual-tiles/back.svg": {
+      "bytes": 302,
+      "sha256": "36c09e8e994bcfb8f8897a8320a45d44fbdec716243921e123c4313b50ef253f"
+    },
+    "virtual-tiles/faces/0m.svg": {
+      "bytes": 5412,
+      "sha256": "d1febbb0db0cef5fbe43aeba678c66cf9f91be14218004ad5af1f3a22ae6d65f"
+    },
+    "virtual-tiles/faces/0p.svg": {
+      "bytes": 9076,
+      "sha256": "dca1b715c1216e2439efafff1cfa458ebb414379e83587dfde6c4850d33ddd24"
+    },
+    "virtual-tiles/faces/0s.svg": {
+      "bytes": 5827,
+      "sha256": "b4a83d95ff4c83540aa73478eede5002e3f66c9052d9fc4177322b93c75e33bc"
+    },
+    "virtual-tiles/faces/1m.svg": {
+      "bytes": 3933,
+      "sha256": "bc4efedeb11fddbd6be582aaab9392aa7a2e6f4cc7b36020ad69ac7a52485c18"
+    },
+    "virtual-tiles/faces/1p.svg": {
+      "bytes": 8633,
+      "sha256": "b4e7464ed909258552dc795bb52559433fad21abbcba4dda2bf4cbefb527b786"
+    },
+    "virtual-tiles/faces/1s.svg": {
+      "bytes": 17853,
+      "sha256": "fcbf0aeccb4a4d48cc00a54acb33aab3a3bf7e062440e75521738028742fb3df"
+    },
+    "virtual-tiles/faces/1z.svg": {
+      "bytes": 2722,
+      "sha256": "f381974e5d499a839a0caefef878dd2954e56255d6df510248ed0407e8b91767"
+    },
+    "virtual-tiles/faces/2m.svg": {
+      "bytes": 4224,
+      "sha256": "046831736d6598f5ebcac62b0d7c12136e02e48ed4b61550e21e88924c38b8ba"
+    },
+    "virtual-tiles/faces/2p.svg": {
+      "bytes": 4945,
+      "sha256": "f1800300f70e0b59f66c6134ffe56b06810eba82c4448e5043e6f82c8fb99c96"
+    },
+    "virtual-tiles/faces/2s.svg": {
+      "bytes": 2436,
+      "sha256": "d796ab3b2933f1d2f3c1a383541bcef8ad4d209a6629c2c886610b129191ea53"
+    },
+    "virtual-tiles/faces/2z.svg": {
+      "bytes": 3178,
+      "sha256": "709c12ace122358169d3f32c17d984af35b7238c171580f60c9a7abf3271c684"
+    },
+    "virtual-tiles/faces/3m.svg": {
+      "bytes": 4715,
+      "sha256": "ff9b015450f038d5d200db2ac9e79265e76d132d24df7d4d2a12a93b54698de6"
+    },
+    "virtual-tiles/faces/3p.svg": {
+      "bytes": 5443,
+      "sha256": "3fa045b721026ecc8d5e6c70852cb74b0564204f79d82ae44aeac146b37c2bfe"
+    },
+    "virtual-tiles/faces/3s.svg": {
+      "bytes": 3551,
+      "sha256": "44331c02d705bf95ae62adf8b550659d8b97eaf8881a34ab02779fed40c62777"
+    },
+    "virtual-tiles/faces/3z.svg": {
+      "bytes": 2276,
+      "sha256": "c323b83b7765bb775c9ff2d3c8450bd7aa3d46e58234f82e792a495612143844"
+    },
+    "virtual-tiles/faces/4m.svg": {
+      "bytes": 4956,
+      "sha256": "3f580738e6ead641f140eff18c987ef30d65567088261360216aef279ff271b4"
+    },
+    "virtual-tiles/faces/4p.svg": {
+      "bytes": 7202,
+      "sha256": "fbd38714a150824313e837c78d154b0b1ed04ad501815cf411b1898e9663d302"
+    },
+    "virtual-tiles/faces/4s.svg": {
+      "bytes": 4634,
+      "sha256": "5a7b854a75c442619b42cfab8e5c8a0f653f89a9faadde4ff5ff7347d1f8429c"
+    },
+    "virtual-tiles/faces/4z.svg": {
+      "bytes": 2267,
+      "sha256": "e892222d034f1901a1d7cda3f386c0f81b0427ee8ac7b1937f3ef07cbd31d27c"
+    },
+    "virtual-tiles/faces/5m.svg": {
+      "bytes": 5405,
+      "sha256": "c0275be6adcba0a59e13a752ec360b97b5805aa0e4e047e575c00e6c77742e29"
+    },
+    "virtual-tiles/faces/5p.svg": {
+      "bytes": 8964,
+      "sha256": "5ae607676a65359e58daaede0b3873c5e276cfaf39b0935a1444a0170b804486"
+    },
+    "virtual-tiles/faces/5s.svg": {
+      "bytes": 5820,
+      "sha256": "5247e1a2491a3428f4c318b84895fba613c6d6c1f475c7e27e9c36c5f69cf57e"
+    },
+    "virtual-tiles/faces/6m.svg": {
+      "bytes": 5136,
+      "sha256": "3e70b7075076b8b099f88570ce6a62c3e73969476a0fcf4b1fcbf689e8727dae"
+    },
+    "virtual-tiles/faces/6p.svg": {
+      "bytes": 10756,
+      "sha256": "e73c7ca37626cf0e6b4d9cb2dd461c9e7eff7149c19d92b13c21681f4ce16713"
+    },
+    "virtual-tiles/faces/6s.svg": {
+      "bytes": 6883,
+      "sha256": "6b0014ae3ec8fcc71a183cb552d97821e0f0bca4de70e74c370fd1ce24e7c3d8"
+    },
+    "virtual-tiles/faces/6z.svg": {
+      "bytes": 3615,
+      "sha256": "5e4cd55dd24c70d1b10b02e0a97c37e50323a589db013eb50c5430bcd9f47f44"
+    },
+    "virtual-tiles/faces/7m.svg": {
+      "bytes": 4364,
+      "sha256": "959bf26da563b8b21a5f4418a3a3b097dcc42950a195603577d35cb19e283fc4"
+    },
+    "virtual-tiles/faces/7p.svg": {
+      "bytes": 12536,
+      "sha256": "b355308c26807252f7806b7f8ba99c13b2b8254b23b66ce9adb7a7fa47f7548f"
+    },
+    "virtual-tiles/faces/7s.svg": {
+      "bytes": 6647,
+      "sha256": "d4b43315c68ac82ea7f610afcb4503e3da7a5dc9a89ea7818ba9cd24296ab031"
+    },
+    "virtual-tiles/faces/7z.svg": {
+      "bytes": 1916,
+      "sha256": "978a6c639987a8424c7b2aa7bcc1a1fbc1e03c80075294ea1703ac8f7a973e92"
+    },
+    "virtual-tiles/faces/8m.svg": {
+      "bytes": 4237,
+      "sha256": "df73b82c7288c3630abaa15d6c3328ce2d88bf5abb38047eb14492055728dfca"
+    },
+    "virtual-tiles/faces/8p.svg": {
+      "bytes": 13916,
+      "sha256": "ed577a8937add71330cd55100fdd752fad92c927d1120a6e911431b87b9806e6"
+    },
+    "virtual-tiles/faces/8s.svg": {
+      "bytes": 7329,
+      "sha256": "507413d33beec8de2381a6dcfe07760452bf5f9cd7f46e44f2fc5bd49dab4c71"
+    },
+    "virtual-tiles/faces/9m.svg": {
+      "bytes": 4653,
+      "sha256": "975e13d9a3ed8fbc51630561d037e273d18ce4f17b65ba23eeed428c2bf0964b"
+    },
+    "virtual-tiles/faces/9p.svg": {
+      "bytes": 15943,
+      "sha256": "69fde8733cd2e6e51f91b47b948f87ddb23f3cddac8857f55ef3a8deac1ec684"
+    },
+    "virtual-tiles/faces/9s.svg": {
+      "bytes": 8466,
+      "sha256": "fa9ff4f21596ed6afe158939e3a87b060a4cdd704b678daa24f64515cf1203ae"
+    },
+    "virtual-tiles/faces/LICENSE.txt": {
+      "bytes": 782,
+      "sha256": "574ae3c0481c5648b56c9cd268ba0b879e100ae32a29b0a2583262196b188e8a"
+    },
+    "virtual-tiles/faces/SOURCE.txt": {
+      "bytes": 265,
+      "sha256": "14811fed83f0d3937c85cc3bc7811a9678474742e88aaa4337f5f8d4e88ecc72"
+    },
+    "virtual-tiles/tile-sheet.png": {
+      "bytes": 197456,
+      "sha256": "e27449a1a8082258cfa129ac39adc4cc7b2ca25cf59d77dc3e238b25b6355d56"
+    }
+  },
+  "emotes": [],
+  "registry": {
+    "version": 1,
+    "cards": [
+      {
+        "code": "MW-001",
+        "name": "麻将无双",
+        "uri": "mahjongwushuang://card/v1/MW-001",
+        "action": "skill",
+        "skillId": 41,
+        "skillName": "麻将无双"
+      },
+      {
+        "code": "MW-002",
+        "name": "断序杂音",
+        "uri": "mahjongwushuang://card/v1/MW-002",
+        "action": "skill",
+        "skillId": 42,
+        "skillName": "断序杂音",
+        "trackTitle": "断序杂音 / Desultory Signals",
+        "audioSrc": null
+      },
+      {
+        "code": "MW-003",
+        "name": "宿星审判",
+        "uri": "mahjongwushuang://card/v1/MW-003",
+        "action": "skill",
+        "skillId": 43,
+        "skillName": "宿星审判",
+        "trackTitle": "宿星审判 / 宿星審判",
+        "audioSrc": null
+      },
+      {
+        "code": "MW-004",
+        "name": "听天问剑",
+        "uri": "mahjongwushuang://card/v1/MW-004",
+        "action": "skill",
+        "skillId": 44,
+        "skillName": "听天问剑"
+      },
+      {
+        "code": "MW-005",
+        "name": "刹那旅程 · 特别卡",
+        "uri": "mahjongwushuang://card/v1/MW-005",
+        "action": "music",
+        "skillId": 40,
+        "skillName": "刹那旅程",
+        "artwork": "/skill-cards/pdf-p06-card02.png",
+        "trackTitle": "刹那旅程 / Setsuna Trip",
+        "audioSrc": null
+      },
+      {
+        "code": "MW-006",
+        "name": "刹那旅程 · 兼容入口",
+        "uri": "mahjongwushuang://card/v1/MW-006",
+        "action": "music",
+        "skillId": 40,
+        "skillName": "刹那旅程",
+        "artwork": "/skill-cards/pdf-p06-card02.png",
+        "trackTitle": "刹那旅程 / Setsuna Trip",
+        "audioSrc": null,
+        "aliasOf": "MW-005"
+      },
+      {
+        "code": "MW-101",
+        "name": "借刀杀人",
+        "uri": "mahjongwushuang://card/v1/MW-101",
+        "action": "skill",
+        "skillId": 1,
+        "skillName": "借刀杀人"
+      },
+      {
+        "code": "MW-102",
+        "name": "祸水东引",
+        "uri": "mahjongwushuang://card/v1/MW-102",
+        "action": "skill",
+        "skillId": 2,
+        "skillName": "祸水东引"
+      },
+      {
+        "code": "MW-103",
+        "name": "背水一战",
+        "uri": "mahjongwushuang://card/v1/MW-103",
+        "action": "skill",
+        "skillId": 3,
+        "skillName": "背水一战"
+      },
+      {
+        "code": "MW-104",
+        "name": "万箭齐发",
+        "uri": "mahjongwushuang://card/v1/MW-104",
+        "action": "skill",
+        "skillId": 4,
+        "skillName": "万箭齐发"
+      },
+      {
+        "code": "MW-105",
+        "name": "顺手牵羊",
+        "uri": "mahjongwushuang://card/v1/MW-105",
+        "action": "skill",
+        "skillId": 5,
+        "skillName": "顺手牵羊"
+      },
+      {
+        "code": "MW-106",
+        "name": "釜底抽薪",
+        "uri": "mahjongwushuang://card/v1/MW-106",
+        "action": "skill",
+        "skillId": 6,
+        "skillName": "釜底抽薪"
+      },
+      {
+        "code": "MW-107",
+        "name": "破釜沉舟",
+        "uri": "mahjongwushuang://card/v1/MW-107",
+        "action": "skill",
+        "skillId": 7,
+        "skillName": "破釜沉舟"
+      },
+      {
+        "code": "MW-108",
+        "name": "飞升天堂",
+        "uri": "mahjongwushuang://card/v1/MW-108",
+        "action": "skill",
+        "skillId": 8,
+        "skillName": "飞升天堂"
+      },
+      {
+        "code": "MW-109",
+        "name": "魔女审判",
+        "uri": "mahjongwushuang://card/v1/MW-109",
+        "action": "skill",
+        "skillId": 9,
+        "skillName": "魔女审判"
+      },
+      {
+        "code": "MW-110",
+        "name": "暗夜之战",
+        "uri": "mahjongwushuang://card/v1/MW-110",
+        "action": "skill",
+        "skillId": 10,
+        "skillName": "暗夜之战"
+      },
+      {
+        "code": "MW-111",
+        "name": "寂静之地",
+        "uri": "mahjongwushuang://card/v1/MW-111",
+        "action": "skill",
+        "skillId": 11,
+        "skillName": "寂静之地"
+      },
+      {
+        "code": "MW-112",
+        "name": "宝箱猎人",
+        "uri": "mahjongwushuang://card/v1/MW-112",
+        "action": "skill",
+        "skillId": 12,
+        "skillName": "宝箱猎人"
+      },
+      {
+        "code": "MW-113",
+        "name": "规则怪谈",
+        "uri": "mahjongwushuang://card/v1/MW-113",
+        "action": "skill",
+        "skillId": 13,
+        "skillName": "规则怪谈"
+      },
+      {
+        "code": "MW-114",
+        "name": "偶氮玉红",
+        "uri": "mahjongwushuang://card/v1/MW-114",
+        "action": "skill",
+        "skillId": 14,
+        "skillName": "偶氮玉红"
+      },
+      {
+        "code": "MW-115",
+        "name": "立直仙人",
+        "uri": "mahjongwushuang://card/v1/MW-115",
+        "action": "skill",
+        "skillId": 15,
+        "skillName": "立直仙人"
+      },
+      {
+        "code": "MW-116",
+        "name": "御风之使",
+        "uri": "mahjongwushuang://card/v1/MW-116",
+        "action": "skill",
+        "skillId": 16,
+        "skillName": "御风之使"
+      },
+      {
+        "code": "MW-117",
+        "name": "哈耶克的大手",
+        "uri": "mahjongwushuang://card/v1/MW-117",
+        "action": "skill",
+        "skillId": 17,
+        "skillName": "哈耶克的大手"
+      },
+      {
+        "code": "MW-118",
+        "name": "崇洋媚外",
+        "uri": "mahjongwushuang://card/v1/MW-118",
+        "action": "skill",
+        "skillId": 18,
+        "skillName": "崇洋媚外"
+      },
+      {
+        "code": "MW-119",
+        "name": "抗坏血酸",
+        "uri": "mahjongwushuang://card/v1/MW-119",
+        "action": "skill",
+        "skillId": 19,
+        "skillName": "抗坏血酸"
+      },
+      {
+        "code": "MW-120",
+        "name": "只狼",
+        "uri": "mahjongwushuang://card/v1/MW-120",
+        "action": "skill",
+        "skillId": 20,
+        "skillName": "只狼"
+      },
+      {
+        "code": "MW-121",
+        "name": "指鹿为马",
+        "uri": "mahjongwushuang://card/v1/MW-121",
+        "action": "skill",
+        "skillId": 21,
+        "skillName": "指鹿为马"
+      },
+      {
+        "code": "MW-122",
+        "name": "镀锌方杠",
+        "uri": "mahjongwushuang://card/v1/MW-122",
+        "action": "skill",
+        "skillId": 22,
+        "skillName": "镀锌方杠"
+      },
+      {
+        "code": "MW-124",
+        "name": "优势在我",
+        "uri": "mahjongwushuang://card/v1/MW-124",
+        "action": "skill",
+        "skillId": 24,
+        "skillName": "优势在我"
+      },
+      {
+        "code": "MW-125",
+        "name": "金坷垃",
+        "uri": "mahjongwushuang://card/v1/MW-125",
+        "action": "skill",
+        "skillId": 25,
+        "skillName": "金坷垃"
+      },
+      {
+        "code": "MW-126",
+        "name": "管中窥牌",
+        "uri": "mahjongwushuang://card/v1/MW-126",
+        "action": "skill",
+        "skillId": 26,
+        "skillName": "管中窥牌"
+      },
+      {
+        "code": "MW-127",
+        "name": "ELO机制",
+        "uri": "mahjongwushuang://card/v1/MW-127",
+        "action": "skill",
+        "skillId": 27,
+        "skillName": "ELO机制"
+      },
+      {
+        "code": "MW-128",
+        "name": "立直禁止",
+        "uri": "mahjongwushuang://card/v1/MW-128",
+        "action": "skill",
+        "skillId": 28,
+        "skillName": "立直禁止"
+      },
+      {
+        "code": "MW-129",
+        "name": "Ctrl + Z",
+        "uri": "mahjongwushuang://card/v1/MW-129",
+        "action": "skill",
+        "skillId": 29,
+        "skillName": "Ctrl + Z"
+      },
+      {
+        "code": "MW-130",
+        "name": "名刀司命",
+        "uri": "mahjongwushuang://card/v1/MW-130",
+        "action": "skill",
+        "skillId": 30,
+        "skillName": "名刀司命"
+      },
+      {
+        "code": "MW-131",
+        "name": "辉月",
+        "uri": "mahjongwushuang://card/v1/MW-131",
+        "action": "skill",
+        "skillId": 31,
+        "skillName": "辉月"
+      },
+      {
+        "code": "MW-132",
+        "name": "大东亚共荣",
+        "uri": "mahjongwushuang://card/v1/MW-132",
+        "action": "skill",
+        "skillId": 32,
+        "skillName": "大东亚共荣"
+      },
+      {
+        "code": "MW-133",
+        "name": "打卡啦摸多",
+        "uri": "mahjongwushuang://card/v1/MW-133",
+        "action": "skill",
+        "skillId": 33,
+        "skillName": "打卡啦摸多"
+      },
+      {
+        "code": "MW-134",
+        "name": "门前积雪",
+        "uri": "mahjongwushuang://card/v1/MW-134",
+        "action": "skill",
+        "skillId": 34,
+        "skillName": "门前积雪"
+      },
+      {
+        "code": "MW-135",
+        "name": "终极奉献",
+        "uri": "mahjongwushuang://card/v1/MW-135",
+        "action": "skill",
+        "skillId": 35,
+        "skillName": "终极奉献"
+      },
+      {
+        "code": "MW-136",
+        "name": "急速狂飙",
+        "uri": "mahjongwushuang://card/v1/MW-136",
+        "action": "skill",
+        "skillId": 36,
+        "skillName": "急速狂飙"
+      },
+      {
+        "code": "MW-137",
+        "name": "恭喜发财",
+        "uri": "mahjongwushuang://card/v1/MW-137",
+        "action": "skill",
+        "skillId": 37,
+        "skillName": "恭喜发财"
+      },
+      {
+        "code": "MW-139",
+        "name": "熠熠生辉",
+        "uri": "mahjongwushuang://card/v1/MW-139",
+        "action": "skill",
+        "skillId": 39,
+        "skillName": "熠熠生辉"
+      },
+      {
+        "code": "MW-140",
+        "name": "刹那旅程 · 普通技能",
+        "uri": "mahjongwushuang://card/v1/MW-140",
+        "action": "skill",
+        "skillId": 40,
+        "skillName": "刹那旅程"
+      }
+    ],
+    "revision": "2026-10-14"
+  },
+  "artManifest": {
+    "schemaVersion": 1,
+    "cards": [
+      {
+        "key": "pdf-p01-card01",
+        "cardId": 3,
+        "name": "背水一战 单",
+        "src": "/skill-cards/pdf-p01-card01.png",
+        "page": 1,
+        "crop": [
+          36.81999893188477,
+          32.62001342773438,
+          215.89999084472657,
+          283.7000244140625
+        ],
+        "width": 717,
+        "height": 1005
+      },
+      {
+        "key": "pdf-p01-card02",
+        "cardId": 2,
+        "name": "祸水东引 团",
+        "src": "/skill-cards/pdf-p01-card02.png",
+        "page": 1,
+        "crop": [
+          230.25999755859374,
+          32.37999267578125,
+          409.33997802734376,
+          283.4600036621094
+        ],
+        "width": 717,
+        "height": 1005
+      },
+      {
+        "key": "pdf-p01-card03",
+        "cardId": 4,
+        "name": "万箭齐发 攻",
+        "src": "/skill-cards/pdf-p01-card03.png",
+        "page": 1,
+        "crop": [
+          424.42003173828124,
+          32.62001342773438,
+          603.5000122070312,
+          283.7000244140625
+        ],
+        "width": 717,
+        "height": 1005
+      },
+      {
+        "key": "pdf-p01-card04",
+        "cardId": 1,
+        "name": "借刀杀人 陷",
+        "src": "/skill-cards/pdf-p01-card04.png",
+        "page": 1,
+        "crop": [
+          617.8600341796875,
+          32.13997192382813,
+          796.9400146484375,
+          283.21998291015626
+        ],
+        "width": 717,
+        "height": 1005
+      },
+      {
+        "key": "pdf-p01-card05",
+        "cardId": 7,
+        "name": "破釜沉舟 单",
+        "src": "/skill-cards/pdf-p01-card05.png",
+        "page": 1,
+        "crop": [
+          36.81999893188477,
+          311.50001831054686,
+          215.89999084472657,
+          562.580029296875
+        ],
+        "width": 717,
+        "height": 1005
+      },
+      {
+        "key": "pdf-p01-card06",
+        "cardId": 5,
+        "name": "顺手牵羊 团",
+        "src": "/skill-cards/pdf-p01-card06.png",
+        "page": 1,
+        "crop": [
+          230.25999755859374,
+          311.50001831054686,
+          409.33997802734376,
+          562.580029296875
+        ],
+        "width": 717,
+        "height": 1005
+      },
+      {
+        "key": "pdf-p01-card07",
+        "cardId": 6,
+        "name": "釜底抽薪 攻",
+        "src": "/skill-cards/pdf-p01-card07.png",
+        "page": 1,
+        "crop": [
+          424.42003173828124,
+          311.50001831054686,
+          603.5000122070312,
+          562.580029296875
+        ],
+        "width": 717,
+        "height": 1005
+      },
+      {
+        "key": "pdf-p01-card08",
+        "cardId": 8,
+        "name": "飞升天堂 陷",
+        "src": "/skill-cards/pdf-p01-card08.png",
+        "page": 1,
+        "crop": [
+          617.8600341796875,
+          311.50001831054686,
+          796.9400146484375,
+          562.580029296875
+        ],
+        "width": 717,
+        "height": 1005
+      },
+      {
+        "key": "pdf-p02-card01",
+        "cardId": 10,
+        "name": "暗夜之战 环",
+        "src": "/skill-cards/pdf-p02-card01.png",
+        "page": 2,
+        "crop": [
+          36.81999893188477,
+          32.62001342773438,
+          215.89999084472657,
+          283.7000244140625
+        ],
+        "width": 717,
+        "height": 1005
+      },
+      {
+        "key": "pdf-p02-card02",
+        "cardId": 12,
+        "name": "宝箱猎人 环",
+        "src": "/skill-cards/pdf-p02-card02.png",
+        "page": 2,
+        "crop": [
+          230.25999755859374,
+          32.62001342773438,
+          409.33997802734376,
+          283.7000244140625
+        ],
+        "width": 717,
+        "height": 1005
+      },
+      {
+        "key": "pdf-p02-card03",
+        "cardId": 11,
+        "name": "寂静之地 环",
+        "src": "/skill-cards/pdf-p02-card03.png",
+        "page": 2,
+        "crop": [
+          424.42003173828124,
+          32.62001342773438,
+          603.5000122070312,
+          283.7000244140625
+        ],
+        "width": 717,
+        "height": 1005
+      },
+      {
+        "key": "pdf-p02-card04",
+        "cardId": 9,
+        "name": "魔女审判 环",
+        "src": "/skill-cards/pdf-p02-card04.png",
+        "page": 2,
+        "crop": [
+          617.8600341796875,
+          32.62001342773438,
+          796.9400146484375,
+          283.7000244140625
+        ],
+        "width": 717,
+        "height": 1005
+      },
+      {
+        "key": "pdf-p02-card05",
+        "cardId": 13,
+        "name": "规则怪谈 环",
+        "src": "/skill-cards/pdf-p02-card05.png",
+        "page": 2,
+        "crop": [
+          36.81999893188477,
+          311.2599670410156,
+          215.89999084472657,
+          562.3399780273437
+        ],
+        "width": 717,
+        "height": 1005
+      },
+      {
+        "key": "pdf-p02-card06",
+        "cardId": 14,
+        "name": "偶氮玉红 环",
+        "src": "/skill-cards/pdf-p02-card06.png",
+        "page": 2,
+        "crop": [
+          230.25999755859374,
+          311.50001831054686,
+          409.33997802734376,
+          562.580029296875
+        ],
+        "width": 717,
+        "height": 1005
+      },
+      {
+        "key": "pdf-p03-card01",
+        "cardId": 17,
+        "name": "哈耶克的大手 单",
+        "src": "/skill-cards/pdf-p03-card01.png",
+        "page": 3,
+        "crop": [
+          37.060000610351565,
+          32.62001342773438,
+          216.13999633789064,
+          283.7000244140625
+        ],
+        "width": 717,
+        "height": 1005
+      },
+      {
+        "key": "pdf-p03-card02",
+        "cardId": 16,
+        "name": "御风之使 团",
+        "src": "/skill-cards/pdf-p03-card02.png",
+        "page": 3,
+        "crop": [
+          230.25999755859374,
+          32.37999267578125,
+          409.33997802734376,
+          283.4600036621094
+        ],
+        "width": 717,
+        "height": 1005
+      },
+      {
+        "key": "pdf-p03-card03",
+        "cardId": 18,
+        "name": "崇洋媚外 攻",
+        "src": "/skill-cards/pdf-p03-card03.png",
+        "page": 3,
+        "crop": [
+          424.42003173828124,
+          32.62001342773438,
+          603.5000122070312,
+          283.7000244140625
+        ],
+        "width": 717,
+        "height": 1005
+      },
+      {
+        "key": "pdf-p03-card04",
+        "cardId": 15,
+        "name": "立直仙人 陷",
+        "src": "/skill-cards/pdf-p03-card04.png",
+        "page": 3,
+        "crop": [
+          617.8600341796875,
+          32.13997192382813,
+          796.9400146484375,
+          283.21998291015626
+        ],
+        "width": 717,
+        "height": 1005
+      },
+      {
+        "key": "pdf-p03-card05",
+        "cardId": 21,
+        "name": "指鹿为马 单",
+        "src": "/skill-cards/pdf-p03-card05.png",
+        "page": 3,
+        "crop": [
+          36.81999893188477,
+          311.50001831054686,
+          215.89999084472657,
+          562.580029296875
+        ],
+        "width": 717,
+        "height": 1005
+      },
+      {
+        "key": "pdf-p03-card06",
+        "cardId": 19,
+        "name": "抗坏血酸 团",
+        "src": "/skill-cards/pdf-p03-card06.png",
+        "page": 3,
+        "crop": [
+          230.25999755859374,
+          311.50001831054686,
+          409.33997802734376,
+          562.580029296875
+        ],
+        "width": 717,
+        "height": 1005
+      },
+      {
+        "key": "pdf-p03-card07",
+        "cardId": 20,
+        "name": "只狼 攻",
+        "src": "/skill-cards/pdf-p03-card07.png",
+        "page": 3,
+        "crop": [
+          424.42003173828124,
+          311.50001831054686,
+          603.5000122070312,
+          562.580029296875
+        ],
+        "width": 717,
+        "height": 1005
+      },
+      {
+        "key": "pdf-p03-card08",
+        "cardId": 22,
+        "name": "镀锌方杠 陷",
+        "src": "/skill-cards/pdf-p03-card08.png",
+        "page": 3,
+        "crop": [
+          617.8600341796875,
+          311.50001831054686,
+          796.9400146484375,
+          562.580029296875
+        ],
+        "width": 717,
+        "height": 1005
+      },
+      {
+        "key": "pdf-p04-card01",
+        "cardId": 25,
+        "name": "金坷垃 单",
+        "src": "/skill-cards/pdf-p04-card01.png",
+        "page": 4,
+        "crop": [
+          37.060000610351565,
+          32.62001342773438,
+          216.13999633789064,
+          283.7000244140625
+        ],
+        "width": 717,
+        "height": 1005
+      },
+      {
+        "key": "pdf-p04-card02",
+        "cardId": 24,
+        "name": "优势在我 团",
+        "src": "/skill-cards/pdf-p04-card02.png",
+        "page": 4,
+        "crop": [
+          230.25999755859374,
+          32.37999267578125,
+          409.33997802734376,
+          283.4600036621094
+        ],
+        "width": 717,
+        "height": 1005
+      },
+      {
+        "key": "pdf-p04-card03",
+        "cardId": 26,
+        "name": "管中窥牌 攻",
+        "src": "/skill-cards/pdf-p04-card03.png",
+        "page": 4,
+        "crop": [
+          424.42003173828124,
+          32.62001342773438,
+          603.5000122070312,
+          283.7000244140625
+        ],
+        "width": 717,
+        "height": 1005
+      },
+      {
+        "key": "pdf-p04-card05",
+        "cardId": 29,
+        "name": "Ctrl + Z 单",
+        "src": "/skill-cards/pdf-p04-card05.png",
+        "page": 4,
+        "crop": [
+          36.81999893188477,
+          311.50001831054686,
+          215.89999084472657,
+          562.580029296875
+        ],
+        "width": 717,
+        "height": 1005
+      },
+      {
+        "key": "pdf-p04-card06",
+        "cardId": 27,
+        "name": "ELO机制 团",
+        "src": "/skill-cards/pdf-p04-card06.png",
+        "page": 4,
+        "crop": [
+          230.25999755859374,
+          311.50001831054686,
+          409.33997802734376,
+          562.580029296875
+        ],
+        "width": 717,
+        "height": 1005
+      },
+      {
+        "key": "pdf-p04-card07",
+        "cardId": 28,
+        "name": "立直禁止 攻",
+        "src": "/skill-cards/pdf-p04-card07.png",
+        "page": 4,
+        "crop": [
+          424.42003173828124,
+          311.50001831054686,
+          603.5000122070312,
+          562.580029296875
+        ],
+        "width": 717,
+        "height": 1005
+      },
+      {
+        "key": "pdf-p04-card08",
+        "cardId": 30,
+        "name": "名刀司命 陷",
+        "src": "/skill-cards/pdf-p04-card08.png",
+        "page": 4,
+        "crop": [
+          617.8600341796875,
+          311.50001831054686,
+          796.9400146484375,
+          562.580029296875
+        ],
+        "width": 717,
+        "height": 1005
+      },
+      {
+        "key": "pdf-p05-card01",
+        "cardId": 33,
+        "name": "打卡啦摸多 单",
+        "src": "/skill-cards/pdf-p05-card01.png",
+        "page": 5,
+        "crop": [
+          37.060000610351565,
+          32.62001342773438,
+          216.13999633789064,
+          283.7000244140625
+        ],
+        "width": 717,
+        "height": 1005
+      },
+      {
+        "key": "pdf-p05-card02",
+        "cardId": 32,
+        "name": "大东亚共荣 团",
+        "src": "/skill-cards/pdf-p05-card02.png",
+        "page": 5,
+        "crop": [
+          230.25999755859374,
+          32.37999267578125,
+          409.33997802734376,
+          283.4600036621094
+        ],
+        "width": 717,
+        "height": 1005
+      },
+      {
+        "key": "pdf-p05-card03",
+        "cardId": 34,
+        "name": "门前积雪 攻",
+        "src": "/skill-cards/pdf-p05-card03.png",
+        "page": 5,
+        "crop": [
+          424.42003173828124,
+          32.62001342773438,
+          603.5000122070312,
+          283.7000244140625
+        ],
+        "width": 717,
+        "height": 1005
+      },
+      {
+        "key": "pdf-p05-card04",
+        "cardId": 31,
+        "name": "辉月 陷",
+        "src": "/skill-cards/pdf-p05-card04.png",
+        "page": 5,
+        "crop": [
+          617.8600341796875,
+          32.13997192382813,
+          796.9400146484375,
+          283.21998291015626
+        ],
+        "width": 717,
+        "height": 1005
+      },
+      {
+        "key": "pdf-p05-card05",
+        "cardId": 37,
+        "name": "恭喜发财 单",
+        "src": "/skill-cards/pdf-p05-card05.png",
+        "page": 5,
+        "crop": [
+          36.81999893188477,
+          311.50001831054686,
+          215.89999084472657,
+          562.580029296875
+        ],
+        "width": 717,
+        "height": 1005
+      },
+      {
+        "key": "pdf-p05-card06",
+        "cardId": 35,
+        "name": "终极奉献 团",
+        "src": "/skill-cards/pdf-p05-card06.png",
+        "page": 5,
+        "crop": [
+          230.25999755859374,
+          311.50001831054686,
+          409.33997802734376,
+          562.580029296875
+        ],
+        "width": 717,
+        "height": 1005
+      },
+      {
+        "key": "pdf-p05-card07",
+        "cardId": 36,
+        "name": "急速狂飙 攻",
+        "src": "/skill-cards/pdf-p05-card07.png",
+        "page": 5,
+        "crop": [
+          424.42003173828124,
+          311.50001831054686,
+          603.5000122070312,
+          562.580029296875
+        ],
+        "width": 717,
+        "height": 1005
+      },
+      {
+        "key": "pdf-p06-card01",
+        "cardId": 39,
+        "name": "熠熠生辉 单",
+        "src": "/skill-cards/pdf-p06-card01.png",
+        "page": 6,
+        "crop": [
+          37.060000610351565,
+          32.62001342773438,
+          216.13999633789064,
+          283.7000244140625
+        ],
+        "width": 717,
+        "height": 1005
+      },
+      {
+        "key": "pdf-p06-card02",
+        "cardId": 40,
+        "name": "刹那旅程Setsuna Trip 团",
+        "src": "/skill-cards/pdf-p06-card02.png",
+        "page": 6,
+        "crop": [
+          230.25999755859374,
+          32.37999267578125,
+          409.33997802734376,
+          283.4600036621094
+        ],
+        "width": 717,
+        "height": 1005
+      },
+      {
+        "key": "pdf-p06-card03",
+        "cardId": 40,
+        "name": "刹那旅程 团",
+        "src": "/skill-cards/pdf-p06-card03.png",
+        "page": 6,
+        "crop": [
+          424.66002197265624,
+          32.86000366210938,
+          603.7400024414062,
+          283.9400146484375
+        ],
+        "width": 717,
+        "height": 1005
+      },
+      {
+        "key": "gen2-mahjong-wushuang",
+        "cardId": 41,
+        "name": "麻将无双",
+        "src": "/skill-cards/gen2-mahjong-wushuang.png",
+        "page": 1,
+        "crop": [
+          6.189799976348877,
+          5.3400146484375,
+          184.78980712890626,
+          255.9400146484375
+        ],
+        "width": 716,
+        "height": 1003
+      },
+      {
+        "key": "gen2-discord",
+        "cardId": 42,
+        "name": "断序杂音",
+        "src": "/skill-cards/gen2-discord.png",
+        "page": 1,
+        "crop": [
+          199.3000061035156,
+          4.920001220703125,
+          377.90000610351564,
+          255.52000122070314
+        ],
+        "width": 715,
+        "height": 1004
+      },
+      {
+        "key": "gen2-astral-judgement",
+        "cardId": 43,
+        "name": "宿星审判",
+        "src": "/skill-cards/gen2-astral-judgement.png",
+        "page": 1,
+        "crop": [
+          393.59999389648436,
+          4.920001220703125,
+          572.2000244140625,
+          255.52000122070314
+        ],
+        "width": 715,
+        "height": 1004
+      },
+      {
+        "key": "gen2-heavens-sword",
+        "cardId": 44,
+        "name": "听天问剑",
+        "src": "/skill-cards/gen2-heavens-sword.png",
+        "page": 1,
+        "crop": [
+          587.3699829101563,
+          4.610003662109375,
+          765.9699829101562,
+          255.2100036621094
+        ],
+        "width": 715,
+        "height": 1003
+      }
+    ]
+  }
+}

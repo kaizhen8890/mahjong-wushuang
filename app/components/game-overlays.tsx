@@ -5,6 +5,7 @@
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
 import { Clock3 } from 'lucide-react';
 
+import { useEmoteLibrary } from './emote-picker';
 import { GAME_EMOTES_BY_ID } from '@/lib/emotes';
 import { calculateTurnClock, turnElapsedMs, type GameState } from '@/lib/mahjong';
 import type { ControllerRealtimeEvent } from '@/lib/lan-protocol';
@@ -20,6 +21,7 @@ export function FloatingEmote({ events = [], tablet = false }: { events?: Contro
 }
 
 function EmoteSlot({ event, slot, tablet }: { event: ControllerRealtimeEvent; slot: number; tablet: boolean }) {
+  useEmoteLibrary();
   const ref = useRef<HTMLElement>(null);
   const [dismissed, setDismissed] = useState(false);
   useLayoutEffect(() => {

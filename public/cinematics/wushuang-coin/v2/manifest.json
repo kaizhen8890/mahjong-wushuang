@@ -1,0 +1,89 @@
+{
+  "version": "2.0.0",
+  "name": "麻将无双 · 高速残影决策币",
+  "durationSeconds": 13,
+  "fps": 30,
+  "frames": 390,
+  "airborneStartSeconds": 3,
+  "airborneEndSeconds": 9.5,
+  "continuousAirborneFlipSeconds": 6.5,
+  "airborneTurns": 52.3,
+  "previousAirborneTurns": 6.3,
+  "motionBlurShutter": 0.7,
+  "afterimageLagsSeconds": [
+    0.009,
+    0.021,
+    0.037
+  ],
+  "resultReadableSeconds": 11,
+  "revealSeconds": 11.25,
+  "sharedOpeningFrames": 286,
+  "outcomeMapping": {
+    "0": "tails",
+    "1": "heads"
+  },
+  "probability": "No RNG in media; caller supplies already persisted Host result. Presentation only.",
+  "audio": {
+    "heads": {
+      "peak": 0.87,
+      "rms": 0.05444964613443752
+    },
+    "tails": {
+      "peak": 0.87,
+      "rms": 0.0546621612396953
+    }
+  },
+  "orientations": {
+    "landscape": [
+      1600,
+      1000
+    ],
+    "portrait": [
+      1000,
+      1600
+    ]
+  },
+  "provenance": "Upgrade of existing procedural Blender coin. Original geometry, coin faces, camera, landing and result retained; faster airborne spin, temporal rim afterimages, shutter motion blur and synchronized synthesized sound. No third-party models or sound samples.",
+  "assets": [
+    {
+      "file": "heads-landscape.jpg",
+      "bytes": 423999,
+      "sha256": "a8417168e470075d7759418a1f9f9f8dd9672b03577d9c6523283a047481fab4"
+    },
+    {
+      "file": "heads-landscape.mp4",
+      "bytes": 20010168,
+      "sha256": "07e73b0d543994b00460577e6d88d774c0accea4faeec059ee39276898d702cd"
+    },
+    {
+      "file": "heads-portrait.jpg",
+      "bytes": 391042,
+      "sha256": "d21783652467d4730d32a831e23e98ddf7d164151fda324f1ad77add521afa6d"
+    },
+    {
+      "file": "heads-portrait.mp4",
+      "bytes": 16996136,
+      "sha256": "20317ef2354e1874143ac9ba30b62b6a1bddfab16a08b7a58ec34af16784f07d"
+    },
+    {
+      "file": "tails-landscape.jpg",
+      "bytes": 409700,
+      "sha256": "e889d816a1bb51dcd930f94e90b705c2f990071c6c8d40248d2fa68cb6315f08"
+    },
+    {
+      "file": "tails-landscape.mp4",
+      "bytes": 20062876,
+      "sha256": "09a5103fbd517a716ce5d99a43af0ebb25f74851a460a93d2ecef55d6ea041a3"
+    },
+    {
+      "file": "tails-portrait.jpg",
+      "bytes": 376720,
+      "sha256": "27e5168c0c0638351057692f1053ec3b95fb32c7aa47560f7738d1dd0179b19a"
+    },
+    {
+      "file": "tails-portrait.mp4",
+      "bytes": 16958633,
+      "sha256": "95e6888dad5f6f73e6f8cecb6e2cbca685eac866fc93c43954ef16b1dbcf1368"
+    }
+  ]
+}

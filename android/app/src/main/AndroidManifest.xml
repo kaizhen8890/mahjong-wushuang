@@ -23,6 +23,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+            <intent-filter>
+                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="mahjongwushuang" android:host="card" android:pathPrefix="/v1/" />
+            </intent-filter>
         </activity>
 
         <provider
@@ -35,6 +40,9 @@
                 android:resource="@xml/file_paths"></meta-data>
         </provider>
     </application>
+
+    <uses-feature android:name="android.hardware.nfc" android:required="false" />
+    <uses-permission android:name="android.permission.NFC" />
 
     <!-- Permissions -->
 

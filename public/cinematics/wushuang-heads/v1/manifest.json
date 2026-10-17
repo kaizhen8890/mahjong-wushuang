@@ -1,0 +1,82 @@
+{
+  "version": "1.0.0",
+  "name": "麻将无双 · 正面 · 万牌归一",
+  "durationSeconds": 6,
+  "fps": 30,
+  "frames": 180,
+  "handoffSeconds": 5.3,
+  "cinematicStart": "Immediately after wushuang-coin/v1/heads, with matching final camera",
+  "outcome": "heads",
+  "presentationOnly": true,
+  "tileCount": 420,
+  "orientations": {
+    "landscape": [
+      1600,
+      1000
+    ],
+    "portrait": [
+      1000,
+      1600
+    ]
+  },
+  "audio": {
+    "source": "Original procedural stereo sound",
+    "sampleRate": 48000,
+    "channels": 2,
+    "peak": 0.88,
+    "rms": 0.06861101257740727
+  },
+  "timeline": [
+    {
+      "at": 0,
+      "event": "Continue settled heads coin"
+    },
+    {
+      "at": 0.65,
+      "event": "Four streams of symbolic tile backs rise"
+    },
+    {
+      "at": 2.73,
+      "event": "Gold Wushuang seal manifests"
+    },
+    {
+      "at": 4.04,
+      "event": "Array collapses"
+    },
+    {
+      "at": 4.84,
+      "event": "Gold core shockwave"
+    },
+    {
+      "at": 5.3,
+      "event": "Optional live UI foreground handoff"
+    },
+    {
+      "at": 6,
+      "event": "Film ends; restore live table"
+    }
+  ],
+  "provenance": "Original Blender geometry, shading, animation, camera and synthesized sound; existing project shrine and project font reused. No player hand information in the film.",
+  "assets": [
+    {
+      "file": "effect-landscape.mp4",
+      "bytes": 13946831,
+      "sha256": "98f4dd77a4cc6fb00f56fba73da1bd6e6c2d47db1f6f7b47992f719c7b04c437"
+    },
+    {
+      "file": "effect-landscape.jpg",
+      "bytes": 529946,
+      "sha256": "de75646d93c7926c37c04b5c629fbaaafe2c4870e5577f1d38720386f7648f04"
+    },
+    {
+      "file": "effect-portrait.mp4",
+      "bytes": 11990301,
+      "sha256": "fc3f48757c4f6f10e5a6a7664488f059f7fd3c7ba3574bb16fa10c44d85e1139"
+    },
+    {
+      "file": "effect-portrait.jpg",
+      "bytes": 471733,
+      "sha256": "d3539bf3a6fc8c0e2c991e584ee78613e68c27baaf6f7bbdae2a7a58ccccd304"
+    }
+  ]
+}

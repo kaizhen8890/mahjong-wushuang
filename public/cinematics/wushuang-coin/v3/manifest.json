@@ -1,0 +1,92 @@
+{
+  "version": "3.0.0",
+  "name": "麻将无双 · 顶点停转与重力下落",
+  "durationSeconds": 10,
+  "fps": 30,
+  "frames": 300,
+  "airborneStartSeconds": 3,
+  "apexSeconds": 4.734272608125819,
+  "airborneEndSeconds": 6.5,
+  "gravitySceneUnitsPerSecondSquared": 9.81,
+  "launchVerticalSpeed": 17.013214285714287,
+  "apexHeight": 17.65277575594458,
+  "airborneTurns": 14.00633802276324,
+  "peakTurnsPerSecond": 9.249548560565923,
+  "spinStoppedFromSeconds": 4.734272608125819,
+  "revealSeconds": 8.25,
+  "motionBlurShutter": 0.6,
+  "afterimageLagsSeconds": [
+    0.009,
+    0.021,
+    0.037
+  ],
+  "sharedOpeningFrames": 196,
+  "outcomeMapping": {
+    "0": "tails",
+    "1": "heads"
+  },
+  "probability": "No RNG in media; caller supplies already persisted Host result. Presentation only.",
+  "audio": {
+    "heads": {
+      "peak": 0.87,
+      "rms": 0.06259921703947154
+    },
+    "tails": {
+      "peak": 0.87,
+      "rms": 0.06281750667251973
+    }
+  },
+  "orientations": {
+    "landscape": [
+      1600,
+      1000
+    ],
+    "portrait": [
+      1000,
+      1600
+    ]
+  },
+  "provenance": "Original procedural shrine and coin design. Ballistic flight under constant gravity in scene units; authored angular braking at apex, fixed falling orientation, small impact rebound, synchronized synthesized sound. Apex spin brake is an intentional stylization; not caused by gravity. No third-party models or sound samples.",
+  "assets": [
+    {
+      "file": "heads-landscape.jpg",
+      "bytes": 423999,
+      "sha256": "a8417168e470075d7759418a1f9f9f8dd9672b03577d9c6523283a047481fab4"
+    },
+    {
+      "file": "heads-landscape.mp4",
+      "bytes": 10683886,
+      "sha256": "e26177657db41eff448a4c9a2f8f9aa68e5ee5ad53ac16d9d21d97b151b62c33"
+    },
+    {
+      "file": "heads-portrait.jpg",
+      "bytes": 391042,
+      "sha256": "d21783652467d4730d32a831e23e98ddf7d164151fda324f1ad77add521afa6d"
+    },
+    {
+      "file": "heads-portrait.mp4",
+      "bytes": 9650571,
+      "sha256": "d20944f6d0b3750d4ef402bb82bba5c21975a7c7891c0dbd60256658f7294b19"
+    },
+    {
+      "file": "tails-landscape.jpg",
+      "bytes": 409700,
+      "sha256": "e889d816a1bb51dcd930f94e90b705c2f990071c6c8d40248d2fa68cb6315f08"
+    },
+    {
+      "file": "tails-landscape.mp4",
+      "bytes": 10656957,
+      "sha256": "31c5b0de3588d93e87e15d7983a0bafe81c23a1aa7ed502f8597c2431250c16d"
+    },
+    {
+      "file": "tails-portrait.jpg",
+      "bytes": 376720,
+      "sha256": "27e5168c0c0638351057692f1053ec3b95fb32c7aa47560f7738d1dd0179b19a"
+    },
+    {
+      "file": "tails-portrait.mp4",
+      "bytes": 9546500,
+      "sha256": "940d68c5e0d780117f5082b432538ebb7e22c2cbf6a74636b1ce118bbc3e805f"
+    }
+  ]
+}

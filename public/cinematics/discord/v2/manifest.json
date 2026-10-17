@@ -1,0 +1,101 @@
+{
+  "version": "1.1.0",
+  "name": "断序杂音 · 崩界铸刃",
+  "durationSeconds": 8,
+  "fps": 30,
+  "frames": 240,
+  "handoffSeconds": 6.8,
+  "presentationOnly": true,
+  "orientations": {
+    "landscape": [
+      1600,
+      1000
+    ],
+    "portrait": [
+      1000,
+      1600
+    ]
+  },
+  "audio": {
+    "source": "Original procedural synchronized stereo",
+    "sampleRate": 48000,
+    "channels": 2,
+    "peak": 0.8799999999999999,
+    "rms": 0.09575727096880536,
+    "silentBeat": [
+      4.03,
+      4.23
+    ]
+  },
+  "changes": [
+    "17.1-unit long sword with segmented diamond blade, swept guard, inlay and wrapped hilt",
+    "Ten individually accelerated assembly parts, damped recoil and synchronized forging impacts",
+    "Layered energy helices, ballistic shards, fracture networks and refracted protection impacts",
+    "Brief keyed RGB dispersion and horizontal reality-collapse bands"
+  ],
+  "timeline": [
+    {
+      "at": 0,
+      "event": "Two symbolic attack costs converge"
+    },
+    {
+      "at": 1.38,
+      "event": "Hilt and swept guard hammer into place"
+    },
+    {
+      "at": 1.88,
+      "event": "Five blade sections accelerate and forge, one by one"
+    },
+    {
+      "at": 2.88,
+      "event": "Long needle point and core lock into sword"
+    },
+    {
+      "at": 3.75,
+      "event": "Anticipation and held breath"
+    },
+    {
+      "at": 4.23,
+      "event": "Cyan slash, ballistic rupture and reality-collapse filter"
+    },
+    {
+      "at": 5.45,
+      "event": "Crystal crown forms protection"
+    },
+    {
+      "at": 6.2,
+      "event": "Three hostile lances refract away"
+    },
+    {
+      "at": 6.8,
+      "event": "Live ally-nameplate handoff window"
+    },
+    {
+      "at": 8,
+      "event": "End film and audio"
+    }
+  ],
+  "provenance": "Original Blender geometry, materials, animation, camera, procedural nebula and synthesized sound. Art direction follows the supplied card palette; no shrine, character identity, physical hand data, scoring or game randomness in the video.",
+  "assets": [
+    {
+      "file": "effect-landscape.mp4",
+      "bytes": 10905304,
+      "sha256": "dd0c7b89b9b401e3de8fe1a5c4c8d0d6b13ff847c661e27043ae3071f172799b"
+    },
+    {
+      "file": "effect-landscape.jpg",
+      "bytes": 506247,
+      "sha256": "1da1065fbee3418d3755d341095bd5e5e9efa764f081f6b1b444c7dfd5401b23"
+    },
+    {
+      "file": "effect-portrait.mp4",
+      "bytes": 10562008,
+      "sha256": "c13f1be82a4900baabf11c4dc92a8d9560d4a3209e369c1ff500fd775ff656e5"
+    },
+    {
+      "file": "effect-portrait.jpg",
+      "bytes": 523266,
+      "sha256": "904bf1d23cb92e9aecb1499a8bae5439370feb8e6bfd792da1be441457cbc07c"
+    }
+  ]
+}

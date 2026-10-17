@@ -20,9 +20,9 @@ export function readAssetFrame(value: unknown): AssetFrame | null {
   return { type: 'character.asset.chunk', hash: entry.hash, index: Number(entry.index), total: Number(entry.total), mime: entry.mime, data: entry.data };
 }
 
-export async function sendCharacterAsset(hash: string, send: (frame: AssetFrame) => Promise<void>): Promise<boolean> {
+export async function sendCharacterAsset(hash: string, send: (frame: AssetFrame) => Promise<void>, read = getCharacterMedia): Promise<boolean> {
   if (!HASH.test(hash)) return false;
-  const blob = await getCharacterMedia(hash);
+  const blob = await read(hash);
   if (!blob || blob.size > MAX_IMAGE_BYTES || !MIMES.has(blob.type) || await mediaHash(blob) !== hash) return false;
   const bytes = new Uint8Array(await blob.arrayBuffer());
   const total = Math.ceil(bytes.length / CHARACTER_CHUNK_BYTES);
@@ -38,6 +38,7 @@ export async function sendCharacterAsset(hash: string, send: (frame: AssetFrame)
 interface Incoming { mime: string; total: number; parts: Uint8Array[]; bytes: number; started: number }
 export class CharacterAssetReceiver {
   private incoming = new Map<string, Incoming>();
+  constructor(private options: { maxBytes?: number; maxDimension?: number; save?: typeof putCharacterMedia } = {}) {}
   async accept(key: string, frame: Extract<AssetFrame, { type: 'character.asset.chunk' }>): Promise<boolean> {
     const decoded = atob(frame.data);
     if (decoded.length > CHARACTER_CHUNK_BYTES || decoded.length === 0) throw new Error('INVALID_CHARACTER_ASSET');
@@ -52,7 +53,7 @@ export class CharacterAssetReceiver {
     }
     const part = Uint8Array.from(decoded, character => character.charCodeAt(0));
     transfer.parts.push(part); transfer.bytes += part.length;
-    if (transfer.bytes > MAX_IMAGE_BYTES) { this.incoming.delete(key); throw new Error('CHARACTER_ASSET_TOO_LARGE'); }
+    if (transfer.bytes > (this.options.maxBytes ?? MAX_IMAGE_BYTES)) { this.incoming.delete(key); throw new Error('CHARACTER_ASSET_TOO_LARGE'); }
     if (transfer.parts.length !== transfer.total) return false;
     this.incoming.delete(key);
     const bytes = new Uint8Array(transfer.bytes);
@@ -61,9 +62,9 @@ export class CharacterAssetReceiver {
     if (await mediaHash(blob) !== frame.hash) throw new Error('CHARACTER_ASSET_HASH_MISMATCH');
     const bitmap = await createImageBitmap(blob);
     try {
-      if (!bitmap.width || !bitmap.height || bitmap.width > 2000 || bitmap.height > 2000) throw new Error('CHARACTER_ASSET_DIMENSIONS');
+      if (!bitmap.width || !bitmap.height || bitmap.width > (this.options.maxDimension ?? 2000) || bitmap.height > (this.options.maxDimension ?? 2000)) throw new Error('CHARACTER_ASSET_DIMENSIONS');
     } finally { bitmap.close(); }
-    await putCharacterMedia(frame.hash, blob);
+    await (this.options.save ?? putCharacterMedia)(frame.hash, blob);
     return true;
   }
   clear() { this.incoming.clear(); }

@@ -1,0 +1,396 @@
+.god-workbench[role='dialog'][role='dialog'] {
+  --god-accent: #d1bee7;
+  position: fixed;
+  width: min(960px, 100vw);
+  max-width: 100vw;
+  max-height: 94vh;
+  max-height: 94dvh;
+  padding: 0;
+  gap: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: #191d30 !important;
+  border: 1px solid #b69a71 !important;
+  border-radius: 22px 22px 0 0 !important;
+  color: #f3ebd7;
+  transform: none !important;
+  isolation: isolate;
+}
+.god-card-42[role=dialog][role=dialog] {
+  --god-accent: #dac0e9;
+}
+.god-card-43[role=dialog][role=dialog] {
+  --god-accent: #d6b77c;
+}
+.god-card-44[role=dialog][role=dialog] {
+  --god-accent: #b8d6e8;
+}
+.god-workbench::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--god-accent);
+  mask: url('/art/mahjong-pattern.svg') center/400px;
+  opacity: 0.045;
+  pointer-events: none;
+}
+.god-header,
+.god-footer {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+  padding: 18px 24px;
+  background: #28273d;
+  border-color: #b7996244;
+  border-style: solid;
+  border-width: 0 0 1px;
+}
+.god-header > button {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #c6ad76;
+  border-radius: 50%;
+  color: #e6ce97;
+  background: #ffffff08;
+}
+.god-header h2 {
+  font-family: var(--font-serif-display);
+  font-size: 27px;
+  color: #f2d59b;
+}
+.god-header p {
+  font-size: 12px;
+  color: #c5baca;
+  margin-top: 5px;
+}
+.god-seal {
+  margin-left: auto;
+  width: 32px;
+  height: 32px;
+  color: var(--god-accent);
+}
+.god-body {
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 24px;
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 26px;
+}
+.god-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  align-items: start;
+}
+.god-hero small {
+  font-size: 12px;
+  color: var(--god-accent);
+  letter-spacing: 2px;
+}
+.god-hero h2 {
+  font-family: var(--font-serif-display);
+  font-size: clamp(27px, 4vw, 38px);
+  line-height: 1.6;
+  color: #f4d998;
+  margin: 12px 0;
+}
+.god-hero p,
+.god-effect p,
+.god-details p {
+  font-size: 14px;
+  color: #cbc4d5;
+  line-height: 1.9;
+}
+.god-hero img {
+  width: 150px;
+  max-height: 220px;
+  object-fit: contain;
+  align-self: center;
+  filter: drop-shadow(0 8px 10px #0008);
+  transform: rotate(5deg);
+}
+.god-config {
+  min-width: 0;
+}
+.god-cost {
+  border: 1px solid #bcab7844;
+  border-radius: 13px;
+  background: #ffffff04;
+  padding: 17px;
+}
+.god-cost label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+.god-cost input {
+  width: 21px;
+  height: 21px;
+  flex-shrink: 0;
+  accent-color: #cbaa71;
+}
+.god-cost strong {
+  font-size: 16px;
+  display: block;
+}
+.god-cost small {
+  font-size: 12px;
+  color: #bcb7c9;
+  display: block;
+  margin-top: 6px;
+}
+.god-cost-tokens {
+  margin-left: auto;
+  white-space: nowrap;
+  color: var(--god-accent);
+  font-family: var(--font-serif-display);
+  font-size: 24px;
+}
+.god-targets,
+.god-decisions,
+.god-effect {
+  margin: 22px 0;
+}
+.god-workbench h3 {
+  font-size: 16px;
+  color: #e9d3a3;
+  margin: 0 0 13px;
+}
+.god-targets > div {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.god-targets button {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  text-align: left;
+  padding: 16px;
+  border: 1px solid #8e819566;
+  border-radius: 10px;
+  background: #ffffff05;
+  color: #ded5e5;
+}
+.god-decisions > div {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+}
+.god-decisions button {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px 4px;
+  border: 1px solid #b39b6944;
+  border-radius: 12px;
+  background: #ffffff04;
+}
+.god-decisions button small {
+  font-size: 11px;
+  color: #bbb3c7;
+  line-height: 1.5;
+}
+.god-decisions button strong {
+  font-family: var(--font-serif-display);
+  font-size: 22px;
+  color: #e6d1a3;
+}
+.god-workbench button[aria-pressed='true'] {
+  border-color: #e3c683;
+  background: #c3a77822;
+  box-shadow: inset 0 0 0 1px #d0b56e55;
+}
+.god-coin {
+  width: 55px;
+  height: 55px;
+  border: 3px double #c6ac73;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-serif-display);
+  font-size: 28px;
+  background: radial-gradient(circle at 30% 25%, #5a483c, #211c2f);
+  color: #e5cb90;
+}
+.god-coin-tails {
+  filter: saturate(0.3);
+}
+.god-coin-toss {
+  filter: hue-rotate(230deg);
+}
+.god-effect {
+  display: flex;
+  gap: 14px;
+  background: #8d7bb010;
+  border: 1px solid #9b89b233;
+  border-radius: 13px;
+  padding: 20px;
+}
+.god-effect > svg {
+  flex-shrink: 0;
+  color: var(--god-accent);
+}
+.god-details {
+  margin-top: 18px;
+  font-size: 13px;
+  color: #bcb7ca;
+}
+.god-details summary {
+  cursor: pointer;
+  padding: 12px 0;
+  color: #dac69e;
+}
+.god-details label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 14px;
+}
+.god-details select,
+.god-details textarea {
+  background: #141728;
+  color: #e5dbcf;
+  border: 1px solid #ac976855;
+  border-radius: 8px;
+  padding: 10px;
+  max-width: 100%;
+  font: inherit;
+}
+.god-error {
+  color: #ffc3af;
+  line-height: 1.7;
+  font-size: 13px;
+  margin-top: 12px;
+}
+.god-footer {
+  border-width: 1px 0 0;
+  justify-content: space-between;
+}
+.god-footer small {
+  display: block;
+  color: #b4acbc;
+  font-size: 11px;
+}
+.god-footer strong {
+  display: block;
+  color: #e1c897;
+  margin-top: 5px;
+  font-size: 15px;
+}
+.god-submit {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  min-height: 58px;
+  min-width: 210px;
+  padding: 10px 28px;
+  color: #f3d99f;
+  font-family: var(--font-serif-display);
+  font-size: 23px;
+  background: #312737 url('/art/signboard-long.png') center/100% 100% no-repeat;
+  border: 1px solid #c8a970;
+  border-radius: 10px;
+}
+.god-workbench button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.god-workbench button {
+  touch-action: manipulation;
+}
+.god-workbench button:focus-visible {
+  outline: 2px solid #f0cf8b;
+  outline-offset: 3px;
+}
+@media (max-width: 700px) {
+  .god-body {
+    display: block;
+    padding: 18px;
+  }
+  .god-hero {
+    flex-direction: row;
+    gap: 14px;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .god-hero > div {
+    flex: 1;
+  }
+  .god-hero img {
+    width: 95px;
+    max-height: 145px;
+  }
+  .god-hero h2 {
+    font-size: 27px;
+    line-height: 1.45;
+  }
+  .god-hero p {
+    font-size: 12px;
+  }
+  .god-header,
+  .god-footer {
+    padding: 14px 16px;
+  }
+  .god-cost-tokens {
+    display: none;
+  }
+  .god-submit {
+    min-width: 0;
+    flex: 1;
+    font-size: 21px;
+    padding: 10px 15px;
+  }
+  .god-footer > div {
+    max-width: 40%;
+  }
+  .god-footer strong {
+    font-size: 13px;
+  }
+  .god-decisions > div {
+    gap: 7px;
+  }
+}
+@media (orientation: landscape) and (max-height: 500px) {
+  .god-workbench[role='dialog'][role='dialog'] {
+    max-height: 98vh;
+  }
+  .god-header,
+  .god-footer {
+    padding: 8px 18px;
+  }
+  .god-header h2 {
+    font-size: 21px;
+  }
+  .god-submit {
+    min-height: 44px;
+  }
+  .god-body {
+    padding: 16px;
+    grid-template-columns: 1fr 1.3fr;
+  }
+  .god-hero img {
+    max-height: 140px;
+    width: 90px;
+  }
+  .god-hero h2 {
+    font-size: 24px;
+  }
+}
+
+.god-hero h2 { white-space: pre-line; text-wrap: balance; }
+
+.god-targets .character-avatar{width:42px;height:42px;flex:none;border:1px solid #c3a672;border-radius:8px}.god-targets button>span{min-width:0;display:grid;gap:4px}.god-targets strong{overflow-wrap:anywhere;font-size:14px}.god-targets small{font-size:11px;color:#c9bcab}
+@media(orientation:landscape) and (max-height:500px){.god-body{gap:16px;padding:12px 16px}.god-hero{position:relative;padding-right:90px;gap:8px}.god-hero img{position:absolute;right:0;top:8px;width:76px;max-height:120px}.god-hero h2{margin:4px 0;font-size:22px;line-height:1.35}.god-hero p{font-size:12px;line-height:1.65}.god-hero small{font-size:10px;letter-spacing:0}.god-cost{padding:10px}.god-cost small{margin-top:3px}.god-targets,.god-decisions,.god-effect{margin:12px 0}.god-workbench h3{margin-bottom:8px}.god-targets button{padding:9px}.god-decisions button{padding:10px 4px;gap:5px}.god-coin{width:38px;height:38px;font-size:22px}.god-details{margin-top:8px}.god-details summary{padding:8px 0}}
+
+@media(max-width:420px){.god-targets>div{grid-template-columns:minmax(0,1fr)}.god-targets button{padding:10px 12px;min-height:64px}.god-targets button>span{text-align:left}.god-targets strong{line-height:1.35}}

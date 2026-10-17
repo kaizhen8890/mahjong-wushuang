@@ -5,14 +5,33 @@ import android.view.WindowManager;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
+import androidx.activity.OnBackPressedCallback;
 import com.getcapacitor.BridgeActivity;
 
 public class MainActivity extends BridgeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         registerPlugin(LanRoomPlugin.class);
+        registerPlugin(SkillNfcPlugin.class);
         registerPlugin(VirtualTableDisplayPlugin.class);
         super.onCreate(savedInstanceState);
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            private boolean dispatching;
+            private void fallback() {
+                setEnabled(false);
+                try { getOnBackPressedDispatcher().onBackPressed(); }
+                finally { setEnabled(true); }
+            }
+            @Override public void handleOnBackPressed() {
+                if (dispatching) return;
+                if (getBridge() == null || getBridge().getWebView() == null) { fallback(); return; }
+                dispatching = true;
+                // A visible editor may consume Back synchronously. Otherwise retain Capacitor's navigation.
+                getBridge().getWebView().evaluateJavascript(
+                    "!window.dispatchEvent(new Event('mahjong:native-back',{cancelable:true}))",
+                    handled -> { dispatching = false; if (!"true".equals(handled)) fallback(); });
+            }
+        });
         enterFullscreen();
     }
 

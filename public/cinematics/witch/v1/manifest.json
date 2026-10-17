@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "appVersion": "1.1.0-beta.1",
+  "fps": 30,
+  "introSeconds": 5.2,
+  "judgementSeconds": 2.1,
+  "introImpactSeconds": 3.1,
+  "judgementImpactSeconds": 0.6333333333333333,
+  "assets": [
+    {
+      "file": "intro-landscape.mp4",
+      "bytes": 4591950,
+      "sha256": "f5bfe4206d3708cbd960c79607329b11b1a79004e953033eb867b326ac8d7dae"
+    },
+    {
+      "file": "judgement-landscape.mp4",
+      "bytes": 2379920,
+      "sha256": "9ecd12ba3d7eb71b45e16bf0b1c8f918822e4a0aff0f1f3eb3a400aa049a4126"
+    },
+    {
+      "file": "poster-landscape.jpg",
+      "bytes": 239159,
+      "sha256": "8cd98a6da0d5e5401cc6ee32d0962b94ef55b1c71133a6013882829c152ddfe1"
+    },
+    {
+      "file": "intro-portrait.mp4",
+      "bytes": 5320485,
+      "sha256": "0d59e059d55b1f75a6a91c663bc56f91e5ffe53bf7b3b1fa279315c463f7396e"
+    },
+    {
+      "file": "judgement-portrait.mp4",
+      "bytes": 2559913,
+      "sha256": "b50d4d055f32fd91fcc3363a040e26b90a31a1f558ee7e3eb0f2bf0295aa148c"
+    },
+    {
+      "file": "poster-portrait.jpg",
+      "bytes": 285713,
+      "sha256": "a7bcd09636ab023a98376bbf2efcc1b75cf468c748cb8803ca0bdf4c543da76c"
+    }
+  ]
+}

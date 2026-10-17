@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Drawer as DrawerPrimitive } from '@base-ui/react/drawer';
 
 import { cn } from '@/lib/utils';
+import { NativeBackClose } from './native-back-close';
 
 type DrawerContextProps = {
   hasSnapPoints: boolean;
@@ -149,6 +150,7 @@ function DrawerContent({
           )}
           {...props}
         >
+          <NativeBackClose close={DrawerPrimitive.Close} />
           {showSwipeHandle && <DrawerSwipeHandle />}
           <DrawerPrimitive.Content
             data-slot="drawer-content"

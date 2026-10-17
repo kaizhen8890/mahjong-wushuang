@@ -1,0 +1,11 @@
+{
+  "buildRoot": "D:/mahjong-builds",
+  "node": "C:/Program Files/nodejs/node.exe",
+  "javaHome": "C:/Program Files/Java/jdk-21",
+  "androidSdk": "C:/Users/YOUR_NAME/AppData/Local/Android/Sdk",
+  "androidUserHome": "D:/mahjong-signing-home",
+  "ffmpeg": "D:/tools/ffmpeg.exe",
+  "cinematicCache": "D:/mahjong-cache/cinematics",
+  "certificateSha256": "REPLACE_WITH_YOUR_EXPECTED_64_HEX_CERTIFICATE_FINGERPRINT",
+  "minimumVersionCode": 87
+}

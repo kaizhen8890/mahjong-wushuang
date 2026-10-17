@@ -13,8 +13,8 @@ const scheduler: RoomScheduler = { every(callback) { const id = setInterval(call
 /** The owning screen supplies a fresh room and exclusively owns this native Host instance. */
 export async function startVirtualNativeHost(room: VirtualRoomHost, port: NativeVirtualHostPort,
   serviceName: string, changed: () => void, failed: (cause: unknown) => void, clock: RoomScheduler = scheduler,
-  assetMessage?: (connectionId: string, text: string) => boolean) {
-  const transport = await attachVirtualRoom(room, port, changed, failed, assetMessage);
+  assetMessage?: (connectionId: string, text: string) => boolean, prepareDelivery?: (delivery: RoomDelivery) => Promise<void | boolean>) {
+  const transport = await attachVirtualRoom(room, port, changed, failed, assetMessage, prepareDelivery);
   let info: NativeHostInfo;
   try {
     info = await port.startHost({ preferredPort: 8765, serviceName });

@@ -45,8 +45,8 @@ export default defineConfig(async () => {
   const { cloudflare } = await import('@cloudflare/vite-plugin');
 
   return {
-    // Match the factory Android WebView used by the compatibility device.
-    build: { target: 'chrome92', cssTarget: 'chrome92' },
+    // Keep the Android compatibility target and the iOS WKWebView support floor.
+    build: { target: ['chrome92', 'safari16.4'], cssTarget: ['chrome92', 'safari16.4'] },
     css: { postcss: { plugins: [tailwindcss()] } },
     server: isCodexSeatbeltSandbox
       ? { watch: { useFsEvents: false, usePolling: true } }

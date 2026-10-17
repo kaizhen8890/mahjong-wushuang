@@ -30,8 +30,12 @@ for (const type of ['攻','团','单','陷']) {
   }
   assert.deepEqual(animated.players,changed.players,'Animation never changes scoring or skill hands');
 }
-assert.equal(manifest.cards.length,41);
+// Profile-specific faces/counts belong to the content contract. Shared behavior
+// still requires unique identities and valid artwork for every active skill.
+assert.equal(new Set(manifest.cards.map(entry => entry.key)).size, manifest.cards.length);
+assert.equal(skillCardArt(23),undefined);
+assert.equal(skillCardArt(38),undefined);
 for(const card of cards) assert.ok(skillCardArt(card.id),`Missing card art ${card.id}`);
 for(const entry of manifest.cards) assert.ok(existsSync('public'+entry.src),entry.src);
 assert.equal(skillCardArt(99999),undefined);
-console.log('Skill activation/reveal, no hidden placement/replay, snapshot boundary and 41 art assets passed.');
+console.log('Skill activation/reveal, no hidden placement/replay, snapshot boundary and active art references passed.');

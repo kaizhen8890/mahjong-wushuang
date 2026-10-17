@@ -140,9 +140,11 @@
   height: var(--wind-slot-thickness);
   border: 0;
   border-radius: 0 0 26px 26px;
-  background: #796b8e;
-  box-shadow: none;
+  background: linear-gradient(180deg,#adb0b5aa 0%,#6b707a 9%,#464c56 46%,#646b75 86%,#92969e 100%);
+  box-shadow: inset 0 2px 3px #e9eef359,inset 0 -4px 6px #171d3159,0 3px 6px #14152560;
+  overflow: hidden;
 }
+.wind-slot::after { content:''; position:absolute; inset:0; border-radius:inherit; background:repeating-linear-gradient(90deg,#edf1ff0d 0 1px,transparent 1px 4px),linear-gradient(115deg,transparent 20%,#ffffff18 38%,transparent 56%); pointer-events:none; }
 .wind-slot.seat-top { top: -3px; left: 50%; transform: translateX(-50%); }
 .wind-slot.seat-bottom { bottom: -3px; left: 50%; transform: translateX(-50%) rotate(180deg); }
 .wind-slot.seat-left {
@@ -154,15 +156,17 @@
   transform: translateY(-50%) rotate(90deg);
 }
 .wind-slot.is-lit {
-  background: #ffe27a;
+  background: linear-gradient(180deg,#fff5c0,#ffe183 20%,#f5c353 65%,#ffe5a0);
   filter: drop-shadow(0 0 10px #ffe675) drop-shadow(0 0 24px #ffc747);
   animation: wind-gold-breath 2.3s ease-in-out infinite alternate;
 }
+.wind-slot.is-riichi { background:linear-gradient(180deg,#ffc2ae,#ff7b77 18%,#e44857 62%,#ff9294); box-shadow:inset 0 2px 4px #ffe6d988,inset 0 -3px 6px #8f16374d; filter:drop-shadow(0 0 12px #ef526b) drop-shadow(0 0 24px #e63a594d); animation:wind-red-breath 2.8s ease-in-out infinite alternate; }
+@keyframes wind-red-breath { from { filter:brightness(.96) drop-shadow(0 0 9px #f15368) drop-shadow(0 0 18px #ef49604d); } to { filter:brightness(1.12) drop-shadow(0 0 14px #ff7687) drop-shadow(0 0 30px #f14a6366); } }
 @keyframes wind-gold-breath {
   from { filter: brightness(.94) drop-shadow(0 0 8px #ffe17a) drop-shadow(0 0 17px #ffcd57); }
   to { filter: brightness(1.16) drop-shadow(0 0 16px #fff2a5) drop-shadow(0 0 34px #ffd45b); }
 }
-@media (prefers-reduced-motion: reduce) { .wind-slot.is-lit { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .wind-slot.is-lit,.wind-slot.is-riichi { animation: none; } }
 @media (orientation: landscape) and (max-width: 1100px) {
   .physical-table-main .table-turn-timer { top: 2%; }
 }
@@ -299,4 +303,63 @@
   .remote-control-shell .remote-command-skill { grid-column: 4; grid-row: 2; }
   .remote-control-shell .remote-command-points { grid-column: 3; grid-row: 3; }
   .remote-control-shell .remote-command-effects { grid-column: 4; grid-row: 3; }
+}
+
+/* Keep every point of the plate for the player's identity and score. */
+.physical-table-main .tablet-player-card { display:block; }
+.physical-table-main .tablet-player-card .player-card-main { height:100%; container-type:inline-size; grid-template-rows:auto minmax(0,1fr); gap:4px; align-items:center; }
+.physical-table-main .tablet-player-card .player-score { display:block; min-width:0; font-size:min(calc(var(--plate-high) * .58),calc(170cqw / var(--score-chars,6))); line-height:1; white-space:nowrap; letter-spacing:-.035em; }
+.physical-table-main .tablet-player-card:is(.is-won,.is-eliminated)::before { content:none; }
+.physical-table-main .tablet-player-card .player-card-head { align-self:start; }
+.physical-table-main .table-control-island { gap:9px; padding:11px; }
+.physical-table-main .table-control-island .wall-control { grid-template-columns:34px minmax(0,1fr) 34px; gap:5px; padding:0; background:transparent; align-items:stretch; }
+.physical-table-main .table-control-island .wall-stepper { position:relative; min-width:0; width:34px; min-height:90px; padding:0; border-radius:9px; background:linear-gradient(90deg,#292c40,#4a4b62 48%,#292c40); border-color:#b9a47b80; box-shadow:inset 0 1px #eee5c93d,0 4px 7px #080f214d; }
+.physical-table-main .table-control-island .wall-stepper::after { content:''; position:absolute; inset:0 -5px; }
+.physical-table-main .table-control-island .wall-stepper svg { width:18px; height:18px; }
+.physical-table-main .table-control-island .wall-number { min-height:90px; container-type:inline-size; background:linear-gradient(180deg,#11192c,#252d44); box-shadow:inset 0 2px 7px #0005,inset 0 -1px #ece0bd18; color:#ffedbc; }
+.physical-table-main .table-control-island .wall-number input { height:100%; background:transparent; color:inherit; font:850 clamp(42px,68cqw,94px)/1 var(--font-sans-ui); letter-spacing:-.03em; text-shadow:0 2px 3px #050c1d; }
+.physical-table-main .table-control-island .wall-number[data-digits='3'] input { font-size:clamp(32px,47cqw,76px); }
+.physical-table-main .table-control-island .experience-environment,
+.physical-table-main .table-control-island .environment-banner { min-height:48px; display:flex; justify-content:center; padding:5px 8px; }
+.physical-table-main .environment-banner .table-fit-label { font-family:var(--font-serif-display); font-weight:400; text-align:center; }
+@media(max-height:540px) and (orientation:landscape) { .physical-table-main .table-control-island { gap:5px; padding:7px; } .physical-table-main .table-control-island .wall-stepper,.physical-table-main .table-control-island .wall-number { min-height:68px; } .physical-table-main .table-control-island .wall-number input { font-size:clamp(36px,58cqw,68px); } .physical-table-main .table-control-island .experience-environment { min-height:40px; } }
+
+/* Outline assets keep the winds centered without depending on font baselines.
+   Preserve the original wind/name order; the wind stays to the name's left. */
+.physical-table-main .tablet-player-card {
+  --plate-wind-size: clamp(44px, calc(var(--plate-high) - 80px), 60px);
+  --plate-name-size: clamp(25px, 2.2vw, 35px);
+}
+.physical-table-main .tablet-player-card .player-card-head {
+  position: relative; height: calc(var(--plate-wind-size) - 10px);
+  padding-left: calc(var(--plate-wind-size) + 10px); align-items: flex-start;
+}
+.physical-table-main .tablet-player-card .player-card-head strong {
+  font-size: var(--plate-name-size); line-height: 1.2;
+  padding-top: max(0px, calc((var(--plate-wind-size) - var(--plate-name-size) * 1.2) / 2 - 10px));
+}
+.physical-table-main .tablet-player-card .plate-wind-mark {
+  position: absolute; top: -10px; left: 0;
+  width: var(--plate-wind-size); height: var(--plate-wind-size); display: block;
+  border: 1.5px solid #d8ba7c; border-radius: 7px; overflow: visible;
+  background: linear-gradient(145deg, #713e4f, #482437 75%);
+  box-shadow: inset 0 1px 2px #fff1c74a, inset 0 -2px 3px #1d132777, 0 2px 4px #080d2640;
+}
+.physical-table-main .tablet-player-card .plate-wind-mark img { display: block; width: 100%; height: 100%; max-width: none; user-select: none; }
+.physical-table-main .tablet-player-card .plate-wind-mark.is-east {
+  border-color: #ffdf8e; background: linear-gradient(135deg, #fff1b8, #eac66e 72%, #c89747);
+  box-shadow: inset 0 1px 2px #fffde2, inset 0 -2px 3px #a877354d, 0 2px 5px #080d2655;
+}
+.physical-table-main .tablet-player-card .plate-dealer-mark {
+  position: absolute; right: -4px; top: -3px; display: grid; place-items: center;
+  width: 18px; height: 18px; border: 1px solid #f7dba0; border-radius: 50%;
+  background: #792c3e; color: #ffebc3; font: 700 11px/1 var(--font-sans-ui);
+  box-shadow: 0 1px 3px #20101c66;
+}
+/* Height limits win over the older per-seat portrait font rules. */
+.physical-table-main .physical-table-board .tablet-player-card .player-score {
+  font-size: min(calc(var(--plate-high) * .58), calc(170cqw / var(--score-chars, 6)), calc(var(--plate-high) - 22px - var(--plate-wind-size)));
+}
+@media (orientation: portrait) {
+  .physical-table-main .tablet-player-card { --plate-name-size: clamp(18px, 3vw, 25px); }
 }

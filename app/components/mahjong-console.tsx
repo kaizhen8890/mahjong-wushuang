@@ -1,4 +1,20 @@
 'use client';
+import type { CSSProperties } from 'react';
+import { EffectSummary } from './effect-summary';
+import { SettingsReview } from './settings-review';
+import './rules-settings.css';
+import { MatchHistory } from './match-history';
+import './room-record-panels.css';
+import { DrawSettlementDialog } from './draw-settlement-dialog';
+import { DataManagementDialog } from './data-management-dialog';
+import './operation-dialogs.css';
+import { SkillDetailPanel, SkillEditorPanel, skillEditorIssue } from './skill-library-panels';
+import { GodSkillWorkbench } from './god-skill-workbench';
+import { NfcIntentTarget } from './nfc-card-scanner';
+import { NfcCodeLibrary } from './nfc-code-library';
+import { godCardCost } from '@/lib/god-card-cost';
+
+import { exportJson } from '@/lib/file-export';
 
 /* oxlint-disable next/no-img-element -- Local tile/card assets and user data URLs are intentionally rendered without an optimizer. */
 
@@ -18,11 +34,8 @@ import {
   Download,
   Edit3,
   Eye,
-  EyeOff,
   Flag,
   History,
-  Import,
-  Library,
   ListRestart,
   Minus,
   Music2,
@@ -35,7 +48,6 @@ import {
   ShieldCheck,
   Smartphone,
   Sparkles,
-  Target,
   Trash2,
   Trophy,
   Upload,
@@ -49,16 +61,30 @@ import {
 } from 'lucide-react';
 
 import bundledSkillData from '@/data/skill-cards.json';
+import { migrateSkillLibrary, retireSkillReferences, SKILL_CATALOG_REVISION } from '@/lib/skill-catalog';
 import { analyzeHand, parseMelds } from '@/lib/hand-analysis';
-import { HandCalculator } from './hand-calculator';
+import { HandCalculator, type HandCalculatorDraft } from './hand-calculator';
+import { SkillCatalogPicker, SkillCardArt } from './skill-catalog-picker';
+import { HandDisplay } from './mahjong-tile';
 import { FloatingEmote, TurnTimerDisplay, useTurnCountdown } from './game-overlays';
 import { useLanHost } from '@/app/hooks/use-lan-host';
+import { useSkillMusic } from '@/app/hooks/use-skill-music';
 import { RIICHI_MUSIC, useCountdownSound, useRealtimeSound, useRiichiMusic } from '@/app/hooks/use-game-audio';
 import { recordRiichiTransitions, recordSkillTransitions, recordWin } from '@/lib/presentation';
 import { PresentationOverlay, usePresentationSequence, RollingScore, WinParticles, type PresentationSequence } from './table-presentation';
 import { FitLabel } from './fit-label';
 import { CharacterAvatar, CharacterPicker } from './character-picker';
 import { characterChoice, defaultSeatCharacter, type CharacterChoice } from '@/lib/characters';
+import { EnvironmentFields, EnvironmentBonusField, EnvironmentControls, ExperiencePresentation, NightMode } from './skill-experience';
+import { WushuangPreview } from './wushuang-cinematic';
+import { WushuangWorkbench } from './wushuang-workbench';
+import { isWushuangCard } from '@/lib/wushuang-session';
+import { pendingWushuang, correctWushuang } from '@/lib/wushuang';
+import { SpecialCinematicPreview } from './special-cinematic';
+import { useSilenceMode } from '@/app/hooks/use-night-brightness';
+import { CoinDecisionDialog } from './coin-decision-dialog';
+import type { CoinDecision } from '@/lib/skill-random';
+import { usesDecisionCoin, activeEnvironment, awardLastSurvivor, applyEnvironmentAction, environmentBonus, type EnvironmentOptions } from '@/lib/skill-experience';
 import { applyRemoteControllerCommand } from '@/lib/remote-command';
 import { hasNativeLanRoom } from '@/lib/lan-native';
 import {
@@ -163,6 +189,7 @@ const TYPE_STYLES: Record<string, { label: string; color: string }> = {
   攻: { label: '负面攻击', color: 'red' },
   陷: { label: '防守陷阱', color: 'purple' },
   环: { label: '战局环境', color: 'gray' },
+  神: { label: '无双神卡', color: 'purple' },
 };
 
 const YAKU_EXCLUSIVE_GROUPS = [
@@ -179,6 +206,8 @@ const YAKU_EXCLUSIVE_GROUPS = [
 type SkillDuration = 'once' | 'hand' | 'match' | 'manual';
 
 interface SkillRecordForm {
+  environment?: EnvironmentOptions;
+  activationId?: string;
   actorId: string;
   cardId: number;
   targetIds: string[];
@@ -238,20 +267,10 @@ function tileFamily(tile: string) {
   return tile[0] === '0' ? `5${tile.slice(1)}` : tile;
 }
 
-function downloadJson(fileName: string, data: unknown) {
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement('a');
-  anchor.href = url;
-  anchor.download = fileName;
-  anchor.click();
-  URL.revokeObjectURL(url);
-}
-
-function normalizeGameState(state: GameState): GameState {
-  return {
+function normalizeGameState(state: GameState, cards: readonly SkillCard[] = bundledCards): GameState {
+  return retireSkillReferences({
     ...state,
-    presentations: [],
+    presentations: [], experienceEvents: [],
     settings: { ...DEFAULT_SETTINGS, ...state.settings },
     players: state.players.map((player, index) => ({
       ...player,
@@ -273,7 +292,7 @@ function normalizeGameState(state: GameState): GameState {
     effects: state.effects ?? [],
     history: state.history ?? [],
     virtual: state.virtual ?? { started: false, wall: [], hands: {}, rivers: {} },
-  };
+  }, cards);
 }
 
 function applySettlementToState(
@@ -348,11 +367,17 @@ function Tile({ tile, small = false, hidden = false }: { tile: string; small?: b
   );
 }
 
+const PLATE_WIND_ART: Record<PlayerState['wind'], string> = {
+  东: '/art/winds/east.svg',
+  南: '/art/winds/south.svg',
+  西: '/art/winds/west.svg',
+  北: '/art/winds/north.svg',
+};
+
 function PlayerPlate({
   player,
   current,
   position,
-  effects,
   onSelect,
   onDraw,
   thinking,
@@ -363,7 +388,6 @@ function PlayerPlate({
   player: PlayerState;
   current: boolean;
   position: string;
-  effects: Array<{ id: string; label: string; hidden?: boolean }>;
   onSelect: () => void;
   onDraw: () => void;
   thinking: boolean;
@@ -384,29 +408,20 @@ function PlayerPlate({
       </button>
       <button
         className="player-card-main"
-        aria-label={`${player.wind}家 ${player.name} ${player.score}点，打开玩家操作`}
+        style={{ '--score-chars': player.score.toLocaleString('zh-CN').length } as CSSProperties}
+        aria-label={`${player.wind}家 ${player.name} ${player.score}点${player.riichi ? '，已立直' : ''}${participation === 'won' ? '，已和牌' : participation === 'eliminated' ? '，已退出' : ''}，打开玩家操作`}
         type="button"
         onClick={onSelect}
       >
         <span className="player-card-head">
-          <span><i className={`wind-seal ${player.wind === '东' ? 'is-east' : ''}`} title={player.wind === '东' ? '东家 · 庄家' : `${player.wind}家`}>{player.wind}</i><strong>{player.name}</strong></span>
+          <span className={`plate-wind-mark ${player.wind === '东' ? 'is-east' : ''}`} title={player.wind === '东' ? '东家 · 庄家' : `${player.wind}家`} aria-hidden="true">
+            <img src={PLATE_WIND_ART[player.wind]} alt="" draggable={false} />
+            {player.wind === '东' && <span className="plate-dealer-mark">庄</span>}
+          </span>
+          <strong title={player.name}>{player.name}</strong>
         </span>
-        <RollingScore className="player-score" value={player.score} playerId={player.id} sequence={presentation} />
+        <RollingScore className="player-score" fitToWidth value={player.score} playerId={player.id} sequence={presentation} />
         <WinParticles active={celebrating} />
-        <span className="player-tags">
-          {player.riichi && <b>立直</b>}
-          {participation === 'won' && <b>已和牌</b>}
-          {participation === 'eliminated' && <b>已退出</b>}
-          {player.eliminationReason && participation === 'eliminated' && <b>{player.eliminationReason}</b>}
-        </span>
-        <span className="effect-chips">
-          {effects.slice(0, 1).map((effect) => (
-            <span className={`effect-chip ${effect.hidden ? 'hidden' : ''}`} key={effect.id}>
-              {effect.hidden ? <EyeOff /> : <Sparkles />}{effect.label}
-            </span>
-          ))}
-          {effects.length > 1 && <span className="effect-chip">效果 {effects.length}</span>}
-        </span>
       </button>
       <button className={`player-draw-button ${thinking ? 'is-thinking' : ''}`} type="button" aria-label={thinking ? `${player.name}我已出牌` : `${player.name}摸牌，牌山减一`} onClick={onDraw} disabled={drawDisabled}>
         <span className="player-draw-team" title={player.team}>{player.team}</span>
@@ -426,22 +441,44 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
   const [historyOpen, setHistoryOpen] = useState(false);
   const [dataOpen, setDataOpen] = useState(false);
   const [detailCard, setDetailCard] = useState<SkillCard | null>(null);
+  const [nfcCodesOpen, setNfcCodesOpen] = useState(false);
   const [editorCard, setEditorCard] = useState<SkillCard | null>(null);
+  const [editorError, setEditorError] = useState('');
+  const cardImageRequest = useRef(0);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [discardDraft, setDiscardDraft] = useState<'settings' | 'card' | null>(null);
+  const settingsBaseline = useRef(''), editorBaseline = useRef('');
+  const [settingsReviewBaseline, setSettingsReviewBaseline] = useState('');
+  const settingsApplying = useRef(false);
+  const beginEditingCard = useCallback((card: SkillCard) => {
+    cardImageRequest.current++; setEditorError('');
+    editorBaseline.current = JSON.stringify(card);
+    setEditorCard(card);
+  }, []);
+  const closeEditor = () => {
+    if (editorCard && JSON.stringify(editorCard) !== editorBaseline.current) setDiscardDraft('card');
+    else setEditorCard(null);
+  };
   const [playerActionOpen, setPlayerActionOpen] = useState(false);
   const [actionPlayerId, setActionPlayerId] = useState<string | null>(null);
   const lastTurnTap = useRef(0);
   const [nagashiIds,setNagashiIds]=useState<string[]>([]);
-  const [settingsSection,setSettingsSection]=useState('基础规则');
+  const [settingsSection,setSettingsSection]=useState('对局');
   const [drawOpen, setDrawOpen] = useState(false);
   const [tenpaiIds, setTenpaiIds] = useState<string[]>([]);
   const [drawPool, setDrawPool] = useState(3000);
   const [effectsOpen, setEffectsOpen] = useState(false);
   const [endMatchOpen, setEndMatchOpen] = useState(false);
   const [matchResultOpen, setMatchResultOpen] = useState(false);
+  const [finalCharacters, setFinalCharacters] = useState<Record<string, PlayerState['character']>>({});
   const [finalSnapshot, setFinalSnapshot] = useState<MatchResultSnapshot | null>(null);
   const [installPrompt, setInstallPrompt] = useState<InstallPromptEvent | null>(null);
+  const [coinPrompt, setCoinPrompt] = useState<'activation' | 'reveal' | null>(null);
+  const [coinError, setCoinError] = useState('');
   const [skillRecordOpen, setSkillRecordOpen] = useState(false);
+  const [wushuangOpen, setWushuangOpen] = useState(false);
+  const [godOpen, setGodOpen] = useState(false);
+  const [wushuangActorId, setWushuangActorId] = useState('player-1');
   const [roomOpen, setRoomOpen] = useState(false);
   const [characterSeat, setCharacterSeat] = useState<number | null>(null);
   const [skillRecordSearch, setSkillRecordSearch] = useState('');
@@ -455,6 +492,10 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
   const [skillSearch, setSkillSearch] = useState('');
   const [skillType, setSkillType] = useState('全部');
   const [scoreTiles, setScoreTiles] = useState<string[]>([]);
+  const [scoreCalculatorDraft, setScoreCalculatorDraft] = useState<{winnerId:string;value:HandCalculatorDraft}>();
+  const [scoreCalculatorRevision, setScoreCalculatorRevision] = useState(0);
+  const [scoreReviewOpen, setScoreReviewOpen] = useState(false);
+  const settlementSubmitting = useRef(false);
   const [scoreAnalysis, setScoreAnalysis] = useState<{winningTile:string;meldText:string;automatic:boolean}>({winningTile:'',meldText:'',automatic:true});
   const [scoreForm, setScoreForm] = useState({
     winnerId: 'player-1',
@@ -466,11 +507,12 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
     uraDora: 0,
     akaDora: 0,
     flowerDora: 0,
-    bonusHan: 0,
+    bonusHan: 0, environmentNumberCount: 0,
     extraPoints: 0,
     selectedYaku: [] as string[],
     yakuOverrides: {} as Record<string, number>,
   });
+  const [godCostConfirmed, setGodCostConfirmed] = useState(false);
   const [skillForm, setSkillForm] = useState<SkillRecordForm>({
     actorId: 'player-1',
     cardId: bundledCards[0]?.id ?? 1,
@@ -493,10 +535,17 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
-        const parsed = JSON.parse(saved) as { game?: GameState; cards?: SkillCard[] };
-        if (parsed.cards?.length) setCards(parsed.cards);
+        const parsed = JSON.parse(saved) as { game?: GameState; cards?: SkillCard[]; skillCatalogRevision?: string };
+        if (parsed.skillCatalogRevision !== SKILL_CATALOG_REVISION) {
+          try {
+            const backupKey = `${STORAGE_KEY}:before-skill-catalog:${SKILL_CATALOG_REVISION}`;
+            if (!localStorage.getItem(backupKey)) localStorage.setItem(backupKey, saved);
+          } catch { /* A full backup must not prevent existing match data from loading. */ }
+        }
+        const restoredCards = migrateSkillLibrary(parsed.cards, parsed.skillCatalogRevision);
+        setCards(restoredCards);
         if (parsed.game?.players?.length) {
-          const restored = normalizeGameState(parsed.game);
+          const restored = normalizeGameState(parsed.game, restoredCards);
           setGame(restored);
           gameRef.current = restored;
         }
@@ -513,7 +562,7 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
     gameRef.current = game;
     if (!ready) return;
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ game, cards }));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ game, cards, skillCatalogRevision: SKILL_CATALOG_REVISION }));
     } catch {
       // Storage may be unavailable in private browsing; gameplay remains usable in memory.
     }
@@ -532,39 +581,45 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
   }, []);
 
   const commit = useCallback((updater: (current: GameState) => GameState) => {
-    setGame((current) => {
-      undoStack.current = [...undoStack.current.slice(-29), current];
-      const next = recordSkillTransitions(current, recordRiichiTransitions(current, updater(current)), cards);
-      gameRef.current = next;
-      return next;
-    });
+    const current = gameRef.current;
+    const next = recordSkillTransitions(current, recordRiichiTransitions(current, awardLastSurvivor(current, updater(current))), cards);
+    if (next === current) return;
+    undoStack.current = [...undoStack.current.slice(-29), current];
+    gameRef.current = next; setGame(next);
   }, [cards]);
 
   const commitRemote = useCallback((updater: (current: GameState) => GameState) => {
     const current = gameRef.current;
+    const next = recordSkillTransitions(current, recordRiichiTransitions(current, awardLastSurvivor(current, updater(current))), cards);
+    // Persist new skill outcomes before exposing them to animations or LAN snapshots.
+    if (ready && (next.experienceEvents !== current.experienceEvents || next.effects.some(e => (e.randomResult && !current.effects.some(old => old.id === e.id && old.randomResult)) || (e.wushuang && e.wushuang !== current.effects.find(old => old.id === e.id)?.wushuang)))) {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ game: next, cards })); }
+      catch { throw new Error('本机空间不足，技能结果未保存；请先导出备份并释放空间'); }
+    }
     undoStack.current = [...undoStack.current.slice(-29), current];
-    const next = recordSkillTransitions(current, recordRiichiTransitions(current, updater(current)), cards);
-    if (next.presentations?.some(event => event.kind === 'skill' && !current.presentations?.some(previous => previous.id === event.id))) {
+    if (next.experienceEvents !== current.experienceEvents || next.presentations?.some(event => event.kind === 'skill' && !current.presentations?.some(previous => previous.id === event.id))) {
       setView('table');
       setEffectsOpen(false);
     }
     gameRef.current = next;
     setGame(next);
     return next;
-  }, [cards]);
+  }, [cards, ready]);
 
   const lanHost = useLanHost({ game, cards, gameRef, commitRemote });
   const presentation = usePresentationSequence(game.presentations);
 
+  const environment = activeEnvironment(game);
+  useSilenceMode(environment?.kind === 'silence');
   const currentPlayer = game.players[game.turnIndex] ?? game.players[0];
-  const currentParticipation = currentPlayer?.participation ?? (currentPlayer?.active ? 'playing' : 'won');
   const actionPlayer = game.players.find(player => player.id === actionPlayerId) ?? currentPlayer;
   const actionParticipation = actionPlayer?.participation ?? (actionPlayer?.active ? 'playing' : 'won');
   const turnClock = useTurnCountdown(game);
   const timerStatus = game.timerPaused ? '已暂停' : game.turnState !== 'thinking' || game.handEnded ? '等待摸牌' : undefined;
   useRealtimeSound(lanHost.realtimeEvent);
   useCountdownSound(turnClock.enabled, turnClock.totalRemaining);
-  useRiichiMusic(Boolean(game.settings.riichiMusicEnabled && !game.handEnded && game.players.some((player) => player.riichi)), game.settings.riichiMusicTrack);
+  useRiichiMusic(Boolean(environment?.kind !== 'silence' && environment?.kind !== 'night' && game.settings.riichiMusicEnabled && !game.handEnded && game.players.some((player) => player.riichi)), game.settings.riichiMusicTrack);
+  const playSkillMusic = useSkillMusic(Boolean(environment?.kind !== 'silence' && environment?.kind !== 'night' && game.settings.riichiMusicEnabled), game.players.map(player => player.id).join('|'));
   const liveEffects = useMemo(() => game.effects.filter(effectIsLive), [game.effects]);
   const tableEffects = useMemo(
     () => liveEffects.filter((effect) => effect.scope === 'table' && !effectIsHidden(effect)),
@@ -579,7 +634,10 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
     [game.effects, manageEffectId],
   );
   const drawPreview = useMemo(
-    () => nagashiIds.length ? calculateNagashiDraw(game,nagashiIds) : calculateExhaustiveDraw(game.players, tenpaiIds, drawPool),
+    () => {
+      const validNagashiIds = nagashiIds.filter(id => game.players.some(player => player.id === id && player.active && player.participation === 'playing'));
+      return validNagashiIds.length ? calculateNagashiDraw(game, validNagashiIds) : calculateExhaustiveDraw(game.players, tenpaiIds, drawPool);
+    },
     [drawPool, game, tenpaiIds, nagashiIds],
   );
 
@@ -599,12 +657,14 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
     }),
     [game.settings.openTanyao, scoreForm.closed, scoreForm.selectedYaku, scoreForm.winType],
   );
+  const scoringOverrides = environment?.kind === 'yaku' && environment.yakuId ? { ...scoreForm.yakuOverrides, [environment.yakuId]: 5 } : scoreForm.yakuOverrides;
+  const envBonus = environmentBonus(game, scoreForm.selectedYaku, scoreForm.closed, scoreForm.environmentNumberCount);
   const yakuHan = selectedYaku.reduce(
-    (sum, yaku) => sum + (scoreForm.yakuOverrides[yaku.id] ?? (scoreForm.closed ? yaku.closedHan : yaku.openHan)),
+    (sum, yaku) => sum + (envBonus.overrideId === yaku.id ? 5 : scoreForm.yakuOverrides[yaku.id] ?? (scoreForm.closed ? yaku.closedHan : yaku.openHan)),
     0,
   );
   const yakuman = selectedYaku.reduce((sum, yaku) => sum + (yaku.yakuman ?? 0), 0);
-  const totalHan = yakuHan + scoreForm.dora + scoreForm.uraDora + scoreForm.akaDora + scoreForm.flowerDora + scoreForm.bonusHan;
+  const totalHan = envBonus.dora + yakuHan + scoreForm.dora + scoreForm.uraDora + scoreForm.akaDora + scoreForm.flowerDora + scoreForm.bonusHan;
   const scoreInput = useMemo<SettlementInput>(() => ({
     winnerId: scoreForm.winnerId,
     loserId: scoreForm.loserId,
@@ -619,6 +679,7 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
     kiriageMangan: game.settings.kiriageMangan,
     kazoeYakuman: game.settings.kazoeYakuman,
     sanmaTsumoLoss: game.settings.sanmaTsumoLoss,
+    teamsEnabled: game.settings.teamsEnabled,
     extraPoints: scoreForm.extraPoints,
   }), [game.honba, game.players, game.riichiSticks, game.settings, scoreForm, totalHan, yakuman]);
   let scorePreview: SettlementResult | null = null;
@@ -639,16 +700,11 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
   const filteredCards = useMemo(() => {
     const query = skillSearch.trim().toLocaleLowerCase('zh-CN');
     return cards.filter((card) => {
-      const matchesType = skillType === '全部' || card.type.code === skillType;
+      const matchesType = skillType === '全部' || (skillType === '随机' ? Boolean(card.randomRule) : card.type.code === skillType);
       const haystack = `${card.name} ${card.summary} ${card.effectDescription}`.toLocaleLowerCase('zh-CN');
       return matchesType && (!query || haystack.includes(query));
     });
   }, [cards, skillSearch, skillType]);
-
-  const skillRecordCards = useMemo(() => {
-    const query = skillRecordSearch.trim().toLocaleLowerCase('zh-CN');
-    return cards.filter((card) => !query || `${card.name} ${card.summary} ${card.effectDescription}`.toLocaleLowerCase('zh-CN').includes(query));
-  }, [cards, skillRecordSearch]);
 
   const playerEffectSummaries = useMemo(() => {
     const result: Record<string, Array<{ id: string; label: string; hidden?: boolean }>> = {};
@@ -686,6 +742,7 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
     const incoming = publicPlayerEffects.filter((effect) => effectSourceId(effect) !== playerId && effect.scope !== 'team' && effectTargets(effect).includes(playerId));
     const self = publicPlayerEffects.filter((effect) => effectSourceId(effect) === playerId && effectTargets(effect).includes(playerId));
     const outgoing = publicPlayerEffects.filter((effect) => effectSourceId(effect) === playerId && effectTargets(effect).some((id) => id !== playerId));
+    const unassigned = publicPlayerEffects.filter((effect) => effectSourceId(effect) === playerId && effectTargets(effect).length === 0);
     const other = publicPlayerEffects.filter((effect) => {
       const targets = effectTargets(effect);
       return effectSourceId(effect) !== playerId && !targets.includes(playerId) && effect.scope !== 'team';
@@ -693,6 +750,7 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
     return [
       { label: '对我生效', effects: incoming },
       { label: '我对自己使用', effects: self },
+      { label: '我发动的待处理效果', effects: unassigned },
       { label: '队伍共享', effects: team },
       { label: '我对其他人使用', effects: outgoing },
       { label: '其他公开效果', effects: other },
@@ -738,6 +796,10 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
   const adjustWall = useCallback((delta: number) => {
     commit((current) => ({ ...current, wallCount: Math.max(0, Math.min(999, current.wallCount + delta)) }));
   }, [commit]);
+
+  const downloadJson = (fileName: string, data: unknown) => {
+    void exportJson(fileName, data).catch(cause => setStatus(cause instanceof Error ? cause.message : '导出失败'));
+  };
 
   const actOnPlayerTurn = useCallback((playerId: string, kind: 'draw.confirm' | 'discard.confirm', turnStartedAt: number) => {
     if (Date.now() - lastTurnTap.current < 500) return;
@@ -870,6 +932,8 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
     const actor = gameRef.current.players.find((player) => player.id === actorId) ?? gameRef.current.players[gameRef.current.turnIndex];
     const card = cards.find((candidate) => candidate.id === preferredCardId) ?? cards[0];
     if (!actor || !card) return;
+    setGodOpen(false); setWushuangOpen(false); setSkillRecordOpen(false);
+    setGodCostConfirmed(false);
     setSkillForm({
       actorId: actor.id,
       cardId: card.id,
@@ -878,13 +942,16 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
       hidden: card.type.code === '陷',
       note: card.effectDescription,
     });
-    setSkillRecordSearch('');
+    setSkillRecordSearch(''); setCoinError('');
     setPlayerActionOpen(false);
     setDetailCard(null);
-    setSkillRecordOpen(true);
+    setSkillForm(form => ({ ...form, environment: {}, activationId: crypto.randomUUID() }));
+    if(isWushuangCard(card)){setWushuangActorId(actor.id);setWushuangOpen(true);}else if(godCardCost(card)) setGodOpen(true); else setSkillRecordOpen(true);
   }, [cards, defaultSkillTargets]);
 
   const chooseSkillCard = useCallback((cardId: number) => {
+    if (cardId === skillForm.cardId) return;
+    setGodCostConfirmed(false); setCoinError('');
     const card = cards.find((candidate) => candidate.id === cardId);
     setSkillForm((form) => ({
       ...form,
@@ -893,105 +960,54 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
       hidden: card?.type.code === '陷',
       note: card?.effectDescription ?? '',
     }));
-  }, [cards, defaultSkillTargets]);
+  }, [cards, defaultSkillTargets, skillForm.cardId]);
 
-  const recordSkillEffect = useCallback(() => {
-    const card = cards.find((candidate) => candidate.id === skillForm.cardId);
-    const actor = gameRef.current.players.find((player) => player.id === skillForm.actorId);
-    if (!card || !actor) {
-      setStatus('请选择使用者和技能卡');
-      return;
+  const recordSkillEffect = useCallback((coinDecision?: CoinDecision) => {
+    const card = cards.find(c => c.id === skillForm.cardId);
+    if(card&&isWushuangCard(card)){setWushuangActorId(skillForm.actorId);setWushuangOpen(true);setSkillRecordOpen(false);return;}
+    if (godCardCost(card) && coinDecision === undefined) {setSkillRecordOpen(false);setGodOpen(true);return;}
+    if (godCardCost(card) && !godCostConfirmed) { setStatus('请先一次确认实体代价已交出'); return; }
+    if (card && !(card.type.code === '陷' && skillForm.hidden) && usesDecisionCoin(card) && coinDecision === undefined) {
+      setCoinError(''); setCoinPrompt('activation'); setSkillRecordOpen(false); return;
     }
-    const cardType = card.type.code;
-    const isHidden = cardType === '陷' && skillForm.hidden;
-    const targets = cardType === '单'
-      ? [actor.id]
-      : cardType === '团'
-        ? (skillForm.targetIds.length ? skillForm.targetIds : defaultSkillTargets(card, actor.id))
-        : cardType === '环'
-          ? []
-          : skillForm.targetIds;
-    if ((cardType === '攻' || (cardType === '陷' && !isHidden)) && targets.length === 0) {
-      setStatus('这张卡需要至少选择一个目标');
-      return;
-    }
-    commit((current) => {
-      const environmentEffects = cardType === '环'
-        ? current.effects.map((effect) => effect.scope === 'table' && effectIsLive(effect) ? { ...effect, status: 'resolved' as const, state: 'resolved' as const } : effect)
-        : current.effects;
-      const effect: ActiveSkillEffect = {
-        id: `effect-${Date.now()}-${card.id}`,
-        cardId: card.id,
-        cardName: card.name,
-        effectText: skillForm.note || card.effectDescription,
-        sourcePlayerId: actor.id,
-        targetPlayerIds: targets,
-        affectedPlayerIds: targets,
-        scope: cardType === '单' ? 'self' : cardType === '团' ? 'team' : cardType === '环' ? 'table' : 'player',
-        visibility: isHidden ? 'face-down' : 'public',
-        state: isHidden ? 'armed' : 'active',
-        duration: skillForm.duration,
-        note: skillForm.note,
-        createdAt: new Date().toISOString(),
-        ownerId: actor.id,
-        targetId: targets[0],
-        faceDown: isHidden,
-        status: 'active',
-      };
-      return addEvent(
-        {
-          ...current,
-          environmentSkillId: cardType === '环' ? card.id : current.environmentSkillId,
-          effects: [...environmentEffects, effect],
-        },
-        isHidden ? '暗置陷阱' : '记录技能发动',
-        isHidden ? `${actor.name}暗置了一张陷阱卡` : `${actor.name}发动「${card.name}」${targets.length ? `，影响${targets.map((id) => current.players.find((player) => player.id === id)?.name).filter(Boolean).join('、')}` : '，作用于牌桌'}`,
-      );
-    });
-    setSkillRecordOpen(false);
-    setEffectsOpen(isHidden);
-    if (!isHidden) setView('table');
-  }, [cards, commit, defaultSkillTargets, setStatus, skillForm]);
+    try {
+      const outcome = applyRemoteControllerCommand(gameRef.current, cards, skillForm.actorId, { kind: 'skill.activate', input: {
+        wushuangCostConfirmed: godCostConfirmed, cardId: skillForm.cardId, targetPlayerIds: skillForm.targetIds, duration: skillForm.duration,
+        faceDown: skillForm.hidden, coinDecision, effectText: skillForm.note, environment: skillForm.environment, activationId: skillForm.activationId,
+      } });
+      setCoinPrompt(null); setCoinError(''); commitRemote(() => outcome.nextGame); setSkillRecordOpen(false); setView('table');
+    } catch (e) { const message = e instanceof Error ? e.message : '技能发动失败'; setCoinError(message); setStatus(message); }
+  }, [cards, skillForm, godCostConfirmed, commitRemote, setStatus]);
 
   const openEffectManager = useCallback((effect: ActiveSkillEffect) => {
-    setManageEffectId(effect.id);
+    setManageEffectId(effect.id); setCoinError('');
     setRevealTargets(effectTargets(effect));
     setRevealNote(effect.note ?? effect.effectText ?? '');
   }, []);
 
-  const revealEffect = useCallback(() => {
+  const revealEffect = useCallback((coinDecision?: CoinDecision) => {
     if (!selectedManagedEffect) return;
-    commit((current) => {
-      const cardName = selectedManagedEffect.cardName ?? cards.find((card) => card.id === selectedManagedEffect.cardId)?.name ?? '陷阱卡';
-      const owner = current.players.find((player) => player.id === effectSourceId(selectedManagedEffect));
-      return addEvent(
-        {
-          ...current,
-          effects: current.effects.map((effect) => effect.id === selectedManagedEffect.id ? {
-            ...effect,
-            visibility: 'public' as const,
-            faceDown: false,
-            state: 'triggered' as const,
-            targetPlayerIds: revealTargets,
-            affectedPlayerIds: revealTargets,
-            targetId: revealTargets[0],
-            note: revealNote,
-            effectText: revealNote || effect.effectText,
-          } : effect),
-        },
-        '陷阱发动',
-        `${owner?.name ?? '玩家'}揭示「${cardName}」${revealTargets.length ? `，影响${revealTargets.map((id) => current.players.find((player) => player.id === id)?.name).filter(Boolean).join('、')}` : ''}`,
-      );
-    });
-    setManageEffectId(null);
-    setEffectsOpen(false);
-    setView('table');
-  }, [cards, commit, revealNote, revealTargets, selectedManagedEffect]);
+    const currentEffect = gameRef.current.effects.find(effect => effect.id === selectedManagedEffect.id);
+    if (!currentEffect || !effectIsLive(currentEffect) || !effectIsHidden(currentEffect)) return;
+    if (!revealTargets.length || revealTargets.some(id => !gameRef.current.players.some(player => player.id === id && player.active))) { setCoinError('请选择仍在本局的受影响玩家'); return; }
+    const card = cards.find(c => c.id === selectedManagedEffect.cardId);
+    if (usesDecisionCoin({ name: selectedManagedEffect.cardName ?? card?.name ?? '', randomRule: card?.randomRule }, selectedManagedEffect.randomRule) && coinDecision === undefined) {
+      setCoinError(''); setCoinPrompt('reveal'); return;
+    }
+    try {
+      const outcome = applyRemoteControllerCommand(gameRef.current, cards, effectSourceId(selectedManagedEffect), {
+        kind: 'skill.reveal', input: { effectId: selectedManagedEffect.id, targetPlayerIds: revealTargets, effectText: revealNote, coinDecision },
+      });
+      setCoinPrompt(null); setCoinError(''); commitRemote(() => outcome.nextGame); setManageEffectId(null); setEffectsOpen(false); setView('table');
+    } catch (e) { const message = e instanceof Error ? e.message : '陷阱发动失败'; setCoinError(message); setStatus(message); }
+  }, [cards, commitRemote, revealNote, revealTargets, selectedManagedEffect, setStatus]);
 
   const resolveEffect = useCallback((effectId: string) => {
+    if (gameRef.current.effects.find(effect => effect.id === effectId)?.wushuang?.status === 'pending') { setStatus('请在无双专属面板完成结算，不能直接结束效果'); return; }
     commit((current) => {
       const effect = current.effects.find((candidate) => candidate.id === effectId);
-      if (!effect) return current;
+      if (!effect || !effectIsLive(effect)) return current;
+      if(effect.wushuang?.status==='pending')return {...current,status:'请在无双专属面板完成结算，不能直接结束效果'};
       const cardName = effect.cardName ?? cards.find((card) => card.id === effect.cardId)?.name ?? '技能效果';
       return addEvent(
         {
@@ -1004,9 +1020,11 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
       );
     });
     setManageEffectId(null);
-  }, [cards, commit]);
+  }, [cards, commit, setStatus]);
 
   const applySettlement = useCallback(() => {
+    if (settlementSubmitting.current) return;
+    if(pendingWushuang(gameRef.current).length){setStatus('请先完成麻将无双结算');return;}
     if (game.handEnded) {
       setStatus('本局已经结算，请先开始下一局');
       return;
@@ -1015,13 +1033,19 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
       setStatus(scoreError || '请完善和牌信息');
       return;
     }
+    settlementSubmitting.current = true;
+    setScoreReviewOpen(false);
     commit((current) => recordWin(current, applySettlementToState(current, scoreInput, scorePreview as SettlementResult), scoreInput, scorePreview as SettlementResult, selectedYaku.map(yaku => yaku.name), scoreTiles));
     setView('table');
   }, [commit, game.handEnded, scoreError, scoreInput, scorePreview, setStatus, selectedYaku, scoreTiles]);
 
+  const drawIssue = game.handEnded ? '本局已经结算，请先开始下一局。' : pendingWushuang(game).length ? '请先完成麻将无双结算，再进行流局操作。' : !Number.isFinite(drawPool) ? '请填写有效的未听罚符总额。' : '';
   const applyExhaustiveDraw = useCallback(() => {
+    if (gameRef.current.handEnded || pendingWushuang(gameRef.current).length || !Number.isFinite(drawPool)) return;
     commit((current) => {
-      const deltas = nagashiIds.length ? calculateNagashiDraw(current,nagashiIds) : calculateExhaustiveDraw(current.players, tenpaiIds, drawPool);
+      if(pendingWushuang(current).length)return {...current,status:'请先完成麻将无双结算，再进行流局操作'};
+      const validNagashiIds = nagashiIds.filter(id => current.players.some(player => player.id === id && player.active && player.participation === 'playing'));
+      const deltas = validNagashiIds.length ? calculateNagashiDraw(current, validNagashiIds) : calculateExhaustiveDraw(current.players, tenpaiIds, drawPool);
       const playing = current.players.filter((player) => player.active && player.participation === 'playing');
       const tenpaiNames = playing.filter((player) => tenpaiIds.includes(player.id)).map((player) => player.name);
       const dealer = current.players.find((player) => player.wind === '东');
@@ -1034,7 +1058,7 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
           honba: current.honba + 1,
         },
         '流局结算',
-        nagashiIds.length ? `流局满贯：${playing.filter(p=>nagashiIds.includes(p.id)).map(p=>p.name).join('、')}；替代未听罚符，供托保留` : tenpaiNames.length === 0 ? '流局：无人听牌' : tenpaiNames.length === playing.length ? '流局：全员听牌，无罚符转移' : `流局：${tenpaiNames.join('、')}听牌（振听亦按听牌）`,
+        validNagashiIds.length ? `流局满贯：${playing.filter(p=>nagashiIds.includes(p.id)).map(p=>p.name).join('、')}；替代未听罚符，供托保留` : tenpaiNames.length === 0 ? '流局：无人听牌' : tenpaiNames.length === playing.length ? '流局：全员听牌，无罚符转移' : `流局：${tenpaiNames.join('、')}听牌（振听亦按听牌）`,
         deltas,
       );
     });
@@ -1045,6 +1069,7 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
 
   const beginNextHand = useCallback(() => {
     commit((current) => {
+      if(pendingWushuang(current).length)return addEvent(current,'无双待结算','请先完成麻将无双结算，再开始下一局');
       const seatCount = current.settings.playerCount;
       const repeatDealer = Boolean(current.dealerRepeat);
       let handNumber = current.handNumber;
@@ -1096,12 +1121,12 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
         turnElapsedMs: 0,
         timerPaused: false,
         phase: 'skill',
-        handEnded: false,
+        handEnded: false, experienceEvents: [], judgementAwarded: false,
         dealerRepeat: false,
         wallCount: resolveInitialWallCount(current.settings),
         environmentSkillId: current.effects.find((effect) => effectIsLive(effect) && effect.duration === 'match' && effect.scope === 'table')?.cardId ?? null,
         skillDiscard: [...current.skillDiscard, ...returnedCards],
-        effects: current.effects.map((effect) => effect.duration === 'match' && effectIsLive(effect) ? effect : { ...effect, status: 'resolved' as const, state: 'resolved' as const }),
+        effects: current.effects.map((effect) => effect.duration === 'match' && effectIsLive(effect) ? effect : { ...effect, wushuang: undefined, status: 'resolved' as const, state: 'resolved' as const }),
         virtual: { started: false, wall: [], hands: {}, rivers: {} },
       };
       if (next.settings.wushuang && next.settings.startingSkillCards > 0) {
@@ -1116,6 +1141,8 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
       );
     });
     setScoreTiles([]);
+    setScoreCalculatorDraft(undefined);
+    setScoreCalculatorRevision(value => value + 1);
     setScoreForm((form) => ({
       ...form,
       closed: true,
@@ -1124,7 +1151,7 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
       uraDora: 0,
       akaDora: 0,
       flowerDora: 0,
-      bonusHan: 0,
+      bonusHan: 0, environmentNumberCount: 0,
       extraPoints: 0,
       selectedYaku: [],
       yakuOverrides: {},
@@ -1155,6 +1182,8 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
   }, [commit, manualForm, setStatus]);
 
   const startFreshMatch = useCallback(() => {
+    if (settingsApplying.current) return;
+    settingsApplying.current = true;
     const next = createGameState(settingsDraft, cards.map((card) => card.id));
     next.players = next.players.map((player, index) => ({
       ...player,
@@ -1175,12 +1204,14 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
       uraDora: 0,
       akaDora: 0,
       flowerDora: 0,
-      bonusHan: 0,
+      bonusHan: 0, environmentNumberCount: 0,
       extraPoints: 0,
       selectedYaku: [],
       yakuOverrides: {},
     }));
     setScoreTiles([]);
+    setScoreCalculatorDraft(undefined);
+    setScoreCalculatorRevision(value => value + 1);
     setSettingsOpen(false);
     setView('table');
   }, [cards, playerDrafts, settingsDraft]);
@@ -1209,25 +1240,32 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
     next.status = '上一场对局已结束；新对局已经自动重置';
     undoStack.current = [...undoStack.current.slice(-29), current];
     gameRef.current = next;
+    setFinalCharacters(Object.fromEntries(current.players.map(player => [player.id, player.character])));
     setFinalSnapshot(snapshot);
     setGame(next);
     setEndMatchOpen(false);
     setMatchResultOpen(true);
     setScoreTiles([]);
-    setScoreForm((form) => ({ ...form, winnerId: next.players[0]?.id ?? '', loserId: next.players[1]?.id ?? '', selectedYaku: [], yakuOverrides: {}, dora: 0, uraDora: 0, akaDora: 0, flowerDora: 0, bonusHan: 0, extraPoints: 0 }));
+    setScoreCalculatorDraft(undefined);
+    setScoreCalculatorRevision(value => value + 1);
+    setScoreForm((form) => ({ ...form, winnerId: next.players[0]?.id ?? '', loserId: next.players[1]?.id ?? '', selectedYaku: [], yakuOverrides: {}, dora: 0, uraDora: 0, akaDora: 0, flowerDora: 0, bonusHan: 0, environmentNumberCount: 0, extraPoints: 0 }));
   }, [cards]);
 
   const openSettings = useCallback(() => {
-    setSettingsDraft({ ...game.settings });
-    setPlayerDrafts(
-      Array.from({ length: 4 }, (_, index) => ({
-        name: game.players[index]?.name ?? `玩家${['一', '二', '三', '四'][index]}`,
-        team: game.players[index]?.team ?? (index % 2 === 0 ? '朱雀' : '玄武'),
-        character: characterChoice(game.players[index]?.character),
-      })),
-    );
-    setSettingsOpen(true);
+    settingsApplying.current = false;
+    const players = Array.from({ length: 4 }, (_, index) => ({
+      name: game.players[index]?.name ?? ('玩家' + ['一', '二', '三', '四'][index]),
+      team: game.players[index]?.team ?? (index % 2 === 0 ? '朱雀' : '玄武'),
+      character: characterChoice(game.players[index]?.character),
+    }));
+    settingsBaseline.current = JSON.stringify([game.settings, players]);
+    setSettingsReviewBaseline(settingsBaseline.current);
+    setSettingsDraft({ ...game.settings }); setPlayerDrafts(players); setSettingsSection('对局'); setSettingsOpen(true);
   }, [game.players, game.settings]);
+  const closeSettings = () => {
+    if (JSON.stringify([settingsDraft, playerDrafts]) !== settingsBaseline.current) setDiscardDraft('settings');
+    else setSettingsOpen(false);
+  };
 
   const undo = useCallback(() => {
     const previous = undoStack.current.pop();
@@ -1253,10 +1291,8 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
   }, [installPrompt, setStatus]);
 
   const saveCard = useCallback(() => {
-    if (!editorCard?.name.trim() || !editorCard.effectDescription.trim()) {
-      setStatus('技能卡需要名称和效果说明');
-      return;
-    }
+    const issue = skillEditorIssue(editorCard);
+    if (!editorCard || issue) { setEditorError(issue); return; }
     const exists = cards.some((card) => card.id === editorCard.id);
     setCards((current) => {
       return exists
@@ -1276,7 +1312,7 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
 
   const newCard = useCallback(() => {
     const id = Math.max(0, ...cards.map((card) => card.id)) + 1;
-    setEditorCard({
+    beginEditingCard({
       id,
       name: '新技能卡',
       rarity: '普通',
@@ -1292,85 +1328,59 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
       artwork: null,
       custom: true,
     });
-  }, [cards]);
+  }, [cards, beginEditingCard]);
 
   const handleCardImage = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+    const file = event.target.files?.[0]; event.target.value = '';
     if (!file) return;
-    if (file.size > 1_500_000) {
-      setStatus('图片超过 1.5 MB，建议先压缩后再导入');
-      return;
+    const request = ++cardImageRequest.current, id = editorCard?.id;
+    if (!['image/png','image/jpeg','image/webp'].includes(file.type) || file.size > 1_500_000) {
+      setEditorError('请选择不超过 1.5 MB 的 PNG、JPEG 或 WebP 图片'); return;
     }
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result !== 'string') return;
-      setEditorCard((card) => (card ? { ...card, artwork: reader.result as string } : card));
-    };
-    reader.readAsDataURL(file);
-  }, [setStatus]);
+    setEditorError('');
+    void createImageBitmap(file).then(bitmap => {
+      bitmap.close(); if (request !== cardImageRequest.current) return;
+      const reader = new FileReader();
+      reader.onload = () => { if (request === cardImageRequest.current && typeof reader.result === 'string') setEditorCard(card => card && card.id === id ? { ...card, artwork: reader.result as string } : card); };
+      reader.onerror = () => { if (request === cardImageRequest.current) setEditorError('图片读取失败，请重新选择'); };
+      reader.readAsDataURL(file);
+    }).catch(() => { if (request === cardImageRequest.current) setEditorError('图片无法读取，请选择有效图片'); });
+  }, [editorCard?.id]);
 
-  const importSkillLibrary = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    void file.text().then((text) => {
-      try {
-        const parsed = JSON.parse(text) as { cards?: SkillCard[] } | SkillCard[];
-        const imported = Array.isArray(parsed) ? parsed : parsed.cards;
-        if (!imported?.length) throw new Error('没有卡片');
-        setCards(imported);
-        const importedIds = new Set(imported.map((card) => card.id));
-        commit((current) => {
-          const players = current.players.map((player) => ({
-            ...player,
-            skillHand: player.skillHand.filter((cardId) => importedIds.has(cardId)),
-          }));
-          const discard = current.skillDiscard.filter((cardId) => importedIds.has(cardId));
-          const keptDeck = current.skillDeck.filter((cardId) => importedIds.has(cardId));
-          const accounted = new Set([...players.flatMap((player) => player.skillHand), ...discard, ...keptDeck]);
-          const added = imported.map((card) => card.id).filter((cardId) => !accounted.has(cardId));
-          return addEvent(
-            {
-              ...current,
-              players,
-              skillDeck: [...keptDeck, ...added],
-              skillDiscard: discard,
-              effects: current.effects.filter((effect) => importedIds.has(effect.cardId)),
-              environmentSkillId: current.environmentSkillId !== null && importedIds.has(current.environmentSkillId) ? current.environmentSkillId : null,
-            },
-            '技能库导入',
-            `已同步 ${imported.length} 张技能卡并清理失效引用`,
-          );
-        });
-        setStatus(`已导入 ${imported.length} 张技能卡`);
-      } catch {
-        setStatus('技能库文件格式不正确');
-      }
-    });
-    event.target.value = '';
+  const applyImportedCards = useCallback((imported: SkillCard[]) => {
+  setCards(imported);
+  const importedIds = new Set(imported.map((card) => card.id));
+  commit((current) => {
+    const players = current.players.map((player) => ({
+      ...player,
+      skillHand: player.skillHand.filter((cardId) => importedIds.has(cardId)),
+    }));
+    const discard = current.skillDiscard.filter((cardId) => importedIds.has(cardId));
+    const keptDeck = current.skillDeck.filter((cardId) => importedIds.has(cardId));
+    const accounted = new Set([...players.flatMap((player) => player.skillHand), ...discard, ...keptDeck]);
+    const added = imported.map((card) => card.id).filter((cardId) => !accounted.has(cardId));
+    return addEvent(
+      {
+        ...current,
+        players,
+        skillDeck: [...keptDeck, ...added],
+        skillDiscard: discard,
+        effects: current.effects.filter((effect) => importedIds.has(effect.cardId)),
+        environmentSkillId: current.environmentSkillId !== null && importedIds.has(current.environmentSkillId) ? current.environmentSkillId : null,
+      },
+      '技能库导入',
+      `已同步 ${imported.length} 张技能卡并清理失效引用`,
+    );
+  });
+  setStatus(`已导入 ${imported.length} 张技能卡`);
   }, [commit, setStatus]);
 
-  const importMatch = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    void file.text().then((text) => {
-      try {
-        const parsed = JSON.parse(text) as unknown;
-        const imported: GameState | undefined =
-          typeof parsed === 'object' && parsed !== null && 'game' in parsed
-            ? (parsed as { game?: GameState }).game
-            : (parsed as GameState);
-        if (!imported?.players?.length) throw new Error('没有对局');
-        undoStack.current = [...undoStack.current.slice(-29), gameRef.current];
-        const restored = normalizeGameState(imported);
-        gameRef.current = restored;
-        setGame({ ...restored, status: '已导入对局记录' });
-        setDataOpen(false);
-      } catch {
-        setStatus('对局文件格式不正确');
-      }
-    });
-    event.target.value = '';
-  }, [setStatus]);
+  const applyImportedMatch = useCallback((imported: GameState) => {
+    const restored = normalizeGameState(imported, cards);
+    undoStack.current = [...undoStack.current.slice(-29), gameRef.current];
+    gameRef.current = restored;
+    setGame({ ...restored, status: '已导入对局记录' });
+  }, [cards]);
 
   useEffect(() => {
     const context = document.modelContext;
@@ -1445,13 +1455,19 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
     return () => lifecycle.abort();
   }, []);
 
+  const wushuangActor=game.players.find(p=>p.id===wushuangActorId);
+  const wushuangSession=[...game.effects].reverse().find(e=>e.ownerId===wushuangActorId&&e.wushuang)?.wushuang;
   const positions = ['seat-bottom', 'seat-right', 'seat-top', 'seat-left'];
   const isTurnActive = game.turnState === 'thinking' && !game.handEnded;
 
   return (
     <TooltipProvider>
       <main className={`app-shell view-${view}`}>
+        <NfcIntentTarget cards={cards} players={game.players.map(p=>({id:p.id,name:p.name,character:p.character,wind:p.wind,active:p.active&&p.participation==='playing'}))} disabled={environment?.kind==='night'} canPrepare={game.settings.wushuang&&!game.handEnded} onPrepare={(id,actorId)=>openSkillRecorder(actorId,id)}/>
         <FloatingEmote events={lanHost.emoteEvents} tablet />
+
+        <ExperiencePresentation onPlayed={playSkillMusic} events={game.experienceEvents} dark={environment?.kind === 'night'} contextKey={environment?.effectId} players={game.players} onComplete={event=>{if(event.cardName==='麻将无双'&&event.actorId===wushuangActorId&&pendingWushuang(gameRef.current).some(e=>e.ownerId===event.actorId))setWushuangOpen(true);}} />
+        {ready && <NightMode active={environment?.kind === 'night'} effectId={environment?.effectId} events={game.experienceEvents} leave={() => environment && resolveEffect(environment.effectId)} />}
         <PresentationOverlay sequence={presentation} tablet characters={Object.fromEntries(game.players.map(player => [player.id, characterChoice(player.character)]))} />
         <header className="topbar">
           <button className="brand-lockup" type="button" aria-label="返回麻将无双对局台" onClick={() => setView('table')}>
@@ -1480,12 +1496,12 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
               </Tooltip>
             )}
             <span className="mode-chip"><Sparkles /> {game.settings.wushuang ? '无双模式' : '标准日麻'}</span>
-            <Button variant="ghost" size="icon-lg" aria-label="立直音乐设置" onClick={() => setMusicOpen(true)}><Music2 /></Button>
+            <Button variant="ghost" size="icon-lg" aria-label="对局音乐设置" onClick={() => setMusicOpen(true)}><Music2 /></Button>
             <Tooltip>
-              <TooltipTrigger render={<Button variant="ghost" size="icon-lg" aria-label={game.settings.riichiMusicEnabled ? '关闭立直音乐' : '开启立直音乐'} onClick={() => commit((current) => ({ ...current, settings: { ...current.settings, riichiMusicEnabled: !current.settings.riichiMusicEnabled }, status: current.settings.riichiMusicEnabled ? '立直音乐已关闭' : '立直音乐已开启' }))} />}>
+              <TooltipTrigger render={<Button variant="ghost" size="icon-lg" aria-label={game.settings.riichiMusicEnabled ? '关闭对局音乐' : '开启对局音乐'} onClick={() => commit((current) => ({ ...current, settings: { ...current.settings, riichiMusicEnabled: !current.settings.riichiMusicEnabled }, status: current.settings.riichiMusicEnabled ? '对局音乐已关闭' : '对局音乐已开启' }))} />}>
                 {game.settings.riichiMusicEnabled ? <Volume2 /> : <VolumeX />}
               </TooltipTrigger>
-              <TooltipContent>{game.settings.riichiMusicEnabled ? '关闭立直音乐' : '开启立直音乐'}</TooltipContent>
+              <TooltipContent>{game.settings.riichiMusicEnabled ? '关闭对局音乐' : '开启对局音乐'}</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger render={<Button variant="ghost" size="icon-lg" aria-label="撤销上一项操作" onClick={undo} />}>
@@ -1537,7 +1553,6 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
                     presentation={presentation}
                     current={index === game.turnIndex && isTurnActive}
                     position={positions[index]}
-                    effects={playerEffectSummaries[player.id] ?? []}
                     onSelect={() => focusPlayer(player.id, true)}
                     thinking={index === game.turnIndex && isTurnActive}
                     drawDisabled={game.handEnded || player.participation !== 'playing' || (!(index === game.turnIndex && game.turnState === 'thinking') && (Boolean(game.timerPaused) || game.wallCount <= 0))}
@@ -1546,7 +1561,7 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
                 ))}
 
                 <div className="table-wind-dial" aria-hidden="true">
-                  {positions.map((position, index) => <span key={position} className={`wind-slot ${position} ${isTurnActive && index === game.turnIndex ? 'is-lit' : ''}`} />)}
+                  {positions.map((position, index) => <span key={position} className={`wind-slot ${position} ${game.players[index]?.riichi ? 'is-riichi' : isTurnActive && index === game.turnIndex ? 'is-lit' : ''}`} />)}
                 </div>
 
                 <div className="table-control-island">
@@ -1556,7 +1571,7 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
                   </div>
                   <div className="wall-control">
                     <button className="wall-stepper" type="button" aria-label="牌山减一" onClick={() => adjustWall(-1)}><Minus /></button>
-                    <label className={`wall-number ${game.wallCount === 0 ? 'is-empty' : ''}`}>
+                    <label className={`wall-number ${game.wallCount === 0 ? 'is-empty' : ''}`} data-digits={String(game.wallCount).length}>
 
                       <input
                         aria-label="牌山剩余张数"
@@ -1571,12 +1586,12 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
                     </label>
                     <button className="wall-stepper" type="button" aria-label="牌山加一" onClick={() => adjustWall(1)}><Plus /></button>
                   </div>
-                  {tableEffects.length > 0 ? (
+                  {environment ? <EnvironmentControls environment={environment} actorId={currentPlayer.id} seats={game.players.map(p => ({ ...p, active: p.active && p.participation === 'playing' }))} host teams={game.settings.teamsEnabled} action={(actorId, input) => { commitRemote(current => applyEnvironmentAction(current, actorId, input, true)); }} /> : tableEffects.length > 0 ? (
                     <button className="environment-banner" type="button" onClick={() => tableEffects.length === 1 ? openEffectManager(tableEffects[0]) : setEffectsOpen(true)}>
-                      <Target /><FitLabel maxSize={18}>{`环境：${tableEffects.map((effect) => effect.cardName ?? cards.find((card) => card.id === effect.cardId)?.name ?? '牌桌效果').join('、')}`}</FitLabel>
+                      <FitLabel maxSize={32}>{`${tableEffects.map((effect) => effect.cardName ?? cards.find((card) => card.id === effect.cardId)?.name ?? '牌桌效果').join('、')}`}</FitLabel>
                     </button>
                   ) : <span className="no-environment">当前无环境效果</span>}
-                  <button className="current-player-indicator" type="button" onClick={() => focusPlayer(currentPlayer.id, true)}><FitLabel>{`${currentPlayer.name} · ${currentParticipation === 'playing' ? '当前操作' : currentParticipation === 'won' ? '已和牌' : '已退出'}`}</FitLabel></button>
+
                 </div>
                 {game.settings.turnTimerEnabled && <div className="table-turn-timer"><TurnTimerDisplay
                   statusLabel={timerStatus}
@@ -1589,9 +1604,11 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
               </div>
 
               <nav className="table-side-actions" aria-label="牌桌快捷操作">
+        {pendingWushuang(game).map(e=><button type='button' className='ws-resume' key={e.id} onClick={()=>{setWushuangActorId(e.ownerId);setWushuangOpen(true);}}><Sparkles/><span>无双待结算</span><small>{game.players.find(p=>p.id===e.ownerId)?.name}</small></button>)}
                 {lanHost.supported && <button type="button" onClick={() => setRoomOpen(true)}><Radio /><span>房间</span>{lanHost.hostInfo && <b>{lanHost.peers.filter((peer) => peer.playerId).length}</b>}</button>}
                 <button type="button" onClick={() => openSkillRecorder(currentPlayer.id)} disabled={!game.settings.wushuang}><Sparkles /><span>技能</span></button>
-                <button type="button" onClick={() => { setTenpaiIds([]); setDrawOpen(true); }}><ListRestart /><span>流局</span></button>
+                
+                <button type="button" onClick={() => { setTenpaiIds([]); setNagashiIds([]); setDrawOpen(true); }}><ListRestart /><span>流局</span></button>
                 <button type="button" onClick={beginNextHand}><ChevronDown /><span>下一局</span></button>
                 <button type="button" onClick={() => setEffectsOpen(true)}><ShieldCheck /><span>效果</span>{liveEffects.length > 0 && <b>{liveEffects.length}</b>}</button>
                 <button type="button" onClick={() => setHistoryOpen(true)}><History /><span>记录</span></button>
@@ -1607,23 +1624,24 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
             <div className="workspace-main">
               <div className="workspace-title">
                 <div><span className="eyebrow">点数计算机</span><h2>和牌结算</h2></div>
-                <p>选择和牌者、役种与番符，右侧会实时显示每家的收支。</p>
+                <p>先填基本情况，再核对役与加番。牌姿可选；提交前集中核对各家收支。</p>
               </div>
 
               <div className="score-form-grid">
                 <div className="form-block">
-                  <h3>和牌信息</h3>
+                  <h3>1 · 基本情况</h3>
                   <div className="field-grid two">
                     <Label>和牌者<Select value={scoreForm.winnerId} onValueChange={(value) => setScoreForm((form) => ({ ...form, winnerId: String(value) }))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{game.players.filter((player) => !game.settings.bloodBattle || player.active).map((player) => <SelectItem key={player.id} value={player.id}>{player.wind}家 · {player.name}</SelectItem>)}</SelectContent></Select></Label>
                     <Label>和牌方式<Select value={scoreForm.winType} onValueChange={(value) => setScoreForm((form) => ({ ...form, winType: String(value) as 'ron' | 'tsumo' }))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="ron">荣和</SelectItem><SelectItem value="tsumo">自摸</SelectItem></SelectContent></Select></Label>
                     {scoreForm.winType === 'ron' && <Label>放铳者<Select value={scoreForm.loserId} onValueChange={(value) => setScoreForm((form) => ({ ...form, loserId: String(value) }))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{game.players.filter((player) => player.active && player.id !== scoreForm.winnerId).map((player) => <SelectItem key={player.id} value={player.id}>{player.wind}家 · {player.name}</SelectItem>)}</SelectContent></Select></Label>}
                     <Label>副露状态<Select value={scoreForm.closed ? 'closed' : 'open'} onValueChange={(value) => setScoreForm((form) => ({ ...form, closed: value === 'closed', selectedYaku: form.selectedYaku.filter((id) => value === 'closed' || (YAKU.find((yaku) => yaku.id === id)?.openHan ?? 0) > 0) }))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="closed">门清</SelectItem><SelectItem value="open">副露</SelectItem></SelectContent></Select></Label>
-                    <Label>符数<Select value={String(scoreForm.fu)} onValueChange={(value) => setScoreForm((form) => ({ ...form, fu: Number(value) }))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{[20, 25, 30, 40, 50, 60, 70, 80, 90, 100, 110].map((fu) => <SelectItem key={fu} value={String(fu)}>{fu} 符</SelectItem>)}</SelectContent></Select></Label>
+                    <Label>符数<Select value={String(scoreForm.fu)} onValueChange={(value) => setScoreForm((form) => ({ ...form, fu: Number(value) }))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{[...new Set([20, 25, 30, 40, 50, 60, 70, 80, 90, 100, 110, scoreForm.fu])].sort((a,b)=>a-b).map((fu) => <SelectItem key={fu} value={String(fu)}>{fu} 符</SelectItem>)}</SelectContent></Select></Label>
                   </div>
                 </div>
 
-                <div className="form-block">
-                  <div className="block-heading"><h3>牌姿记录</h3><span>{scoreTiles.length} 张 · 杠后可超过 14</span></div>
+                <details className="form-block score-optional-tiles">
+                  <summary><strong>牌姿识别与现场算符（可选）</strong><span>{scoreTiles.length} 张 · 可录牌识别，也可直接按现场算符</span></summary><div>
+                  <HandCalculator key={`${scoreForm.winnerId}:${scoreCalculatorRevision}`} initialDraft={scoreCalculatorDraft?.winnerId===scoreForm.winnerId?scoreCalculatorDraft.value:undefined} currentFu={scoreForm.fu} onDraftChange={value=>setScoreCalculatorDraft(previous=>previous?.winnerId===scoreForm.winnerId&&JSON.stringify(previous.value)===JSON.stringify(value)?previous:{winnerId:scoreForm.winnerId,value})} tiles={scoreTiles} closed={scoreForm.closed} winType={scoreForm.winType} seatWind={game.players.find(p=>p.id===scoreForm.winnerId)?.wind ?? '东'} roundWind={game.roundWind} selected={scoreForm.selectedYaku} bonusHan={scoreForm.dora+scoreForm.uraDora+scoreForm.akaDora+scoreForm.flowerDora+scoreForm.bonusHan} overrides={scoringOverrides} openTanyao={game.settings.openTanyao} kiriage={game.settings.kiriageMangan} kazoe={game.settings.kazoeYakuman} onApply={(ids,fu,closed,analysis)=>{if(analysis)setScoreAnalysis(previous=>JSON.stringify(previous)===JSON.stringify(analysis)?previous:analysis);setScoreForm(form=>JSON.stringify(form.selectedYaku)===JSON.stringify(ids)&&(fu===undefined||fu===form.fu)&&(closed===undefined||closed===form.closed)?form:{...form,selectedYaku:ids,fu:fu??form.fu,closed:closed??form.closed});}}>
                   <div className="score-hand">
                     {scoreTiles.map((tile, index) => <button type="button" key={`${tile}-${index}`} onClick={() => setScoreTiles((tiles) => tiles.filter((_, tileIndex) => tileIndex !== index))}><Tile tile={tile} /></button>)}
                     {scoreTiles.length === 0 && <span className="empty-note">可选：点击下方牌面记录和牌牌姿</span>}
@@ -1637,11 +1655,12 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
                         return <button type="button" key={tile} disabled={familyCount >= 4 || redAlreadySelected} onClick={() => addScoreTile(tile)}><Tile tile={tile} small /></button>;
                       })}
                   </div>
-                  <HandCalculator key={scoreForm.winnerId} tiles={scoreTiles} closed={scoreForm.closed} winType={scoreForm.winType} seatWind={game.players.find(p=>p.id===scoreForm.winnerId)?.wind ?? '东'} roundWind={game.roundWind} selected={scoreForm.selectedYaku} bonusHan={scoreForm.dora+scoreForm.uraDora+scoreForm.akaDora+scoreForm.flowerDora+scoreForm.bonusHan} overrides={scoreForm.yakuOverrides} openTanyao={game.settings.openTanyao} kiriage={game.settings.kiriageMangan} kazoe={game.settings.kazoeYakuman} onApply={(ids,fu,closed,analysis)=>{if(analysis)setScoreAnalysis(previous=>JSON.stringify(previous)===JSON.stringify(analysis)?previous:analysis);setScoreForm(form=>JSON.stringify(form.selectedYaku)===JSON.stringify(ids)&&(fu===undefined||fu===form.fu)&&(closed===undefined||closed===form.closed)?form:{...form,selectedYaku:ids,fu:fu??form.fu,closed:closed??form.closed});}}/>
-                </div>
+                  </HandCalculator>
+                  </div>
+                </details>
 
                 <div className="form-block yaku-block">
-                  <div className="block-heading"><h3>役种</h3><strong>{yakuman ? `${yakuman} 倍役满` : `${totalHan} 番`}</strong></div>
+                  <div className="block-heading"><h3>2 · 役与番数</h3><strong>{yakuman ? `${yakuman} 倍役满` : `${totalHan} 番`}</strong></div>
                   <div className="yaku-grid">
                     {YAKU.map((yaku) => {
                       const disabled =
@@ -1669,13 +1688,14 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
                 </div>
 
                 <div className="form-block">
-                  <h3>宝牌与技能修正</h3>
+                  <h3>3 · 宝牌与技能修正</h3>
                   <div className="field-grid five">
+                    <EnvironmentBonusField environment={environment} count={scoreForm.environmentNumberCount} change={environmentNumberCount => setScoreForm(form => ({ ...form, environmentNumberCount }))} />
                     {[['dora', '宝牌'], ['uraDora', '里宝牌'], ['akaDora', '赤宝牌'], ['flowerDora', '花 / 北'], ['bonusHan', '技能加番']].map(([key, label]) => (
                       <Label key={key}>{label}<Select value={String(scoreForm[key as keyof typeof scoreForm] as number)} onValueChange={(value) => setScoreForm((form) => ({ ...form, [key]: Number(value) }))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{HAN_NUMBER_OPTIONS.map((count) => <SelectItem key={count} value={String(count)}>{count}</SelectItem>)}</SelectContent></Select></Label>
                     ))}
                   </div>
-                  <Label className="extra-points-field">技能额外得点<Input type="number" inputMode="numeric" step={100} min={0} max={1000000} placeholder="0" value={scoreForm.extraPoints || ''} onFocus={(event) => event.currentTarget.select()} onChange={(event) => setScoreForm((form) => ({ ...form, extraPoints: Math.max(0, Math.min(1000000, Number(event.target.value) || 0)) }))} /><small>例如“恭喜发财”固定增加的 1000 点；荣和由放铳者支付，自摸由其余玩家合计支付。</small></Label>
+                  <Label className="extra-points-field">技能额外得点<Input type="number" inputMode="numeric" step={100} min={0} max={1000000} placeholder="0" value={scoreForm.extraPoints || ''} onFocus={(event) => event.currentTarget.select()} onChange={(event) => setScoreForm((form) => ({ ...form, extraPoints: Math.max(0, Math.min(1000000, Number(event.target.value) || 0)) }))} /><small>例如“恭喜发财”固定增加的 2000 点；荣和由放铳者支付，自摸由仍在局内的对手合计支付，阵营队友免付。</small></Label>
                 </div>
               </div>
             </div>
@@ -1689,12 +1709,12 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
                   <div className="payment-list">
                     {game.players.map((player) => {
                       const payment = scorePreview?.payments[player.id] ?? 0;
-                      const gain = player.id === scoreForm.winnerId ? scorePreview.winnerGain : -payment;
+                      const gain = player.id === scoreForm.winnerId ? scorePreview.winnerGain : payment ? -payment : 0;
                       return <div key={player.id}><span>{player.wind} · {player.name}</span><strong className={gain > 0 ? 'positive' : gain < 0 ? 'negative' : ''}>{gain > 0 ? '+' : ''}{gain.toLocaleString('zh-CN')}</strong></div>;
                     })}
                   </div>
                   <p>{scorePreview.summary}</p>
-                  <Button className="gold-button result-apply" size="lg" onClick={applySettlement} disabled={game.handEnded}><Save /> {game.handEnded ? '本局已结算' : '应用结算'}</Button>
+                  <Button className="gold-button result-apply" size="lg" onClick={() => { settlementSubmitting.current = false; setScoreReviewOpen(true); }} disabled={game.handEnded}><Save /> {game.handEnded ? '本局已结算' : '核对并结算'}</Button>
                 </>
               ) : <div className="result-error">{scoreError}</div>}
 
@@ -1717,15 +1737,17 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
             <div className="workspace-main">
               <div className="workspace-title skills-title">
                 <div><span className="eyebrow">已录入 {cards.length} 张</span><h2>技能卡资料库</h2></div>
-                <div className="library-actions"><Button variant="outline" onClick={() => downloadJson('麻将无双技能卡资料库.json', { schemaVersion: 1, cards })}><Download /> 导出</Button><Button className="gold-button" onClick={newCard}><Plus /> 新增技能卡</Button></div>
+                <div className="library-actions"><Button variant="outline" onClick={() => setNfcCodesOpen(true)}><Radio /> NFC 代码</Button><Button variant="outline" onClick={() => downloadJson('麻将无双技能卡资料库.json', { schemaVersion: 1, skillCatalogRevision: SKILL_CATALOG_REVISION, cards })}><Download /> 导出</Button><Button className="gold-button" onClick={newCard}><Plus /> 新增技能卡</Button></div>
               </div>
 
+              <WushuangPreview players={game.players} />
+              <SpecialCinematicPreview />
               <div className="filter-bar">
                 <div className="search-field"><Search /><Input aria-label="搜索技能卡名或效果" placeholder="搜索卡名或效果" value={skillSearch} onChange={(event) => setSkillSearch(event.target.value)} /></div>
                 <div className="type-filters">
-                  {['全部', '单', '团', '攻', '陷', '环'].map((type) => <button type="button" key={type} className={skillType === type ? 'active' : ''} onClick={() => setSkillType(type)}>{type}</button>)}
+                  {['全部', '单', '团', '攻', '陷', '环', '神', '随机'].map((type) => <button type="button" key={type} className={skillType === type ? 'active' : ''} onClick={() => setSkillType(type)}>{type}</button>)}
                 </div>
-                <label className="import-label"><Upload /> 导入 JSON<input type="file" accept="application/json,.json" onChange={importSkillLibrary} /></label>
+                <button type="button" className="import-label" onClick={() => setDataOpen(true)}><Upload /> 导入 JSON</button>
               </div>
 
               <div className="skill-grid">
@@ -1739,7 +1761,7 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
                         <div className="card-rules"><p>{card.summary || card.effectDescription}</p><small>{card.flavorText}</small></div>
                         <div className="card-meta"><span>{card.rarity}</span><span>{style.label}</span></div>
                       </button>
-                      <button className="card-edit" type="button" aria-label={`编辑${card.name}`} onClick={() => setEditorCard({ ...card })}><Edit3 /></button>
+                      <button className="card-edit" type="button" aria-label={`编辑${card.name}`} onClick={() => beginEditingCard({ ...card })}><Edit3 /></button>
                     </article>
                   );
                 })}
@@ -1755,12 +1777,13 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
         </footer>
 
         <Dialog open={roomOpen} onOpenChange={setRoomOpen}>
-          <DialogContent className="host-room-dialog">
+          <DialogContent className="host-room-dialog room-flow-dialog">
             <DialogHeader>
               <DialogTitle>手机遥控房间</DialogTitle>
-              <DialogDescription>平板保存唯一对局状态。让所有手机与平板连接同一个 Wi-Fi，再用同一 APK 选择“手机遥控”。</DialogDescription>
+              <DialogDescription>手机操作由平板确认。房主保持 App 在前台，锁屏或切后台可能断开连接。</DialogDescription>
             </DialogHeader>
-            {!lanHost.hostInfo ? (
+            <ol className="room-connect-steps" aria-label="连接步骤"><li><b>1</b> 同一 Wi-Fi</li><li><b>2</b> 手机打开遥控</li><li><b>3</b> 选房间与席位</li></ol>
+            <div className="host-room-scroll">{!lanHost.hostInfo ? (
               <div className="host-room-start">
                 <span className="host-room-hero"><Wifi /></span>
                 <h3>开启本地房间</h3>
@@ -1774,7 +1797,7 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
               <div className="host-room-live">
                 <section className="host-room-access">
                   <div><span>房间码</span><strong>{lanHost.roomCode}</strong></div>
-                  <div><span>平板地址</span><strong>{lanHost.hostInfo.host || '等待 Wi-Fi 地址'}:{lanHost.hostInfo.port}</strong></div>
+                  <details><summary>手动连接地址</summary><code>{lanHost.hostInfo.host || '等待 Wi-Fi 地址'}:{lanHost.hostInfo.port}</code></details>
                 </section>
                 <p className="host-room-tip"><Wifi /> 手机选择自动发现的“{lanHost.hostInfo.serviceName}”，输入上方房间码，再选择自己的席位。</p>
                 <section className="host-seat-list">
@@ -1783,7 +1806,7 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
                     const peer = lanHost.peers.find((entry) => entry.playerId === player.id);
                     return (
                       <article className={peer ? 'is-online' : ''} key={player.id}>
-                        <span className="wind-seal">{player.wind}</span>
+                        <span className="wind-seal">{player.wind}</span><CharacterAvatar choice={player.character} />
                         <div><strong>{player.name}</strong><small>{peer ? peer.deviceName : '等待手机加入'}</small></div>
                         <span>{peer ? <><Wifi /> 在线</> : <><WifiOff /> 未连接</>}</span>
                       </article>
@@ -1792,7 +1815,7 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
                 </section>
                 {lanHost.error && <p className="host-room-error">{lanHost.error}</p>}
               </div>
-            )}
+            )}</div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setRoomOpen(false)}>返回牌桌</Button>
               {lanHost.hostInfo && <Button variant="destructive" onClick={() => void lanHost.stopRoom()}>关闭房间</Button>}
@@ -1801,28 +1824,23 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
         </Dialog>
 
         <Dialog open={effectsOpen} onOpenChange={setEffectsOpen}>
-          <DialogContent className="effects-dialog">
-            <DialogHeader><DialogTitle>场上效果 · {actionPlayer?.name}视角</DialogTitle><DialogDescription>这里集中显示公开技能、团队效果、牌桌环境和暗置陷阱。点击任一公开效果可查看完整说明。</DialogDescription></DialogHeader>
+          <DialogContent className="effects-dialog effect-overview-dialog">
+            <DialogHeader><DialogTitle>场上效果 · {actionPlayer?.name}视角</DialogTitle><DialogDescription>查看谁对谁生效、持续多久；展开卡片可读完整说明。</DialogDescription></DialogHeader>
             {effectGroups.length === 0 ? <p className="effects-empty">当前没有已记录的技能效果。</p> : (
               <div className="effects-dialog-grid">
                 {effectGroups.map((group) => (
                   <section className="ledger-group" key={group.label}>
-                    <h3>{group.label}</h3>
+                    <h3>{group.label}<span>{group.effects.length} 项</span></h3>
                     {group.effects.map((effect) => {
                       const hidden = effectIsHidden(effect);
                       const source = game.players.find((player) => player.id === effectSourceId(effect));
                       const targets = effectTargets(effect).map((id) => game.players.find((player) => player.id === id)?.name).filter(Boolean);
                       const name = effect.cardName ?? cards.find((card) => card.id === effect.cardId)?.name ?? '技能效果';
                       return (
-                        <article className="effect-row" key={effect.id}>
-                          <strong>{hidden ? `${source?.name ?? '玩家'}的暗置陷阱` : name}</strong>
-                          {!hidden && <><span>{source?.name ?? '玩家'} → {effect.scope === 'table' ? '牌桌' : targets.join('、') || '未指定目标'}</span><p>{effect.effectText ?? cards.find((card) => card.id === effect.cardId)?.effectDescription ?? '按卡面说明执行'}{effect.note && effect.note !== effect.effectText ? ` · ${effect.note}` : ''}</p><small>{DURATION_LABELS[effect.duration ?? 'hand']}</small></>}
-                          {hidden && <p>卡名与效果保持隐藏；实际触发时再揭示并选择目标。</p>}
-                          <div className="effect-row-actions">
-                            <Button variant="outline" onClick={() => { setEffectsOpen(false); openEffectManager(effect); }}>{hidden ? <><Eye /> 揭示／发动</> : <><Eye /> 查看／管理</>}</Button>
-                            {!hidden && effectTargets(effect).length > 0 && <Button variant="outline" onClick={() => { const targetId = effectTargets(effect)[0]; setEffectsOpen(false); focusPlayer(targetId); setQuickPointForm((form) => ({ ...form, reason: name })); setPlayerActionOpen(true); }}>快速罚点</Button>}
-                          </div>
-                        </article>
+                        <EffectSummary key={effect.id} hidden={Boolean(hidden)} card={hidden ? undefined : { ...cards.find(card => card.id === effect.cardId), id: effect.cardId, name, effectDescription: effect.effectText ?? '' }} title={name} from={`${source?.wind ?? ''} · ${source?.name ?? '玩家'}`} to={effect.scope === 'table' ? '整张牌桌' : targets.join('、') || (effect.wushuang?.status === 'pending' ? '无双专属结算' : '未指定目标')} duration={DURATION_LABELS[effect.duration ?? 'hand']} state={effect.state} text={hidden ? undefined : (effect.effectText ?? cards.find(card => card.id === effect.cardId)?.effectDescription ?? '') + (effect.note && effect.note !== effect.effectText ? ` · ${effect.note}` : '')}>
+                          <Button variant="outline" onClick={() => { setEffectsOpen(false); openEffectManager(effect); }}>{hidden ? <><Eye /> 揭示／发动</> : <><Eye /> 查看／管理</>}</Button>
+                          {!hidden && effectTargets(effect).length > 0 && <Button variant="outline" onClick={() => { const targetId = effectTargets(effect)[0]; setEffectsOpen(false); focusPlayer(targetId); setQuickPointForm(form => ({ ...form, reason: name })); setPlayerActionOpen(true); }}>快速罚点</Button>}
+                        </EffectSummary>
                       );
                     })}
                   </section>
@@ -1834,23 +1852,23 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
 
         <AlertDialog open={endMatchOpen} onOpenChange={setEndMatchOpen}>
           <AlertDialogContent>
-            <AlertDialogHeader><AlertDialogTitle>结束整场对局？</AlertDialogTitle><AlertDialogDescription>将按当前点数生成个人名次与阵营结算画面。确认后，新对局会在结算画面背后自动重置；本次操作仍可从新对局中撤销恢复。{game.riichiSticks > 0 ? `当前还有 ${game.riichiSticks} 根供托，结算画面会标记为未分配。` : ''}</AlertDialogDescription></AlertDialogHeader>
-            <AlertDialogFooter><AlertDialogCancel>继续对局</AlertDialogCancel><AlertDialogAction variant="destructive" onClick={finishMatch}><Flag /> 结束并查看结算</AlertDialogAction></AlertDialogFooter>
+            <AlertDialogHeader><AlertDialogTitle>结束整场对局？</AlertDialogTitle><AlertDialogDescription>生成本场名次和阵营结算，并立即重置新对局。仍可在新对局中撤销，恢复本场进度。{game.riichiSticks > 0 ? `当前还有 ${game.riichiSticks} 根供托，结算画面会标记为未分配。` : ''}</AlertDialogDescription></AlertDialogHeader>
+            <AlertDialogFooter><AlertDialogCancel>继续对局</AlertDialogCancel><AlertDialogAction variant="destructive" onClick={finishMatch}><Flag /> 生成结算并重置新对局</AlertDialogAction></AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
 
         <Dialog open={matchResultOpen} onOpenChange={setMatchResultOpen}>
-          <DialogContent className="match-result-dialog">
+          <DialogContent className="match-result-dialog match-review-dialog">
             <DialogHeader><DialogTitle>对局最终结算</DialogTitle><DialogDescription>{finalSnapshot?.roundLabel} · {finalSnapshot ? new Date(finalSnapshot.endedAt).toLocaleString('zh-CN') : ''}</DialogDescription></DialogHeader>
             {finalSnapshot && <div className="match-result-body">
               <section className="champion-panel">
-                <span>第一名</span><strong>{finalSnapshot.players[0]?.name}</strong><output>{finalSnapshot.players[0]?.score.toLocaleString('zh-CN')}</output><small>{finalSnapshot.players[0]?.team}</small>
+                <span>第一名</span><CharacterAvatar choice={finalCharacters[finalSnapshot.players[0]?.id]} /><strong>{finalSnapshot.players[0]?.name}</strong><output>{finalSnapshot.players[0]?.score.toLocaleString('zh-CN')}</output><small>{finalSnapshot.players[0]?.team}</small>
               </section>
               <section className="ranking-panel">
                 <h3>个人排名</h3>
                 <div className="final-ranking-list">{finalSnapshot.players.map((player, index) => {
                   const returnDelta = player.score - finalSnapshot.targetPoints;
-                  return <article className={`rank-${index + 1}`} key={player.id}><b>{index + 1}</b><span className="wind-seal">{player.wind}</span><div><strong>{player.name}</strong><small>{player.team}</small></div><output>{player.score.toLocaleString('zh-CN')}<small>{returnDelta >= 0 ? '+' : ''}{returnDelta.toLocaleString('zh-CN')} 对返还点</small></output></article>;
+                  return <article className={`rank-${index + 1}`} key={player.id}><b>{index + 1}</b><CharacterAvatar choice={finalCharacters[player.id]} /><div><strong>{player.name}</strong><small>{player.wind}家</small><small>{player.team}</small></div><output>{player.score.toLocaleString('zh-CN')}<small>{returnDelta >= 0 ? '+' : ''}{returnDelta.toLocaleString('zh-CN')} 对返还点</small></output></article>;
                 })}</div>
               </section>
               {finalSnapshot.teamsEnabled && <section className="team-result-panel">
@@ -1863,48 +1881,45 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
           </DialogContent>
         </Dialog>
 
-        <Dialog open={playerActionOpen} onOpenChange={setPlayerActionOpen}>
-          <DialogContent className="player-action-dialog">
-            <DialogHeader>
-              <DialogTitle>{actionPlayer?.wind}家 · {actionPlayer?.name}</DialogTitle>
-              <DialogDescription>点数 {actionPlayer?.score.toLocaleString('zh-CN')}。这里仅记录会影响现实牌桌状态的关键操作。</DialogDescription>
-            </DialogHeader>
-            {actionPlayer && <>
-              <div className="player-action-grid">
-                <Button className="gold-button" onClick={() => { setPlayerActionOpen(false); openScoreFor(actionPlayer.id); }} disabled={game.handEnded || actionParticipation !== 'playing'}><Trophy /> 和了</Button>
-                <Button variant="outline" onClick={() => declareRiichiFor(actionPlayer.id)} disabled={game.handEnded || actionParticipation !== 'playing' || actionPlayer.riichi}><CircleDollarSign /> {actionPlayer.riichi ? '已立直' : '立直 −1,000'}</Button>
-                {game.settings.wushuang && <Button variant="outline" onClick={() => openSkillRecorder(actionPlayer.id)}><Sparkles /> 记录技能</Button>}
-                <Button variant="outline" onClick={() => { setEffectsOpen(true); setPlayerActionOpen(false); }}><ShieldCheck /> 查看效果（{playerEffectSummaries[actionPlayer.id]?.length ?? 0}）</Button>
-                {actionParticipation === 'eliminated' || actionParticipation === 'won' ? (
-                  <Button variant="outline" onClick={() => setPlayerParticipation(actionPlayer.id, 'playing')}><UserRoundCheck /> 恢复参与</Button>
-                ) : (
-                  <Button variant="destructive" onClick={() => setPlayerParticipation(actionPlayer.id, 'eliminated', 'hand')}><UserMinus /> 退出本局</Button>
-                )}
-                {actionParticipation === 'playing' && <Button variant="destructive" onClick={() => setPlayerParticipation(actionPlayer.id, 'eliminated', 'match')}><UserMinus /> 移出整场</Button>}
-              </div>
+        <Dialog open={scoreReviewOpen} onOpenChange={setScoreReviewOpen}>
+          <DialogContent className="score-review-dialog">
+            <DialogHeader><DialogTitle>核对和牌结算</DialogTitle><DialogDescription>确认后记入当前对局；返回修改会保留录入内容。</DialogDescription></DialogHeader>
+            <div className="score-review-body">
+              <div className="win-review-identity"><CharacterAvatar choice={game.players.find(player => player.id === scoreForm.winnerId)?.character} /><div><strong>{game.players.find(player => player.id === scoreForm.winnerId)?.wind} · {game.players.find(player => player.id === scoreForm.winnerId)?.name}</strong><span>{game.settings.playerCount} 人桌 · {scoreForm.closed ? '门清' : '副露'} · {scoreForm.winType === 'tsumo' ? '自摸，对手支付' : `荣和，${game.players.find(player => player.id === scoreForm.loserId)?.name ?? '未选择放铳者'}支付`}</span></div></div>
+              <HandDisplay tiles={scoreTiles} />
+              <div className="win-review-total"><strong>{yakuman ? `${yakuman} 倍役满` : `${totalHan} 番 ${scoreForm.fu} 符`}</strong><span>{selectedYaku.map(yaku => yaku.name).join('、') || '技能加番／手动录入'}</span></div>
+              <dl className="win-source-list"><div><dt>役种番数（含修改）</dt><dd>{yakuHan}</dd></div><div><dt>宝牌 / 里 / 赤 / 花北</dt><dd>{scoreForm.dora} / {scoreForm.uraDora} / {scoreForm.akaDora} / {scoreForm.flowerDora}</dd></div><div><dt>技能加番</dt><dd>{scoreForm.bonusHan}</dd></div><div><dt>环境加番</dt><dd>{environment?.kind === 'number' ? Math.floor(scoreForm.environmentNumberCount / 2) : 0}{environment?.kind === 'yaku' ? '（指定役修正已计入役种）' : ''}</dd></div><div><dt>技能额外得点</dt><dd>{scoreForm.extraPoints.toLocaleString()} 点</dd></div></dl>
+              {yakuman > 0 && <p className="skill-flow-note">按役满结算，普通番数与宝牌不叠加到役满倍数。</p>}
+              {scorePreview ? <><div className="payment-list">{game.players.map(player => { const delta = player.id === scoreForm.winnerId ? scorePreview.winnerGain : -(scorePreview.payments[player.id] ?? 0); return <div key={player.id}><span>{player.wind} · {player.name}</span><strong className={delta > 0 ? 'positive' : delta < 0 ? 'negative' : ''}>{delta > 0 ? '+' : ''}{(delta || 0).toLocaleString()}</strong></div>; })}</div><p>{scorePreview.summary}</p></> : <p role="alert">{scoreError}</p>}
+            </div>
+            <DialogFooter><Button variant="outline" onClick={() => setScoreReviewOpen(false)}>返回修改</Button><Button className="gold-button" disabled={!scorePreview || game.handEnded} onClick={applySettlement}>确认结算</Button></DialogFooter>
+          </DialogContent>
+        </Dialog>
 
-              <div className="quick-points-panel">
-                <div className="block-heading"><h3>快速加／扣点</h3><span>所有操作都可撤销</span></div>
-                <div className="field-grid two">
-                  <Label>点数来自／去向
-                    <Select value={quickPointForm.counterpartyId} onValueChange={(value) => setQuickPointForm((form) => ({ ...form, counterpartyId: String(value) }))}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
-                      <SelectContent><SelectItem value="outside">场外增减（罚点／奖励）</SelectItem>{game.players.filter((player) => player.id !== actionPlayer.id).map((player) => <SelectItem key={player.id} value={player.id}>与 {player.name} 转移</SelectItem>)}</SelectContent>
-                    </Select>
-                  </Label>
-                  <Label>原因<Input value={quickPointForm.reason} onChange={(event) => setQuickPointForm((form) => ({ ...form, reason: event.target.value }))} /></Label>
-                </div>
-                <div className="point-preset-grid">
-                  {[1000, 2000, 3000, 4000].flatMap((amount) => [
-                    <Button variant="destructive" key={`minus-${amount}`} onClick={() => quickAdjustPlayer(-amount)}>−{amount.toLocaleString('zh-CN')}</Button>,
-                    <Button variant="outline" key={`plus-${amount}`} onClick={() => quickAdjustPlayer(amount)}>+{amount.toLocaleString('zh-CN')}</Button>,
-                  ])}
-                </div>
-                <div className="field-grid two">
-                  <Label>自定义点数<Input type="number" min={1} step={100} value={quickPointForm.amount} onChange={(event) => setQuickPointForm((form) => ({ ...form, amount: Math.max(0, Number(event.target.value)) }))} /></Label>
-                  <div className="custom-point-actions"><Button variant="destructive" onClick={() => quickAdjustPlayer(-quickPointForm.amount)}>自定义扣点</Button><Button variant="outline" onClick={() => quickAdjustPlayer(quickPointForm.amount)}>自定义加点</Button></div>
-                </div>
+        <Dialog open={playerActionOpen} onOpenChange={setPlayerActionOpen}>
+          <DialogContent className="player-action-dialog player-command-panel">
+            <DialogHeader><div className="player-command-identity">{actionPlayer && <CharacterAvatar choice={actionPlayer.character} />}<div><DialogTitle><span className="wind-seal">{actionPlayer?.wind}</span>{actionPlayer?.name}</DialogTitle><DialogDescription>玩家操作 · {actionParticipation === 'playing' ? '参与本局' : actionParticipation === 'won' ? '已和了' : '已退出'}</DialogDescription></div><strong className="player-command-score">{actionPlayer?.score.toLocaleString('zh-CN')}<small>点</small></strong></div></DialogHeader>
+            {actionPlayer && <div className="player-command-scroll">
+              <div className="player-action-grid player-command-primary">
+                <Button className="gold-button" onClick={() => { setPlayerActionOpen(false); openScoreFor(actionPlayer.id); }} disabled={game.handEnded || actionParticipation !== 'playing'}><Trophy /><span>和了<small>录入与结算</small></span></Button>
+                <Button variant="outline" onClick={() => declareRiichiFor(actionPlayer.id)} disabled={game.handEnded || actionParticipation !== 'playing' || actionPlayer.riichi}><CircleDollarSign /><span>{actionPlayer.riichi ? '已立直' : '立直'}<small>{actionPlayer.riichi ? '已支付立直棒' : '支付 1,000 点'}</small></span></Button>
+                {game.settings.wushuang && <Button variant="outline" onClick={() => openSkillRecorder(actionPlayer.id)}><Sparkles /><span>记录技能<small>卡片与作用对象</small></span></Button>}
+                <Button variant="outline" onClick={() => { setEffectsOpen(true); setPlayerActionOpen(false); }}><ShieldCheck /><span>查看效果<small>{playerEffectSummaries[actionPlayer.id]?.length ?? 0} 项生效中</small></span></Button>
               </div>
+              <section className="quick-points-panel">
+                <div className="block-heading"><h3>加点与扣点</h3><span>点选即记账 · 可撤销</span></div>
+                <div className="field-grid two">
+                  <Label>点数来自／去向<Select value={quickPointForm.counterpartyId} onValueChange={value => setQuickPointForm(form => ({ ...form, counterpartyId: String(value) }))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="outside">场外增减（罚点／奖励）</SelectItem>{game.players.filter(player => player.id !== actionPlayer.id).map(player => <SelectItem key={player.id} value={player.id}>与 {player.name} 转移</SelectItem>)}</SelectContent></Select></Label>
+                  <Label>原因<Input value={quickPointForm.reason} onChange={event => setQuickPointForm(form => ({ ...form, reason: event.target.value }))} /></Label>
+                </div>
+                <div className="point-direction-note">{quickPointForm.counterpartyId === 'outside' ? '场外记账：只改变当前玩家点数。' : ('双方转移：' + actionPlayer.name + ' 与 ' + (game.players.find(player => player.id === quickPointForm.counterpartyId)?.name ?? '所选玩家') + ' 一增一减。')}</div>
+                <div className="point-columns">{[-1, 1].map(direction => <div key={direction} className={direction < 0 ? 'point-column subtract' : 'point-column add'}><h4>{direction < 0 ? '扣点 −' : '加点 +'}</h4><div>{[1000, 2000, 3000, 4000].map(amount => <Button variant="outline" key={amount} aria-label={(direction < 0 ? '扣除' : '增加') + ' ' + amount + ' 点'} onClick={() => quickAdjustPlayer(direction * amount)}>{direction < 0 ? '−' : '+'}{amount.toLocaleString('zh-CN')}</Button>)}</div></div>)}</div>
+                <div className="point-custom"><Label>自定义点数<Input type="number" inputMode="numeric" min={1} step={100} value={quickPointForm.amount} onChange={event => setQuickPointForm(form => ({ ...form, amount: Math.max(0, Number(event.target.value)) }))} /></Label><Button variant="outline" className="subtract" disabled={!quickPointForm.amount} onClick={() => quickAdjustPlayer(-quickPointForm.amount)}>扣除</Button><Button variant="outline" className="add" disabled={!quickPointForm.amount} onClick={() => quickAdjustPlayer(quickPointForm.amount)}>增加</Button></div>
+              </section>
+              <details className="player-command-manage"><summary><Settings2 /> 玩家管理与计时<span>低频操作</span></summary><div className="player-manage-actions">
+                {actionParticipation === 'eliminated' || actionParticipation === 'won' ? <Button variant="outline" onClick={() => setPlayerParticipation(actionPlayer.id, 'playing')}><UserRoundCheck /> 恢复参与</Button> : <Button variant="destructive" onClick={() => setPlayerParticipation(actionPlayer.id, 'eliminated', 'hand')}><UserMinus /> 退出本局</Button>}
+                {actionParticipation === 'playing' && <Button variant="destructive" onClick={() => setPlayerParticipation(actionPlayer.id, 'eliminated', 'match')}><UserMinus /> 移出整场</Button>}
+              </div><p>退出本局和移出整场仍按现有规则记录，可从对局记录撤销。</p>
               {game.settings.turnTimerEnabled && <div className="player-timer-panel">
                 <div className="block-heading"><h3>想牌时间</h3><span>调整后从现在重新计时</span></div>
                 <div className="field-grid two">
@@ -1913,156 +1928,168 @@ export function MahjongConsole({ onOpenModeChooser }: { onOpenModeChooser?: () =
                 </div>
                 <div className="timer-quick-actions"><Button variant="outline" onClick={() => updatePlayerTimer(actionPlayer.id, 'turnFixedSeconds', 3)}>技能：固定 3 秒</Button><Button variant="outline" onClick={() => updatePlayerTimer(actionPlayer.id, 'turnExtraSeconds', game.settings.turnExtraSeconds)}>恢复额外时间</Button></div>
               </div>}
-            </>}
+              </details>
+            </div>}
+            <DialogFooter className="player-command-footer"><output>{game.status}</output><Button variant="outline" onClick={undo}><RotateCcw /> 撤销上一项</Button><Button onClick={() => setPlayerActionOpen(false)}>返回牌桌</Button></DialogFooter>
           </DialogContent>
         </Dialog>
 
-        <Dialog open={drawOpen} onOpenChange={setDrawOpen}>
-          <DialogContent className="draw-dialog">
-            <DialogHeader><DialogTitle>流局结算</DialogTitle><DialogDescription>勾选听牌玩家。振听仍算听牌；牌山归零不会自动流局，只有确认后才结算。</DialogDescription></DialogHeader>
-            <div className="tenpai-grid">
-              {game.players.filter((player) => player.active && player.participation === 'playing').map((player) => (
-                <Label key={player.id}>
-                  <Checkbox checked={tenpaiIds.includes(player.id)} onCheckedChange={(checked) => setTenpaiIds((ids) => checked ? [...ids, player.id] : ids.filter((id) => id !== player.id))} />
-                  <span><strong>{player.wind} · {player.name}</strong><small> 听牌（含振听）</small></span>
-                </Label>
-              ))}
-            </div>
-            <div className="nagashi-picker"><h3>流局满贯</h3><p>牌河全部为幺九牌且未被他家鸣牌时，可勾选成立玩家。按满贯自摸支付，替代未听罚符；供托保留、本场加一，连庄仍按听牌勾选。</p><div className="tenpai-grid">{game.players.filter(p=>p.active&&p.participation==='playing').map(p=><Label key={p.id}><Checkbox checked={nagashiIds.includes(p.id)} onCheckedChange={checked=>setNagashiIds(ids=>checked?[...ids,p.id]:ids.filter(id=>id!==p.id))}/>{p.wind} · {p.name}</Label>)}</div></div>
-            <Label>未听罚符总额<Input disabled={nagashiIds.length>0} type="number" min={0} step={100} value={drawPool} onChange={(event) => setDrawPool(Math.max(0, Number(event.target.value)))} /></Label>
-            <div className="draw-preview payment-list">
-              {game.players.filter((player) => player.active && player.participation === 'playing').map((player) => {
-                const delta = drawPreview[player.id] ?? 0;
-                return <div key={player.id}><span>{player.name} · {nagashiIds.includes(player.id) ? '流局满贯' : tenpaiIds.includes(player.id) ? '听牌' : '未听'}</span><strong className={delta > 0 ? 'positive' : delta < 0 ? 'negative' : ''}>{delta > 0 ? '+' : ''}{delta.toLocaleString('zh-CN')}</strong></div>;
-              })}
-            </div>
-            <DialogFooter><Button variant="outline" onClick={() => setDrawOpen(false)}>取消</Button><Button className="gold-button" onClick={applyExhaustiveDraw}><ListRestart /> 确认流局</Button></DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <DrawSettlementDialog open={drawOpen} onOpenChange={setDrawOpen} game={game} tenpaiIds={tenpaiIds} onTenpaiChange={setTenpaiIds} nagashiIds={nagashiIds} onNagashiChange={setNagashiIds} pool={drawPool} onPoolChange={setDrawPool} deltas={drawPreview} issue={drawIssue} onConfirm={applyExhaustiveDraw} />
 
+        {wushuangActor&&<WushuangWorkbench key={`${game.history[0]?.id}:${wushuangActor.id}`} open={wushuangOpen}
+          storageKey={`mahjong-wushuang:workspace:${[...game.history].reverse().find(e=>['对局开始','开始下一局','庄家连庄'].includes(e.title))?.id??game.history[0]?.id}:${wushuangActor.id}`}
+          actor={wushuangActor} targets={game.players.map(p=>({...p,active:p.active&&p.participation==='playing',enemy:!game.settings.teamsEnabled||p.team!==wushuangActor.team}))}
+          context={{seatWind:wushuangActor.wind,roundWind:game.roundWind,rules:game.settings}} session={wushuangSession} deposits={game.riichiSticks}
+          close={()=>setWushuangOpen(false)} backToCards={()=>{setWushuangOpen(false);setSkillRecordOpen(true);}}
+          activate={async(decision,targetId,activationId)=>{const outcome=applyRemoteControllerCommand(gameRef.current,cards,wushuangActor.id,{kind:'skill.activate',input:{cardId:41,activationId,coinDecision:decision,wushuangCostConfirmed:true,targetPlayerIds:decision==='heads'?[]:targetId?[targetId]:[],duration:'hand',faceDown:false}});commitRemote(()=>outcome.nextGame);setWushuangOpen(false);}}
+          send={async command=>{const outcome=applyRemoteControllerCommand(gameRef.current,cards,wushuangActor.id,command);if(outcome.changed)commitRemote(()=>outcome.nextGame);if(command.kind==='wushuang.commit')setWushuangOpen(false);}}
+          correct={async face=>{if(wushuangSession)commitRemote(current=>correctWushuang(current,wushuangSession.effectId,face));}} />}
+        {godOpen && selectedSkillCard && godCardCost(selectedSkillCard) && <GodSkillWorkbench key={skillForm.activationId || selectedSkillCard.id} card={selectedSkillCard} actorName={game.players.find(p=>p.id===skillForm.actorId)?.name || '使用者'}
+          targets={game.players.filter(p=>p.id!==skillForm.actorId).map(p=>({id:p.id,name:p.name,character:p.character,wind:p.wind,active:p.active&&p.participation==='playing',enemy:!game.settings.teamsEnabled||p.team!==game.players.find(a=>a.id===skillForm.actorId)?.team}))}
+          disabled={!game.settings.wushuang||game.handEnded||environment?.kind==='night'} close={()=>setGodOpen(false)}
+          activate={async input=>{const outcome=applyRemoteControllerCommand(gameRef.current,cards,skillForm.actorId,{kind:'skill.activate',input});commitRemote(()=>outcome.nextGame);setGodOpen(false);setView('table');}}/>}
+        <CoinDecisionDialog open={coinPrompt !== null} cardName={coinPrompt === 'reveal' ? selectedManagedEffect?.cardName ?? '陷阱卡' : selectedSkillCard?.name ?? '技能卡'} error={coinError}
+          choose={decision => coinPrompt === 'reveal' ? revealEffect(decision) : recordSkillEffect(decision)}
+          cancel={() => { if (coinPrompt === 'activation') setSkillRecordOpen(true); setCoinPrompt(null); setCoinError(''); }} />
         <Dialog open={skillRecordOpen} onOpenChange={setSkillRecordOpen}>
-          <DialogContent className="skill-record-dialog">
-            <DialogHeader><DialogTitle>记录技能发动</DialogTitle><DialogDescription>按现实牌桌录入使用者、卡片、目标和持续范围；不要求先在网站里抽卡。</DialogDescription></DialogHeader>
-            <div className="skill-record-grid">
+          <DialogContent className="skill-record-dialog skill-workspace-dialog">
+            <DialogHeader><DialogTitle>记录技能发动</DialogTitle><DialogDescription>左侧找卡，右侧配置使用者与目标；确认后才记录到牌桌。</DialogDescription></DialogHeader>
+            <div className="skill-workspace-body">
+              <SkillCatalogPicker cards={cards} selectedId={skillForm.cardId} query={skillRecordSearch} onQuery={setSkillRecordSearch} onSelect={card => chooseSkillCard(card.id)} />
+              <section className="skill-workspace-config" aria-label="技能配置">
+                {selectedSkillCard && <div className="skill-chosen-heading"><SkillCardArt card={selectedSkillCard} /><div><small>{selectedSkillCard.type.code} · 已选技能</small><h3>{selectedSkillCard.name}</h3><p>{selectedSkillCard.effectDescription}</p></div></div>}
               <Label>使用者
                 <Select value={skillForm.actorId} onValueChange={(value) => {
                   const actorId = String(value);
+                  setGodCostConfirmed(false);
                   setSkillForm((form) => ({ ...form, actorId, targetIds: defaultSkillTargets(cards.find((card) => card.id === form.cardId), actorId) }));
                 }}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{game.players.map((player) => <SelectItem key={player.id} value={player.id}>{player.wind} · {player.name}</SelectItem>)}</SelectContent></Select>
               </Label>
-              <Label>搜索技能<Input placeholder="输入卡名或效果关键词" value={skillRecordSearch} onChange={(event) => setSkillRecordSearch(event.target.value)} /></Label>
-              <Label className="full">技能卡
-                <Select items={cards.map(card=>({value:String(card.id),label:card.type.code+' · '+card.name}))} value={String(skillForm.cardId)} onValueChange={(value) => chooseSkillCard(Number(value))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{skillRecordCards.map((card) => <SelectItem key={card.id} value={String(card.id)}>{card.type.code} · {card.name}</SelectItem>)}</SelectContent></Select>
-              </Label>
-              <div className="selected-skill-summary full">
-                <span className="wind-seal">{selectedSkillCard?.type.code}</span><div><strong>{selectedSkillCard?.name}</strong><p>{selectedSkillCard?.effectDescription}</p></div>
-              </div>
               {selectedSkillCard?.type.code === '陷' && <SettingRow title="陷阱状态" detail={skillForm.hidden ? '暗置时只公开持有者，不显示卡名与效果' : '立即明置并选择受影响目标'}><Switch checked={skillForm.hidden} onCheckedChange={(checked) => setSkillForm((form) => ({ ...form, hidden: checked, targetIds: checked ? [] : form.targetIds }))} /></SettingRow>}
               {selectedSkillCard?.type.code === '单' && <p className="detected-yaku-note full">“单”只对使用者自己发动，但全场都能看到记录。</p>}
               {selectedSkillCard?.type.code === '环' && <p className="detected-yaku-note full">“环”作用于整张牌桌；新环境会令旧环境效果结束。</p>}
-              {(selectedSkillCard?.type.code === '团' || selectedSkillCard?.type.code === '攻' || (selectedSkillCard?.type.code === '陷' && !skillForm.hidden)) && (
+              {(['宿星审判'].includes(selectedSkillCard?.name ?? '') || selectedSkillCard?.type.code === '团' || selectedSkillCard?.type.code === '攻' || (selectedSkillCard?.type.code === '陷' && !skillForm.hidden)) && (
                 <fieldset className="full"><legend>实际受影响玩家</legend><div className="target-grid">{game.players.map((player) => {
                   const selected = skillForm.targetIds.includes(player.id);
-                  return <Label className="target-toggle" key={player.id}><Checkbox checked={selected} onCheckedChange={(checked) => setSkillForm((form) => ({ ...form, targetIds: checked ? [...form.targetIds, player.id] : form.targetIds.filter((id) => id !== player.id) }))} /><span>{player.wind} · {player.name}<small>{player.team}</small></span></Label>;
+                  return <Label className="target-toggle" key={player.id}><Checkbox checked={selected} onCheckedChange={(checked) => setSkillForm((form) => ({ ...form, targetIds: checked ? [...form.targetIds, player.id] : form.targetIds.filter((id) => id !== player.id) }))} /><CharacterAvatar choice={player.character} /><span>{player.wind} · {player.name}<small>{player.team}</small></span></Label>;
                 })}</div></fieldset>
               )}
+
+                {(godCardCost(selectedSkillCard) || (selectedSkillCard && isWushuangCard(selectedSkillCard))) ? <p className="skill-flow-note">下一步进入专属页面，一次确认实体代价与发动条件。</p> : <>
+                  <EnvironmentFields name={selectedSkillCard?.name ?? ''} value={skillForm.environment} change={environment => setSkillForm(form => ({ ...form, environment }))} />
+                  <details className="skill-advanced"><summary>持续与说明 · {DURATION_LABELS[skillForm.duration]}</summary><div>
               <Label>持续范围<Select value={skillForm.duration} onValueChange={(value) => setSkillForm((form) => ({ ...form, duration: String(value) as SkillDuration }))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{Object.entries(DURATION_LABELS).map(([value, label]) => <SelectItem key={value} value={value}>{label}</SelectItem>)}</SelectContent></Select></Label>
-              <Label>显示给玩家的效果说明<textarea value={skillForm.note} onChange={(event) => setSkillForm((form) => ({ ...form, note: event.target.value }))} /></Label>
+                    <Label>显示给玩家的效果说明<textarea value={skillForm.note} onChange={event => setSkillForm(form => ({ ...form, note: event.target.value }))} /></Label>
+                  </div></details>
+                </>}
+              </section>
             </div>
-            <DialogFooter><Button variant="outline" onClick={() => setSkillRecordOpen(false)}>取消</Button><Button className="gold-button" onClick={recordSkillEffect}><Sparkles /> {skillForm.hidden ? '暗置陷阱' : '记录发动'}</Button></DialogFooter>
+            <DialogFooter className="skill-workspace-footer"><output>{coinError || `${game.players.find(player => player.id === skillForm.actorId)?.name ?? '请选择使用者'} · ${skillForm.hidden ? '暗置，不公开卡名与效果' : selectedSkillCard?.type.code === '环' ? '作用于整张牌桌' : skillForm.targetIds.length ? skillForm.targetIds.map(id => game.players.find(player => player.id === id)?.name).join('、') : '请核对作用目标'}`}</output><Button variant="outline" onClick={() => setSkillRecordOpen(false)}>取消</Button><Button className="gold-button" disabled={!selectedSkillCard} onClick={() => recordSkillEffect()}><Sparkles /> {(godCardCost(selectedSkillCard) || (selectedSkillCard && isWushuangCard(selectedSkillCard))) ? '进入专属页面' : skillForm.hidden ? '暗置陷阱' : '记录发动'}</Button></DialogFooter>
           </DialogContent>
         </Dialog>
 
-        <Dialog open={Boolean(selectedManagedEffect)} onOpenChange={(open) => !open && setManageEffectId(null)}>
-          <DialogContent className="effect-manage-dialog">
-            <DialogHeader><DialogTitle>{selectedManagedEffect && effectIsHidden(selectedManagedEffect) ? '揭示暗置陷阱' : selectedManagedEffect?.cardName ?? '管理技能效果'}</DialogTitle><DialogDescription>{selectedManagedEffect && effectIsHidden(selectedManagedEffect) ? '触发后补录目标与公开说明，所有玩家即可看到。' : '可结束效果，或先打开目标玩家的快速罚点面板。'}</DialogDescription></DialogHeader>
-            {selectedManagedEffect && effectIsHidden(selectedManagedEffect) ? <>
-              <div className="target-grid">{game.players.map((player) => <Label className="target-toggle" key={player.id}><Checkbox checked={revealTargets.includes(player.id)} onCheckedChange={(checked) => setRevealTargets((ids) => checked ? [...ids, player.id] : ids.filter((id) => id !== player.id))} /><span>{player.wind} · {player.name}</span></Label>)}</div>
-              <Label>公开效果说明<textarea value={revealNote} onChange={(event) => setRevealNote(event.target.value)} /></Label>
-              <DialogFooter><Button variant="outline" onClick={() => setManageEffectId(null)}>保持暗置</Button><Button className="gold-button" onClick={revealEffect}><Eye /> 揭示并发动</Button></DialogFooter>
-            </> : selectedManagedEffect ? <>
-              <div className="effect-detail-copy"><p>{selectedManagedEffect.effectText}</p><small>{DURATION_LABELS[selectedManagedEffect.duration ?? 'hand']}</small></div>
-              <DialogFooter>
-                {effectTargets(selectedManagedEffect).length > 0 && <Button variant="outline" onClick={() => { const targetId = effectTargets(selectedManagedEffect)[0]; const name = selectedManagedEffect.cardName ?? '技能效果'; setManageEffectId(null); focusPlayer(targetId); setQuickPointForm((form) => ({ ...form, reason: name })); setPlayerActionOpen(true); }}>对目标罚点</Button>}
-                <Button variant="destructive" onClick={() => resolveEffect(selectedManagedEffect.id)}>结束／解除效果</Button>
+        <Dialog open={Boolean(selectedManagedEffect) && coinPrompt !== 'reveal'} onOpenChange={(open) => !open && setManageEffectId(null)}>
+          <DialogContent className="effect-manage-dialog effect-manage-workspace">
+            <DialogHeader><DialogTitle>{selectedManagedEffect && effectIsHidden(selectedManagedEffect) ? '揭示暗置陷阱' : '管理技能效果'}</DialogTitle><DialogDescription>{selectedManagedEffect && effectIsHidden(selectedManagedEffect) ? '确认后将向所有玩家公开这张卡及其效果。' : '核对作用对象与说明，再决定是否解除。'}</DialogDescription></DialogHeader>
+            {selectedManagedEffect && <>
+              <div className="effect-manage-body">
+                <EffectSummary hidden={Boolean(effectIsHidden(selectedManagedEffect))} card={effectIsHidden(selectedManagedEffect) ? undefined : { ...cards.find(card => card.id === selectedManagedEffect.cardId), id: selectedManagedEffect.cardId, name: selectedManagedEffect.cardName ?? cards.find(card => card.id === selectedManagedEffect.cardId)?.name ?? '技能效果', effectDescription: selectedManagedEffect.effectText ?? '' }} title={selectedManagedEffect.cardName ?? '技能效果'} from={game.players.find(player => player.id === effectSourceId(selectedManagedEffect))?.name ?? '玩家'} to={selectedManagedEffect.scope === 'table' ? '整张牌桌' : effectTargets(selectedManagedEffect).map(id => game.players.find(player => player.id === id)?.name ?? '玩家').join('、') || (selectedManagedEffect.wushuang?.status === 'pending' ? '无双专属结算' : '未指定目标')} duration={DURATION_LABELS[selectedManagedEffect.duration ?? 'hand']} state={selectedManagedEffect.state} text={effectIsHidden(selectedManagedEffect) ? undefined : (selectedManagedEffect.effectText || selectedManagedEffect.note || cards.find(card => card.id === selectedManagedEffect.cardId)?.effectDescription)} expanded />
+                {effectIsHidden(selectedManagedEffect) ? <section className="effect-reveal-fields"><h3>选择受影响玩家</h3><div className="target-grid">{game.players.map(player => <Label className="target-toggle" key={player.id}><Checkbox disabled={!player.active} checked={revealTargets.includes(player.id)} onCheckedChange={checked => { setCoinError(''); setRevealTargets(ids => checked ? [...ids, player.id] : ids.filter(id => id !== player.id)); }} /><CharacterAvatar choice={player.character} /><span>{player.wind} · {player.name}<small>{player.active ? '可选择' : '已结束本局'}</small></span></Label>)}</div><Label>公开效果说明<textarea value={revealNote} onChange={event => setRevealNote(event.target.value)} /></Label><p className="effect-action-note">公开对象：所有玩家。受影响对象：{revealTargets.map(id => game.players.find(player => player.id === id)?.name).join('、') || '请先选择'}。</p></section> : <p className="effect-action-note">{selectedManagedEffect.wushuang?.status === 'pending' ? '无双仍待结算，请前往无双专属面板完成。' : '结束后移出场上效果列表，已记录的点数不变。需要恢复时可撤销上一项操作。'}</p>}
+              </div>
+              <DialogFooter><output className="effect-action-feedback">{coinError}</output>
+                <Button variant="outline" onClick={() => setManageEffectId(null)}>{effectIsHidden(selectedManagedEffect) ? '保持暗置' : '返回牌桌'}</Button>
+                {effectIsHidden(selectedManagedEffect) ? <Button className="gold-button" disabled={!revealTargets.length || revealTargets.some(id => !game.players.some(player => player.id === id && player.active))} onClick={() => revealEffect()}><Eye /> 揭示并发动</Button> : <>
+                  {effectTargets(selectedManagedEffect).length > 0 && <Button variant="outline" onClick={() => { const targetId = effectTargets(selectedManagedEffect)[0]; const name = selectedManagedEffect.cardName ?? '技能效果'; setManageEffectId(null); focusPlayer(targetId); setQuickPointForm(form => ({ ...form, reason: name })); setPlayerActionOpen(true); }}>对目标罚点</Button>}
+                  <Button variant="destructive" disabled={selectedManagedEffect.wushuang?.status === 'pending'} onClick={() => resolveEffect(selectedManagedEffect.id)}>结束／解除效果</Button>
+                </>}
               </DialogFooter>
-            </> : null}
+            </>}
+
           </DialogContent>
         </Dialog>
 
         <Dialog open={musicOpen} onOpenChange={setMusicOpen}>
-          <DialogContent>
-            <DialogHeader><DialogTitle>立直音乐</DialogTitle><DialogDescription>仅牌桌主机播放，立即生效，不会重开对局。</DialogDescription></DialogHeader>
-            <SettingRow title="播放音乐" detail="场上无人立直时自动停止"><Switch checked={game.settings.riichiMusicEnabled} onCheckedChange={(checked) => commit((current) => ({ ...current, settings: { ...current.settings, riichiMusicEnabled: checked } }))} /></SettingRow>
+          <DialogContent className="table-music-dialog">
+            <DialogHeader><DialogTitle>对局音乐</DialogTitle><DialogDescription>仅牌桌主机播放，立即生效，不会重开对局。</DialogDescription></DialogHeader>
+            <SettingRow title={game.settings.riichiMusicEnabled ? '播放音乐 · 已开启' : '播放音乐 · 已关闭'} detail="无双歌曲优先播放，结束后恢复仍有效的立直音乐"><Switch aria-label="播放对局音乐" checked={game.settings.riichiMusicEnabled} onCheckedChange={(checked) => commit((current) => ({ ...current, settings: { ...current.settings, riichiMusicEnabled: checked } }))} /></SettingRow>
             <Label>立直曲目<Select value={game.settings.riichiMusicTrack} onValueChange={(value) => commit((current) => ({ ...current, settings: { ...current.settings, riichiMusicTrack: value ?? 'random' } }))}><SelectTrigger aria-label="立直曲目"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="random">随机播放</SelectItem>{RIICHI_MUSIC.map((track) => <SelectItem key={track.id} value={track.id}>{track.label}</SelectItem>)}</SelectContent></Select></Label>
+            <output className="table-music-status">{game.settings.riichiMusicEnabled ? '音乐已开启；有立直或无双演出时按原规则播放。' : '音乐已关闭，仍保留当前选择的曲目。'}</output><DialogFooter><Button onClick={() => setMusicOpen(false)}>返回牌桌</Button></DialogFooter>
           </DialogContent>
         </Dialog>
-        <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
-          <DialogContent className="setup-dialog wide-dialog">
+        <Dialog open={settingsOpen} onOpenChange={open => { if (!open) closeSettings(); }}>
+          <DialogContent className="setup-dialog wide-dialog rules-workspace">
             <DialogHeader><DialogTitle>新对局规则</DialogTitle><DialogDescription>调整后会建立一场新对局，当前对局可用撤销恢复。</DialogDescription></DialogHeader>
-            <div className="settings-layout"><nav className="settings-shortcuts" aria-label="规则快捷导航">{['基础规则','技能与牌山','日麻计分细则','玩家与阵营'].map(name=><button type="button" key={name} aria-current={settingsSection===name?'location':undefined} onClick={()=>{setSettingsSection(name);document.getElementById('settings-'+name)?.scrollIntoView({behavior:'smooth',block:'start'});}}>{name}</button>)}</nav><div className="settings-scroll">
-              <div className="settings-section" id="settings-基础规则"><h3>基础规则</h3>
-                <SettingRow title="参与人数" detail="三人麻将会移除二万至八万"><Select value={String(settingsDraft.playerCount)} onValueChange={(value) => setSettingsDraft((draft) => ({ ...draft, playerCount: Number(value) as 3 | 4 }))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="4">四人麻将</SelectItem><SelectItem value="3">三人麻将</SelectItem></SelectContent></Select></SettingRow>
-                <SettingRow title="麻将无双" detail="技能卡、环境与陷阱区"><Switch checked={settingsDraft.wushuang} onCheckedChange={(checked) => setSettingsDraft((draft) => ({ ...draft, wushuang: checked, bloodBattle: checked ? draft.bloodBattle : false }))} /></SettingRow>
-                <SettingRow title="血战到底" detail="和牌者退场，其余玩家继续"><Switch checked={settingsDraft.bloodBattle} onCheckedChange={(checked) => setSettingsDraft((draft) => ({ ...draft, bloodBattle: checked }))} /></SettingRow>
-                <SettingRow title="阵营计分" detail="默认东／西同队、南／北同队"><Switch checked={settingsDraft.teamsEnabled} onCheckedChange={(checked) => setSettingsDraft((draft) => ({ ...draft, teamsEnabled: checked }))} /></SettingRow>
-                <SettingRow title="对家自动同队" detail="开启后以东／西、南／北为默认阵营"><Switch checked={settingsDraft.oppositeTeams} onCheckedChange={(checked) => { setSettingsDraft((draft) => ({ ...draft, oppositeTeams: checked })); if (checked) setPlayerDrafts((drafts) => drafts.map((player, index) => ({ ...player, team: index % 2 === 0 ? '朱雀' : '玄武' }))); }} /></SettingRow>
-                <SettingRow title="飞牌使用" detail="在实体牌桌记录飞牌与技能造成的移牌"><Switch checked={settingsDraft.flyingTiles} onCheckedChange={(checked) => setSettingsDraft((draft) => ({ ...draft, flyingTiles: checked }))} /></SettingRow>
-                <div className="field-grid two"><Label>开局点数<Input type="number" step={1000} min={0} value={settingsDraft.startingPoints} onChange={(event) => setSettingsDraft((draft) => ({ ...draft, startingPoints: Math.max(0, Number(event.target.value)) }))} /></Label><Label>返还点 / 目标点<Input type="number" step={1000} min={0} value={settingsDraft.targetPoints} onChange={(event) => setSettingsDraft((draft) => ({ ...draft, targetPoints: Math.max(0, Number(event.target.value)) }))} /></Label></div>
-                <SettingRow title="每巡计时" detail="固定时间每巡恢复；额外时间用完后本局不再恢复"><Switch checked={settingsDraft.turnTimerEnabled} onCheckedChange={(checked) => setSettingsDraft((draft) => ({ ...draft, turnTimerEnabled: checked }))} /></SettingRow>
-                <div className="field-grid two timer-settings-grid"><Label>默认固定时间（秒）<Input type="number" inputMode="numeric" min={0} max={3600} value={settingsDraft.turnFixedSeconds} onChange={(event) => setSettingsDraft((draft) => ({ ...draft, turnFixedSeconds: Math.max(0, Math.min(3600, Number(event.target.value) || 0)) }))} /></Label><Label>默认额外时间（秒）<Input type="number" inputMode="numeric" min={0} max={86400} value={settingsDraft.turnExtraSeconds} onChange={(event) => setSettingsDraft((draft) => ({ ...draft, turnExtraSeconds: Math.max(0, Math.min(86400, Number(event.target.value) || 0)) }))} /></Label></div>
-                <SettingRow title="立直音乐" detail="有人立直时只在牌桌主机循环播放"><Switch checked={settingsDraft.riichiMusicEnabled} onCheckedChange={(checked) => setSettingsDraft((draft) => ({ ...draft, riichiMusicEnabled: checked }))} /></SettingRow>
-                <SettingRow title="立直曲目" detail="随机模式：每次开始立直音乐时随机选一首，本次循环播放"><Select value={settingsDraft.riichiMusicTrack} onValueChange={(value) => setSettingsDraft((draft) => ({ ...draft, riichiMusicTrack: value ?? 'random' }))}><SelectTrigger aria-label="立直曲目"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="random">随机播放</SelectItem>{RIICHI_MUSIC.map((track) => <SelectItem key={track.id} value={track.id}>{track.label}</SelectItem>)}</SelectContent></Select></SettingRow>
-              </div>
-              <div className="settings-section" id="settings-技能与牌山"><h3>技能与牌山</h3>
-                <div className="slider-setting"><span><strong>每巡技能上限</strong><small>{settingsDraft.maxSkillsPerTurn} 张</small></span><Slider min={0} max={5} step={1} value={[settingsDraft.maxSkillsPerTurn]} onValueChange={(value) => setSettingsDraft((draft) => ({ ...draft, maxSkillsPerTurn: Number(Array.isArray(value) ? value[0] : value) }))} /></div>
-                <div className="slider-setting"><span><strong>开局技能卡</strong><small>每人 {settingsDraft.startingSkillCards} 张</small></span><Slider min={0} max={6} step={1} value={[settingsDraft.startingSkillCards]} onValueChange={(value) => setSettingsDraft((draft) => ({ ...draft, startingSkillCards: Number(Array.isArray(value) ? value[0] : value) }))} /></div>
-                <SettingRow title="杠牌抽技能" detail="每次杠牌额外获得一张技能卡"><Switch checked={settingsDraft.drawSkillOnKan} onCheckedChange={(checked) => setSettingsDraft((draft) => ({ ...draft, drawSkillOnKan: checked }))} /></SettingRow>
-                <SettingRow title="拔花 / 拔北抽技能" detail="补牌以外再获得一张技能卡"><Switch checked={settingsDraft.drawSkillOnFlower} onCheckedChange={(checked) => setSettingsDraft((draft) => ({ ...draft, drawSkillOnFlower: checked }))} /></SettingRow>
-                <SettingRow title="花牌" detail="允许记录春夏秋冬、梅兰竹菊"><Switch checked={settingsDraft.flowersEnabled} onCheckedChange={(checked) => setSettingsDraft((draft) => ({ ...draft, flowersEnabled: checked }))} /></SettingRow>
+            <div className="rules-overview"><span><strong>{settingsDraft.playerCount} 人桌</strong><small>{settingsDraft.wushuang ? '麻将无双' : '标准日麻'}</small></span><span><strong>{settingsDraft.startingPoints.toLocaleString()} 点</strong><small>每人开局</small></span><span><strong>{settingsDraft.initialWallCount ?? automaticInitialWallCount(settingsDraft)} 张</strong><small>初始牌山</small></span></div>
+            <div className="settings-layout"><nav className="settings-shortcuts" aria-label="规则快捷导航">{['对局','玩家与角色','无双与技能','高级','核对开局'].map((name, index) => <button type="button" key={name} aria-current={settingsSection === name ? 'page' : undefined} onClick={() => setSettingsSection(name)}><b>{index + 1}</b><span>{name}<small>{['人数、点数与牌山','姓名、阵营与头像','技能与特殊玩法','计分、计时与音乐','查看本次改动'][index]}</small></span></button>)}</nav><div className="settings-scroll" key={settingsSection}>
+<section className="settings-section" hidden={settingsSection !== '对局'} aria-label="对局"><h3>对局</h3>
+<SettingRow title="参与人数" detail="三人麻将会移除二万至八万"><Select value={String(settingsDraft.playerCount)} onValueChange={(value) => setSettingsDraft((draft) => ({ ...draft, playerCount: Number(value) as 3 | 4 }))}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="4">四人麻将</SelectItem><SelectItem value="3">三人麻将</SelectItem></SelectContent></Select></SettingRow>
+<div className="field-grid two"><Label>开局点数<Input type="number" step={1000} min={0} value={settingsDraft.startingPoints} onChange={(event) => setSettingsDraft((draft) => ({ ...draft, startingPoints: Math.max(0, Number(event.target.value)) }))} /></Label><Label>返还点 / 目标点<Input type="number" step={1000} min={0} value={settingsDraft.targetPoints} onChange={(event) => setSettingsDraft((draft) => ({ ...draft, targetPoints: Math.max(0, Number(event.target.value)) }))} /></Label></div>
+<SettingRow title="花牌" detail="允许记录春夏秋冬、梅兰竹菊"><Switch checked={settingsDraft.flowersEnabled} onCheckedChange={(checked) => setSettingsDraft((draft) => ({ ...draft, flowersEnabled: checked }))} /></SettingRow>
                 <div className="field-grid two wall-settings-grid">
                   <Label>实体花牌数量<Input type="number" inputMode="numeric" min={0} max={32} disabled={!settingsDraft.flowersEnabled} value={settingsDraft.flowerTileCount} onFocus={(event) => event.currentTarget.select()} onChange={(event) => setSettingsDraft((draft) => ({ ...draft, flowerTileCount: Math.max(0, Math.min(32, Number(event.target.value) || 0)) }))} /><small>启用花牌后会加入初始牌山；常见八花为 8 张。</small></Label>
                   <Label>初始牌山<Input type="number" inputMode="numeric" min={0} max={999} value={settingsDraft.initialWallCount ?? automaticInitialWallCount(settingsDraft)} onFocus={(event) => event.currentTarget.select()} onChange={(event) => setSettingsDraft((draft) => ({ ...draft, initialWallCount: Math.max(0, Math.min(999, Number(event.target.value) || 0)) }))} /><small>{settingsDraft.initialWallCount === null ? '当前按人数、王牌与花牌自动计算' : '当前使用自定义张数'}</small></Label>
                 </div>
                 {settingsDraft.initialWallCount !== null && <Button className="wall-auto-reset" type="button" variant="outline" onClick={() => setSettingsDraft((draft) => ({ ...draft, initialWallCount: null }))}>恢复自动计算（{automaticInitialWallCount(settingsDraft)} 张）</Button>}
                 <SettingRow title="三麻拔北" detail="三人麻将可把北风当作宝牌"><Switch checked={settingsDraft.nukiEnabled} onCheckedChange={(checked) => setSettingsDraft((draft) => ({ ...draft, nukiEnabled: checked }))} /></SettingRow>
-              </div>
-              <div className="settings-section" id="settings-日麻计分细则"><h3>日麻计分细则</h3>
-                <SettingRow title="赤宝牌" detail="虚拟牌山加入赤五万、筒、索"><Switch checked={settingsDraft.akaDora} onCheckedChange={(checked) => setSettingsDraft((draft) => ({ ...draft, akaDora: checked }))} /></SettingRow>
-                <SettingRow title="食断" detail="副露状态下允许断幺九"><Switch checked={settingsDraft.openTanyao} onCheckedChange={(checked) => setSettingsDraft((draft) => ({ ...draft, openTanyao: checked }))} /></SettingRow>
-                <SettingRow title="切上满贯" detail="30符4番与60符3番按满贯"><Switch checked={settingsDraft.kiriageMangan} onCheckedChange={(checked) => setSettingsDraft((draft) => ({ ...draft, kiriageMangan: checked }))} /></SettingRow>
-                <SettingRow title="累计役满" detail="13番以上按役满而非三倍满"><Switch checked={settingsDraft.kazoeYakuman} onCheckedChange={(checked) => setSettingsDraft((draft) => ({ ...draft, kazoeYakuman: checked }))} /></SettingRow>
-                <SettingRow title="三麻自摸损" detail="缺席北家的付款份额不补齐"><Switch checked={settingsDraft.sanmaTsumoLoss} onCheckedChange={(checked) => setSettingsDraft((draft) => ({ ...draft, sanmaTsumoLoss: checked }))} /></SettingRow>
-              </div>
-              <div className="settings-section" id="settings-玩家与阵营"><h3>玩家与阵营</h3><div className="player-settings-grid">{playerDrafts.slice(0, settingsDraft.playerCount).map((player, index) => <div key={index}><span className="wind-seal">{WINDS[index]}</span><Input aria-label={`${WINDS[index]}家名称`} value={player.name} onChange={(event) => setPlayerDrafts((drafts) => drafts.map((draft, draftIndex) => draftIndex === index ? { ...draft, name: event.target.value } : draft))} /><Input aria-label={`${WINDS[index]}家阵营`} disabled={!settingsDraft.teamsEnabled} value={player.team} onChange={(event) => setPlayerDrafts((drafts) => drafts.map((draft, draftIndex) => draftIndex === index ? { ...draft, team: event.target.value } : draft))} /></div>)}</div></div>
-              <div className="settings-section"><h3>角色</h3><div className="character-seat-choices">{playerDrafts.slice(0, settingsDraft.playerCount).map((player, index) => <button type="button" key={index} onClick={() => setCharacterSeat(index)}><CharacterAvatar choice={player.character} /><span>{WINDS[index]}家 · {player.name}<small>{player.character?.name ?? '选择角色'}</small></span></button>)}</div></div>
-            </div>
-            </div><DialogFooter><Button variant="outline" onClick={() => setSettingsOpen(false)}>取消</Button><Button className="gold-button" onClick={startFreshMatch}><ListRestart /> 应用并开始新对局</Button></DialogFooter>
+</section>
+<section className="settings-section" hidden={settingsSection !== '玩家与角色'} aria-label="玩家与角色"><h3>玩家与角色</h3>
+<SettingRow title="阵营计分" detail="默认东／西同队、南／北同队；自摸不向队友收分"><Switch checked={settingsDraft.teamsEnabled} onCheckedChange={(checked) => setSettingsDraft((draft) => ({ ...draft, teamsEnabled: checked }))} /></SettingRow>
+<SettingRow title="对家自动同队" detail="开启后以东／西、南／北为默认阵营"><Switch checked={settingsDraft.oppositeTeams} onCheckedChange={(checked) => { setSettingsDraft((draft) => ({ ...draft, oppositeTeams: checked })); if (checked) setPlayerDrafts((drafts) => drafts.map((player, index) => ({ ...player, team: index % 2 === 0 ? '朱雀' : '玄武' }))); }} /></SettingRow>
+<div className="player-settings-grid">{playerDrafts.slice(0, settingsDraft.playerCount).map((player, index) => <div key={index}><span className="wind-seal">{WINDS[index]}</span><Input aria-label={`${WINDS[index]}家名称`} value={player.name} onChange={(event) => setPlayerDrafts((drafts) => drafts.map((draft, draftIndex) => draftIndex === index ? { ...draft, name: event.target.value } : draft))} /><Input aria-label={`${WINDS[index]}家阵营`} disabled={!settingsDraft.teamsEnabled} value={player.team} onChange={(event) => setPlayerDrafts((drafts) => drafts.map((draft, draftIndex) => draftIndex === index ? { ...draft, team: event.target.value } : draft))} /></div>)}</div>
+<h4>角色</h4><div className="character-seat-choices">{playerDrafts.slice(0, settingsDraft.playerCount).map((player, index) => <button type="button" key={index} onClick={() => setCharacterSeat(index)}><CharacterAvatar choice={player.character} /><span>{WINDS[index]}家 · {player.name}<small>{player.character?.name ?? '选择角色'}</small></span></button>)}</div>
+</section>
+<section className="settings-section" hidden={settingsSection !== '无双与技能'} aria-label="无双与技能"><h3>无双与技能</h3>
+<SettingRow title="麻将无双" detail="技能卡、环境与陷阱区"><Switch checked={settingsDraft.wushuang} onCheckedChange={(checked) => setSettingsDraft((draft) => ({ ...draft, wushuang: checked, bloodBattle: checked ? draft.bloodBattle : false }))} /></SettingRow>
+<SettingRow title="血战到底" detail="和牌者退场，其余玩家继续"><Switch checked={settingsDraft.bloodBattle} onCheckedChange={(checked) => setSettingsDraft((draft) => ({ ...draft, bloodBattle: checked }))} /></SettingRow>
+<SettingRow title="飞牌使用" detail="在实体牌桌记录飞牌与技能造成的移牌"><Switch checked={settingsDraft.flyingTiles} onCheckedChange={(checked) => setSettingsDraft((draft) => ({ ...draft, flyingTiles: checked }))} /></SettingRow>
+<div className="slider-setting"><span><strong>每巡技能上限</strong><small>{settingsDraft.maxSkillsPerTurn} 张</small></span><Slider min={0} max={5} step={1} value={[settingsDraft.maxSkillsPerTurn]} onValueChange={(value) => setSettingsDraft((draft) => ({ ...draft, maxSkillsPerTurn: Number(Array.isArray(value) ? value[0] : value) }))} /></div>
+<div className="slider-setting"><span><strong>开局技能卡</strong><small>每人 {settingsDraft.startingSkillCards} 张</small></span><Slider min={0} max={6} step={1} value={[settingsDraft.startingSkillCards]} onValueChange={(value) => setSettingsDraft((draft) => ({ ...draft, startingSkillCards: Number(Array.isArray(value) ? value[0] : value) }))} /></div>
+<SettingRow title="杠牌抽技能" detail="每次杠牌额外获得一张技能卡"><Switch checked={settingsDraft.drawSkillOnKan} onCheckedChange={(checked) => setSettingsDraft((draft) => ({ ...draft, drawSkillOnKan: checked }))} /></SettingRow>
+<SettingRow title="拔花 / 拔北抽技能" detail="补牌以外再获得一张技能卡"><Switch checked={settingsDraft.drawSkillOnFlower} onCheckedChange={(checked) => setSettingsDraft((draft) => ({ ...draft, drawSkillOnFlower: checked }))} /></SettingRow>
+</section>
+<section className="settings-section" hidden={settingsSection !== '高级'} aria-label="高级"><h3>高级</h3>
+<SettingRow title="赤宝牌" detail="虚拟牌山加入赤五万、筒、索"><Switch checked={settingsDraft.akaDora} onCheckedChange={(checked) => setSettingsDraft((draft) => ({ ...draft, akaDora: checked }))} /></SettingRow>
+<SettingRow title="食断" detail="副露状态下允许断幺九"><Switch checked={settingsDraft.openTanyao} onCheckedChange={(checked) => setSettingsDraft((draft) => ({ ...draft, openTanyao: checked }))} /></SettingRow>
+<SettingRow title="切上满贯" detail="30符4番与60符3番按满贯"><Switch checked={settingsDraft.kiriageMangan} onCheckedChange={(checked) => setSettingsDraft((draft) => ({ ...draft, kiriageMangan: checked }))} /></SettingRow>
+<SettingRow title="累计役满" detail="13番以上按役满而非三倍满"><Switch checked={settingsDraft.kazoeYakuman} onCheckedChange={(checked) => setSettingsDraft((draft) => ({ ...draft, kazoeYakuman: checked }))} /></SettingRow>
+<SettingRow title="三麻自摸损" detail="缺席北家的付款份额不补齐"><Switch checked={settingsDraft.sanmaTsumoLoss} onCheckedChange={(checked) => setSettingsDraft((draft) => ({ ...draft, sanmaTsumoLoss: checked }))} /></SettingRow>
+<SettingRow title="每巡计时" detail="固定时间每巡恢复；额外时间用完后本局不再恢复"><Switch checked={settingsDraft.turnTimerEnabled} onCheckedChange={(checked) => setSettingsDraft((draft) => ({ ...draft, turnTimerEnabled: checked }))} /></SettingRow>
+<div className="field-grid two timer-settings-grid"><Label>默认固定时间（秒）<Input type="number" inputMode="numeric" min={0} max={3600} value={settingsDraft.turnFixedSeconds} onChange={(event) => setSettingsDraft((draft) => ({ ...draft, turnFixedSeconds: Math.max(0, Math.min(3600, Number(event.target.value) || 0)) }))} /></Label><Label>默认额外时间（秒）<Input type="number" inputMode="numeric" min={0} max={86400} value={settingsDraft.turnExtraSeconds} onChange={(event) => setSettingsDraft((draft) => ({ ...draft, turnExtraSeconds: Math.max(0, Math.min(86400, Number(event.target.value) || 0)) }))} /></Label></div>
+<SettingRow title="对局音乐" detail="无双歌曲与立直音乐仅由牌桌主机播放"><Switch checked={settingsDraft.riichiMusicEnabled} onCheckedChange={(checked) => setSettingsDraft((draft) => ({ ...draft, riichiMusicEnabled: checked }))} /></SettingRow>
+<SettingRow title="立直曲目" detail="随机模式：每次开始立直音乐时随机选一首，本次循环播放"><Select value={settingsDraft.riichiMusicTrack} onValueChange={(value) => setSettingsDraft((draft) => ({ ...draft, riichiMusicTrack: value ?? 'random' }))}><SelectTrigger aria-label="立直曲目"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="random">随机播放</SelectItem>{RIICHI_MUSIC.map((track) => <SelectItem key={track.id} value={track.id}>{track.label}</SelectItem>)}</SelectContent></Select></SettingRow>
+</section>
+              {settingsSection === '核对开局' && <SettingsReview settings={settingsDraft} players={playerDrafts} baseline={settingsReviewBaseline} />}
+            </div></div><DialogFooter className="rules-footer"><output>{settingsSection === '核对开局' ? '确认后重置点数、本场和供托，开始新对局。' : '当前仅修改草稿；下一步核对后才会开局。'}</output><Button variant="outline" onClick={closeSettings}>取消</Button>{settingsSection === '核对开局' ? <Button className="gold-button" onClick={startFreshMatch}><ListRestart /> 应用并开始新对局</Button> : <Button className="gold-button" onClick={() => setSettingsSection('核对开局')}>核对并继续</Button>}</DialogFooter>
           </DialogContent>
         </Dialog>
         {characterSeat !== null && <CharacterPicker value={playerDrafts[characterSeat]?.character} onClose={() => setCharacterSeat(null)} onSelect={(choice: CharacterChoice) => {
           setPlayerDrafts(drafts => drafts.map((draft, index) => index === characterSeat ? { ...draft, character: choice } : draft));
-          const playerId = game.players[characterSeat]?.id;
-          if (playerId) commit(current => ({ ...current, players: current.players.map(player => player.id === playerId ? { ...player, character: choice } : player) }));
         }} />}
 
         <Dialog open={historyOpen} onOpenChange={setHistoryOpen}>
-          <DialogContent className="history-dialog"><DialogHeader><DialogTitle>对局记录</DialogTitle><DialogDescription>最近的操作显示在最上方。</DialogDescription></DialogHeader><div className="history-list">{[...game.history].reverse().map((event) => <article key={event.id}><time>{new Date(event.at).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}</time><div><strong>{event.title}</strong><p>{event.detail}</p>{event.deltas && <small>{Object.entries(event.deltas).map(([id, delta]) => `${game.players.find((player) => player.id === id)?.name ?? id} ${delta > 0 ? '+' : ''}${delta.toLocaleString('zh-CN')}`).join(' · ')}</small>}</div></article>)}</div><DialogFooter><Button variant="outline" onClick={undo}><RotateCcw /> 撤销上一项</Button></DialogFooter></DialogContent>
+          <DialogContent className="history-dialog match-history-dialog"><DialogHeader><DialogTitle>对局记录</DialogTitle><DialogDescription>查看操作与点数变化；撤销仍只恢复最近一次操作。</DialogDescription></DialogHeader><MatchHistory game={game} /><DialogFooter><Button variant="outline" onClick={undo}><RotateCcw /> 撤销上一项</Button><Button onClick={() => setHistoryOpen(false)}>返回牌桌</Button></DialogFooter></DialogContent>
         </Dialog>
 
-        <Dialog open={dataOpen} onOpenChange={setDataOpen}>
-          <DialogContent className="data-dialog"><DialogHeader><DialogTitle>导入与导出</DialogTitle><DialogDescription>JSON 文件适合备份、迁移和后续扩展。导入会替换对应的本机数据。</DialogDescription></DialogHeader><div className="data-actions"><button type="button" onClick={() => downloadJson('麻将无双对局备份.json', { schemaVersion: 1, exportedAt: new Date().toISOString(), game })}><Download /><span><strong>导出当前对局</strong><small>玩家、点数、设置、技能手牌与历史</small></span></button><label><Import /><span><strong>导入对局备份</strong><small>从此前导出的 JSON 恢复</small></span><input type="file" accept="application/json,.json" onChange={importMatch} /></label><button type="button" onClick={() => downloadJson('麻将无双技能卡资料库.json', { schemaVersion: 1, cards })}><Library /><span><strong>导出技能库</strong><small>包含 40 张内置卡与自制卡</small></span></button><label><Upload /><span><strong>导入技能库</strong><small>适合批量维护与迁移</small></span><input type="file" accept="application/json,.json" onChange={importSkillLibrary} /></label></div></DialogContent>
-        </Dialog>
+        {dataOpen && <DataManagementDialog open close={() => setDataOpen(false)} game={game} cards={cards}
+          normalizeMatch={value => normalizeGameState(value, cards)} applyMatch={applyImportedMatch} applyCards={applyImportedCards} />}
+
+        <AlertDialog open={discardDraft !== null} onOpenChange={open => { if (!open) setDiscardDraft(null); }}>
+          <AlertDialogContent className="draft-discard-dialog"><AlertDialogHeader><AlertDialogTitle>放弃未保存的修改？</AlertDialogTitle><AlertDialogDescription>{discardDraft === 'settings' ? '规则、玩家和角色的调整尚未应用。放弃后当前对局保持不变。' : '技能卡的修改尚未保存，放弃后保留原来的资料。'}</AlertDialogDescription></AlertDialogHeader>
+            <AlertDialogFooter><AlertDialogCancel>继续编辑</AlertDialogCancel><AlertDialogAction onClick={() => { if (discardDraft === 'settings') { setSettingsOpen(false); setCharacterSeat(null); } else setEditorCard(null); setDiscardDraft(null); }}>放弃修改</AlertDialogAction></AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        {nfcCodesOpen && <NfcCodeLibrary open onOpenChange={setNfcCodesOpen} cards={cards} />}
 
         <Dialog open={Boolean(detailCard)} onOpenChange={(open) => !open && setDetailCard(null)}>
-          <DialogContent className="card-detail-dialog" showCloseButton><DialogHeader><DialogTitle>{detailCard?.name}</DialogTitle><DialogDescription>{detailCard?.rarity} · {detailCard?.type.name}</DialogDescription></DialogHeader>{detailCard && <div className={`card-detail type-${TYPE_STYLES[detailCard.type.code]?.color ?? 'gray'}`}><div className="detail-art">{detailCard.artwork ? <img src={detailCard.artwork} alt="" /> : <Sparkles />}</div><div className="detail-rule"><span>{detailCard.type.code}</span><p>{detailCard.effectDescription}</p><blockquote>{detailCard.flavorText}</blockquote></div><dl><div><dt>使用时机</dt><dd>{detailCard.timing?.playWindow ?? '摸牌前'}</dd></div><div><dt>目标</dt><dd>{detailCard.targeting?.scope ?? '依卡面说明'}</dd></div><div><dt>持续</dt><dd>{detailCard.timing?.duration ?? '依卡面说明'}</dd></div><div><dt>叠加</dt><dd>{detailCard.stackability ?? '资料未说明'}</dd></div></dl>{detailCard.ambiguities?.length ? <div className="ambiguity-note"><ShieldCheck /><span><strong>裁定提示</strong>{detailCard.ambiguities[0]}</span></div> : null}</div>}<DialogFooter><Button variant="outline" onClick={() => { if (detailCard) setEditorCard({ ...detailCard }); setDetailCard(null); }}><Edit3 /> 编辑资料</Button>{currentPlayer && game.settings.wushuang && <Button className="gold-button" onClick={() => openSkillRecorder(currentPlayer.id, detailCard?.id)}><Sparkles /> 记录发动</Button>}</DialogFooter></DialogContent>
+          <DialogContent className="card-detail-dialog library-detail-dialog" showCloseButton><DialogHeader><DialogTitle>{detailCard?.name}</DialogTitle><DialogDescription>{detailCard?.rarity} · {detailCard?.type.name}</DialogDescription></DialogHeader>{detailCard && <SkillDetailPanel card={detailCard} change={artwork => setDetailCard(card => card ? { ...card, artwork } : card)} />}<DialogFooter><Button variant="outline" onClick={() => { if (detailCard) beginEditingCard({ ...detailCard }); setDetailCard(null); }}><Edit3 /> 编辑资料</Button>{currentPlayer && game.settings.wushuang && <Button className="gold-button" onClick={() => openSkillRecorder(currentPlayer.id, detailCard?.id)}><Sparkles /> 记录发动</Button>}</DialogFooter></DialogContent>
         </Dialog>
 
-        <Dialog open={Boolean(editorCard)} onOpenChange={(open) => !open && setEditorCard(null)}>
-          <DialogContent className="editor-dialog"><DialogHeader><DialogTitle>技能卡编辑器</DialogTitle><DialogDescription>卡片会保存到本机技能库；图片建议小于 1.5 MB。</DialogDescription></DialogHeader>{editorCard && <div className="editor-grid"><div className="editor-preview">{editorCard.artwork ? <img src={editorCard.artwork} alt="技能卡素材预览" /> : <Sparkles />}<label className="upload-art"><Upload /> 更换素材<input type="file" accept="image/png,image/jpeg,image/webp" onChange={handleCardImage} /></label></div><div className="editor-fields"><div className="field-grid two"><Label>名称<Input value={editorCard.name} onChange={(event) => setEditorCard((card) => card ? { ...card, name: event.target.value } : card)} /></Label><Label>稀有度<Select value={editorCard.rarity} onValueChange={(value) => setEditorCard((card) => card ? { ...card, rarity: String(value) } : card)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{['普通', '稀有', '史诗'].map((rarity) => <SelectItem key={rarity} value={rarity}>{rarity}</SelectItem>)}</SelectContent></Select></Label><Label>类型<Select value={editorCard.type.code} onValueChange={(value) => setEditorCard((card) => card ? { ...card, type: { ...card.type, code: String(value), name: TYPE_STYLES[String(value)]?.label ?? '自定义' } } : card)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{['单', '团', '攻', '陷', '环'].map((type) => <SelectItem key={type} value={type}>{type} · {TYPE_STYLES[type].label}</SelectItem>)}</SelectContent></Select></Label><Label>使用时机<Input value={editorCard.timing?.playWindow ?? ''} onChange={(event) => setEditorCard((card) => card ? { ...card, timing: { ...card.timing, playWindow: event.target.value } } : card)} /></Label></div><Label>效果说明<textarea value={editorCard.effectDescription} onChange={(event) => setEditorCard((card) => card ? { ...card, effectDescription: event.target.value, summary: event.target.value } : card)} /></Label><Label>风味文字<Input value={editorCard.flavorText} onChange={(event) => setEditorCard((card) => card ? { ...card, flavorText: event.target.value } : card)} /></Label></div></div>}<DialogFooter>{editorCard && cards.some((card) => card.id === editorCard.id) && <Button variant="destructive" onClick={() => setDeleteOpen(true)}><Trash2 /> 删除</Button>}<Button variant="outline" onClick={() => setEditorCard(null)}>取消</Button><Button className="gold-button" onClick={saveCard}><Save /> 保存技能卡</Button></DialogFooter></DialogContent>
+        <Dialog open={Boolean(editorCard)} onOpenChange={(open) => { if (!open) closeEditor(); }}>
+          <DialogContent className="editor-dialog library-editor-dialog"><DialogHeader><DialogTitle>技能卡编辑器</DialogTitle><DialogDescription>分区编辑，确认保存后更新本机技能库。</DialogDescription></DialogHeader>{editorCard && <SkillEditorPanel card={editorCard} change={card => { cardImageRequest.current++; setEditorCard(card); setEditorError(''); }} upload={handleCardImage} />}{(editorError || skillEditorIssue(editorCard)) && <p className="library-editor-error" role="alert">{editorError || skillEditorIssue(editorCard)}</p>}<DialogFooter>{editorCard && cards.some((card) => card.id === editorCard.id) && <Button variant="destructive" onClick={() => setDeleteOpen(true)}><Trash2 /> 删除</Button>}<Button variant="outline" onClick={closeEditor}>取消</Button><Button className="gold-button" disabled={Boolean(skillEditorIssue(editorCard))} onClick={saveCard}><Save /> 保存技能卡</Button></DialogFooter></DialogContent>
         </Dialog>
 
-        <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>删除这张技能卡？</AlertDialogTitle><AlertDialogDescription>技能库和玩家手牌中的这张卡都会移除。此操作可通过重新导入备份恢复。</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>取消</AlertDialogCancel><AlertDialogAction variant="destructive" onClick={() => { if (!editorCard) return; const id = editorCard.id; setCards((current) => current.filter((card) => card.id !== id)); commit((current) => ({ ...current, players: current.players.map((player) => ({ ...player, skillHand: player.skillHand.filter((cardId) => cardId !== id) })), skillDeck: current.skillDeck.filter((cardId) => cardId !== id), skillDiscard: current.skillDiscard.filter((cardId) => cardId !== id) })); setEditorCard(null); setDeleteOpen(false); }}>删除</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
+        <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>删除这张技能卡？</AlertDialogTitle><AlertDialogDescription>将删除「{editorCard?.name}」，并从技能库、玩家手牌、牌库和弃牌堆中移除。建议先导出技能库备份；删除后可通过导入备份恢复资料。</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>取消</AlertDialogCancel><AlertDialogAction variant="destructive" onClick={() => { if (!editorCard) return; const id = editorCard.id; setCards((current) => current.filter((card) => card.id !== id)); commit((current) => ({ ...current, players: current.players.map((player) => ({ ...player, skillHand: player.skillHand.filter((cardId) => cardId !== id) })), skillDeck: current.skillDeck.filter((cardId) => cardId !== id), skillDiscard: current.skillDiscard.filter((cardId) => cardId !== id) })); setEditorCard(null); setDeleteOpen(false); }}>删除</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
       </main>
     </TooltipProvider>
   );

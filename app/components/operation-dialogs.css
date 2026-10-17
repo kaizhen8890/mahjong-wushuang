@@ -1,0 +1,116 @@
+/* First-batch dialog styles are scoped; dedicated card/cinematic layouts keep their own rules. */
+[data-native-back-close] { display: none !important; }
+.player-command-panel.player-action-dialog,
+.data-manager.data-dialog {
+  display: flex; flex-direction: column; gap: 0; padding: 0;
+  width: min(880px, calc(100vw - 40px)) !important; max-width: 880px !important;
+  max-height: min(92dvh, 980px); overflow: hidden;
+  border: 1px solid #b79a70 !important; border-radius: 20px;
+  background: linear-gradient(135deg, #302c47, #1c223b) !important;
+  color: #fff1d5; box-shadow: 0 28px 90px #050619b3 !important;
+}
+.player-command-panel > [data-slot='dialog-header'],
+.data-manager > [data-slot='dialog-header'] {
+  flex: none; margin: 0; padding: 22px 54px 18px 24px;
+  border-bottom: 1px solid #9a82594d; background: #29273f;
+}
+.player-command-panel > [data-slot='dialog-close'],
+.data-manager > [data-slot='dialog-close'] { width: 44px; height: 44px; top: 8px; right: 8px; }
+.player-command-panel [data-slot='dialog-description'],
+.data-manager [data-slot='dialog-description'] { color: #c3bdd0; font: 14px/1.65 var(--font-sans, sans-serif); }
+.player-command-identity { display: flex; align-items: center; gap: 16px; min-width: 0; }
+.player-command-identity > .character-avatar { width: 68px; height: 68px; flex: none; border-radius: 14px; border: 1px solid #d6b675; box-shadow: 0 4px 14px #08091970; }
+.player-command-identity > div { min-width: 0; flex: 1; }
+.player-command-identity [data-slot='dialog-title'] { display: flex; align-items: center; gap: 10px; overflow-wrap: anywhere; font-size: 27px; }
+.player-command-identity .wind-seal { display: grid; place-items: center; width: 32px; height: 34px; flex: none; font-size: 25px; border: 1px solid #ccaf78; border-radius: 4px; background: #65374b; }
+.player-command-score { flex: none; font: 600 34px/1.15 var(--font-sans, sans-serif); color: #ffe3a0; font-variant-numeric: tabular-nums; }
+.player-command-score small { display: block; text-align: right; font: 12px/1.6 var(--font-sans, sans-serif); color: #c9bdcf; }
+.player-command-scroll, .data-manager-scroll { min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 22px 24px; scrollbar-color: #807083 transparent; }
+.player-command-scroll { position: relative; display: grid; gap: 22px; background-image: linear-gradient(#24273df8, #24273df8), url('/art/mahjong-pattern.svg'); background-size: auto, 420px; }
+.player-command-primary.player-action-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.player-command-primary.player-action-grid > button { min-height: 84px; height: auto; padding: 12px 8px; gap: 8px; flex-direction: column; border-radius: 12px; white-space: normal; }
+.player-command-primary > button > svg { width: 23px; height: 23px; }
+.player-command-primary > button > span { display: grid; gap: 5px; font-family: var(--font-serif-display); font-size: 21px; }
+.player-command-primary small { font: 11px/1.5 var(--font-sans, sans-serif); color: #c6bfd2; }
+.player-command-panel .quick-points-panel { padding-top: 20px; gap: 14px; }
+.player-command-panel .block-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin: 0; }
+.player-command-panel .block-heading h3 { margin: 0; font-size: 24px; }
+.player-command-panel .block-heading > span { font-size: 12px; color: #c3b6cd; }
+.player-command-panel .field-grid { gap: 14px; }
+.player-command-panel .field-grid label, .point-custom label { display: grid; gap: 8px; font-size: 13px; color: #cfc5d5; }
+.player-command-panel [data-slot='select-trigger'] { width: 100%; min-height: 48px; font-size: 15px; }
+.point-direction-note { font-size: 13px; line-height: 1.6; color: #d2c8dd; }
+.point-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.point-column { min-width: 0; padding: 14px; border: 1px solid #c18b8945; border-radius: 12px; background: #b1677710; }
+.point-column.add { border-color: #8eae9345; background: #82ae9810; }
+.point-column h4 { margin: 0 0 10px; color: #f1b2b4; font: 600 15px/1.4 var(--font-sans, sans-serif); }
+.point-column.add h4 { color: #bce4cf; }
+.point-column > div { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.point-column button { font: 600 19px/1.2 var(--font-sans, sans-serif); font-variant-numeric: tabular-nums; }
+.player-command-panel .subtract button, .player-command-panel button.subtract { color: #f6c0c3; }
+.player-command-panel .add button, .player-command-panel button.add { color: #c5ebd6; }
+.point-custom { display: grid; grid-template-columns: minmax(0, 1fr) 105px 105px; gap: 10px; align-items: end; }
+.point-custom button { min-height: 48px; }
+.player-command-manage { border: 1px solid #8e7e9e55; border-radius: 12px; padding: 0 16px; background: #171c302e; }
+.player-command-manage summary { display: flex; align-items: center; gap: 10px; min-height: 52px; cursor: pointer; list-style: none; color: #d7c6e0; font-size: 15px; }
+.player-command-manage summary::after { content: '＋'; margin-left: auto; font-size: 20px; }
+.player-command-manage[open] summary::after { content: '−'; }
+.player-command-manage summary > svg { width: 19px; height: 19px; }
+.player-command-manage summary > span { font-size: 11px; opacity: .7; }
+.player-manage-actions { display: flex; gap: 12px; flex-wrap: wrap; padding-top: 8px; }
+.player-manage-actions button { min-height: 44px; padding: 10px 18px; }
+.player-manage-actions button[data-variant='destructive'] { color: #ffbdc2; border-color: #ae6879; background: #593547; }
+.player-command-manage > p { font-size: 12px; line-height: 1.6; margin: 10px 0 16px; color: #c2b6c9; }
+.player-command-manage .player-timer-panel { margin-bottom: 18px; }
+.player-command-panel > [data-slot='dialog-footer'], .data-manager > [data-slot='dialog-footer'] {
+  flex: none; display: flex; flex-direction: row; justify-content: flex-end; align-items: center; gap: 10px;
+  margin: 0; padding: 14px 24px max(14px, env(safe-area-inset-bottom)); border-radius: 0;
+}
+.player-command-footer > output { flex: 1; min-width: 0; margin: 0; color: #d2c6d7; font-size: 12px; line-height: 1.65; overflow-wrap: anywhere; }
+.player-command-panel > [data-slot='dialog-footer'] > button, .data-manager > [data-slot='dialog-footer'] > button { min-height: 46px; padding: 10px 18px; }
+.data-manager.data-dialog { width: min(780px, calc(100vw - 32px)) !important; max-width: 780px !important; }
+.data-manager-scroll { display: grid; gap: 22px; }
+.data-section h3 { display: flex; align-items: center; gap: 10px; margin: 0 0 12px; font-size: 23px; }
+.data-section h3 svg { width: 20px; height: 20px; color: #dec187; }
+.data-section p { margin: -5px 0 14px; color: #c5bccf; font-size: 13px; }
+.data-manager .data-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.data-manager .data-actions > button, .data-manager .data-actions > label { min-height: 96px; padding: 18px; border-color: #a492ab70; background: #41405a60; }
+.data-manager .data-actions strong { color: #f4e7ca; font-size: 16px; font-weight: 500; }
+.data-manager .data-actions small { font-size: 12px; line-height: 1.5; color: #c7bed0; }
+.data-manager .data-scope { margin: 0; color: #b4aabd; font-size: 12px; }
+.import-file { display: flex; gap: 14px; align-items: center; padding: 16px; border: 1px solid #b29a6e77; border-radius: 12px; background: #dcc1830c; }
+.import-file > svg { flex: none; color: #e5c88e; }
+.import-file > div { flex: 1; min-width: 0; display: grid; gap: 4px; }
+.import-file span { font-size: 12px; color: #c8bed1; overflow-wrap: anywhere; }
+.import-file b { font-size: 12px; color: #e5c88e; white-space: nowrap; }
+.import-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.import-summary > div { display: grid; gap: 6px; padding: 12px 16px; border-left: 2px solid #d2ae75; background: #141a303d; }
+.import-summary span { font-size: 12px; color: #c3b6ce; }.import-summary strong { font-size: 22px; font-variant-numeric: tabular-nums; }
+.import-players { display: grid; gap: 8px; }
+.import-players > div { display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 7px 12px; border-bottom: 1px solid #c9b6d022; }
+.import-players > div > span:nth-child(2) { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.import-players strong { flex: none; font-variant-numeric: tabular-nums; }
+.import-card-names { display: flex; flex-wrap: wrap; gap: 8px; max-height: 160px; overflow-y: auto; }
+.import-card-names span { padding: 5px 10px; font-size: 13px; border: 1px solid #9182a06b; border-radius: 6px; background: #111a2c45; }
+.import-impact { margin: 0; padding: 14px 16px; border-left: 3px solid #d1a466; background: #cf985410; color: #e7d2b4; font-size: 14px; line-height: 1.8; }
+.import-backup { width: max-content; max-width: 100%; min-height: 46px; }
+.import-error { margin: 0; font-size: 14px; color: #ffb8bd; }.import-notice { margin: 0; color: #bcddce; font-size: 14px; }
+.draft-discard-dialog [data-slot='alert-dialog-description'] { font-size: 14px; line-height: 1.8; }
+.draft-discard-dialog button { min-height: 44px; }
+@media (max-width: 720px) {
+  .player-command-primary.player-action-grid { grid-template-columns: 1fr 1fr; }
+  .player-command-identity { gap: 10px; }.player-command-identity > .character-avatar { width: 52px; height: 52px; }
+  .player-command-score { font-size: 25px; }.player-command-identity [data-slot='dialog-title'] { font-size: 22px; }
+  .data-manager .data-actions { grid-template-columns: 1fr; }
+  .data-manager > [data-slot='dialog-header'] { padding: 18px 50px 16px 18px; }
+  .data-manager-scroll { padding: 18px; gap: 18px; }
+  .data-manager > [data-slot='dialog-footer'] { padding: 12px 16px; }
+  .data-manager > [data-slot='dialog-footer'] > button { flex: 1; padding-inline: 10px; }
+}
+@media (max-height: 820px) and (min-width: 721px) {
+  .player-command-panel > [data-slot='dialog-header'] { padding-top: 14px; padding-bottom: 14px; }
+  .player-command-identity > .character-avatar { width: 52px; height: 52px; }
+  .player-command-scroll { padding-top: 16px; padding-bottom: 16px; gap: 16px; }
+  .player-command-primary.player-action-grid > button { min-height: 72px; }
+  .player-command-panel .quick-points-panel { gap: 10px; padding-top: 14px; }
+}

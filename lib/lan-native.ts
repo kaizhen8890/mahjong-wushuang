@@ -30,10 +30,21 @@ export interface ClientMessageEvent {
   text: string;
 }
 
+export interface RoomsChangedEvent {
+  rooms: DiscoveredLanRoom[];
+  discovering?: boolean;
+  error?: string;
+}
+
+export interface HostStateEvent {
+  state: 'error' | 'advertisementError';
+  message: string;
+}
+
 interface LanRoomNativePlugin {
   startHost(options: { preferredPort: number; serviceName: string }): Promise<NativeHostInfo>;
   stopHost(): Promise<void>;
-  discoverRooms(): Promise<{ rooms: DiscoveredLanRoom[] }>;
+  discoverRooms(): Promise<RoomsChangedEvent>;
   stopDiscovery(): Promise<void>;
   connect(options: { host: string; port: number }): Promise<void>;
   disconnect(): Promise<void>;
@@ -43,7 +54,8 @@ interface LanRoomNativePlugin {
   addListener(eventName: 'peerOpened', listener: (event: PeerEvent) => void): Promise<PluginListenerHandle>;
   addListener(eventName: 'peerMessage', listener: (event: PeerMessageEvent) => void): Promise<PluginListenerHandle>;
   addListener(eventName: 'peerClosed', listener: (event: PeerEvent) => void): Promise<PluginListenerHandle>;
-  addListener(eventName: 'roomsChanged', listener: (event: { rooms: DiscoveredLanRoom[] }) => void): Promise<PluginListenerHandle>;
+  addListener(eventName: 'roomsChanged', listener: (event: RoomsChangedEvent) => void): Promise<PluginListenerHandle>;
+  addListener(eventName: 'hostState', listener: (event: HostStateEvent) => void): Promise<PluginListenerHandle>;
   addListener(eventName: 'clientState', listener: (event: ClientStateEvent) => void): Promise<PluginListenerHandle>;
   addListener(eventName: 'clientMessage', listener: (event: ClientMessageEvent) => void): Promise<PluginListenerHandle>;
 }
@@ -51,6 +63,6 @@ interface LanRoomNativePlugin {
 export const LanRoomNative = registerPlugin<LanRoomNativePlugin>('LanRoom');
 
 export function hasNativeLanRoom() {
-  return Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'android';
+  return Capacitor.isNativePlatform() && Capacitor.isPluginAvailable('LanRoom');
 }
 

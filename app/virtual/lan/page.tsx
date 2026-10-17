@@ -9,6 +9,7 @@ import { saveRoom, loadRoom, clearRoom, matchingClientSave, type RoomSave } from
 import { startVirtualNativeHost } from '@/lib/virtual-mahjong/native-host';
 import { defaultRules } from '@/lib/virtual-mahjong/rules';
 import { ReconnectController, type ReconnectStatus } from '@/lib/virtual-mahjong/reconnect-policy';
+import { EmoteRoomAssets } from '@/lib/emote-transfer';
 import { VirtualCharacterHostAssets } from '@/lib/virtual-mahjong/character-assets';
 import { CharacterAssetReceiver, readAssetFrame, sendCharacterAsset, type AssetFrame } from '@/lib/character-transfer';
 import { getCharacterMedia } from '@/lib/characters';
@@ -20,6 +21,8 @@ import { CharacterAvatar, CharacterPicker, preferredCharacter, savedPreferredCha
 import { DEFAULT_CHARACTER, defaultSeatCharacter, type CharacterChoice } from '@/lib/characters';
 import { RoomRuleEditor, RoomRuleSummary } from '@/app/components/virtual-mahjong/room-rules';
 import './room.css';
+import './room-flow.css';
+import { RoomRuleDialog } from '@/app/components/virtual-mahjong/room-rule-dialog';
 const prefix = '麻将无双·虚拟·';
 const terminalErrors = new Set(['CLOSED', 'KICKED', 'SESSION_REPLACED', 'AUTH_FAILED', 'ROOM_CHANGED', 'ROOM_FULL', 'MATCH_STARTED', 'ROOM_CLOSED', 'WRONG_PROTOCOL']);
 const roomErrorText: Record<string, string> = {
@@ -40,6 +43,7 @@ export default function VirtualLanPage({ onBack }: { onBack?: () => void } = {})
   const [port, setPort] = useState(8765), [now, setNow] = useState(0);
   const [rules, setRules] = useState(defaultRules()), [view, setView] = useState<RoomSnapshot | null>(null);
   const [rooms, setRooms] = useState<DiscoveredLanRoom[]>([]);
+  const [searched, setSearched] = useState(false);
   const [formTab, setFormTab] = useState<'create' | 'join'>('create');
   const [savedRoom, setSavedRoom] = useState<SavedSummary | null>(null);
   const [reconnectStatus, setReconnectStatus] = useState<ReconnectStatus>({ kind: 'idle', attempt: 0 });
@@ -48,6 +52,8 @@ export default function VirtualLanPage({ onBack }: { onBack?: () => void } = {})
   const alive = useRef(false), clock = useRef({ server: 0, received: 0 });
   const room = useRef<VirtualRoomHost | null>(null), client = useRef<VirtualRoomClient | null>(null);
   const host = useRef<Awaited<ReturnType<typeof startVirtualNativeHost>> | null>(null);
+  const hostEmoteAssets = useRef<EmoteRoomAssets | null>(null);
+  const clientEmoteAssets = useRef<EmoteRoomAssets | null>(null);
   const hostAssets = useRef<VirtualCharacterHostAssets | null>(null);
   const clientAssetReceiver = useRef(new CharacterAssetReceiver());
   const clientAssetRequests = useRef(new Map<string, number>());
@@ -75,6 +81,13 @@ export default function VirtualLanPage({ onBack }: { onBack?: () => void } = {})
   const fail = (cause: unknown) => { if (alive.current) setError(readableError(cause)); };
   useEffect(() => {
     alive.current = true;
+    let disposed = false;
+    let hostStatus: { remove(): Promise<void> } | undefined;
+    if (hasNativeLanRoom()) void LanRoomNative.addListener('hostState', event => {
+      if (!disposed) setError(event.message);
+    }).then(handle => { if (disposed) void handle.remove(); else hostStatus = handle; }).catch(cause => {
+      if (!disposed) setError(readableError(cause));
+    });
     selectedCharacterRef.current = preferredCharacter('virtual'); setSelectedCharacter(selectedCharacterRef.current);
     const savedTimer = window.setTimeout(() => {
       try { setSavedRoom(summarizeSave(loadRoom(localStorage))); } catch (cause) { setError(readableError(cause)); }
@@ -85,17 +98,24 @@ export default function VirtualLanPage({ onBack }: { onBack?: () => void } = {})
       if (status.kind === 'exhausted') retryAllowed.current = false;
     });
     const visibility = () => {
-      if (document.hidden) reconnect.current?.pause();
+      if (document.hidden) {
+        reconnect.current?.pause();
+        if (room.current) try {
+          saveRoom(localStorage, { format: 'musou.local.room', version: 1, role: 'host', checkpoint: room.current.exportCheckpoint() });
+        } catch (cause) { setError(readableError(cause)); }
+      }
       else if (reconnect.current?.enabled) reconnect.current.resume();
       else if (client.current && !client.current.active && retryAllowed.current && !leaving.current) reconnect.current?.start();
     };
     document.addEventListener('visibilitychange', visibility);
     const timer = setInterval(() => setNow(clock.current.server + Date.now() - clock.current.received), 250);
     // oxlint-disable-next-line react-hooks/exhaustive-deps -- These are async resources, not DOM refs; cleanup must use the latest owners.
-    return () => { alive.current = false; clearTimeout(savedTimer); clearInterval(timer); document.removeEventListener('visibilitychange', visibility); reconnect.current?.cancel(); void host.current?.close(); void Promise.allSettled(handles.current.map(item => item.remove())); if (client.current) void LanRoomNative.disconnect(); if (hasNativeLanRoom()) void LanRoomNative.stopDiscovery(); };
+    return () => { disposed = true; void hostStatus?.remove(); alive.current = false; clearTimeout(savedTimer); clearInterval(timer); document.removeEventListener('visibilitychange', visibility); reconnect.current?.cancel(); void host.current?.close(); void Promise.allSettled(handles.current.map(item => item.remove())); if (client.current) void LanRoomNative.disconnect(); if (hasNativeLanRoom()) void LanRoomNative.stopDiscovery(); };
   }, []);
   const command = (operation: () => RoomDelivery[]) => { try { setError(''); host.current!.command(operation); return true; } catch (cause) { fail(cause); return false; } };
   const send = (text: string) => { void LanRoomNative.send({ text }).catch(fail); };
+  clientEmoteAssets.current ??= new EmoteRoomAssets(VIRTUAL_ROOM_PROTOCOL, () => client.current?.savedCredentials()?.roomId ?? '',
+    () => Boolean(client.current?.active), (_, text) => LanRoomNative.send({ text }), fail);
   const clientAssetWire = (roomId: string, frame: AssetFrame) => LanRoomNative.send({ text: JSON.stringify({ protocol: VIRTUAL_ROOM_PROTOCOL, roomId, ...frame }) });
   const ensureClientAssets = (snapshot: RoomSnapshot) => {
     const hashes = new Set(snapshot.seats.flatMap(seat => [seat.character?.avatarHash, seat.character?.portraitHash]).filter((value): value is string => !!value));
@@ -106,6 +126,7 @@ export default function VirtualLanPage({ onBack }: { onBack?: () => void } = {})
     }).catch(fail);
   };
   const handleClientAsset = (text: string, session: VirtualRoomClient): boolean => {
+    if (clientEmoteAssets.current!.handle('host', text)) return true;
     if (!text.includes('character.asset.')) return false;
     void (async () => {
       if (new TextEncoder().encode(text).length > MAX_WIRE_BYTES) throw new Error('MESSAGE_TOO_LARGE');
@@ -129,6 +150,7 @@ export default function VirtualLanPage({ onBack }: { onBack?: () => void } = {})
     return true;
   };
   const queueReconnect = () => {
+    clientEmoteAssets.current?.clear();
     if (!client.current || !retryAllowed.current || leaving.current) return;
     if (reconnect.current?.enabled) reconnect.current.disconnected(); else reconnect.current?.start();
     if (document.hidden) reconnect.current?.pause();
@@ -146,6 +168,10 @@ export default function VirtualLanPage({ onBack }: { onBack?: () => void } = {})
       const assets = new VirtualCharacterHostAssets(authority, authority.exportCheckpoint().options.roomId,
         (connectionId, text) => LanRoomNative.sendTo({ connectionId, text }), fail);
       hostAssets.current = assets;
+      hostEmoteAssets.current?.clear();
+      const emoteAssets = new EmoteRoomAssets(VIRTUAL_ROOM_PROTOCOL, () => authority.exportCheckpoint().options.roomId,
+        id => authority.characterAssetPeer(id), (connectionId, text) => LanRoomNative.sendTo({ connectionId, text }), fail);
+      hostEmoteAssets.current = emoteAssets;
       lastSave.current = { revision: -1, at: 0 };
       const changed = () => {
         const snapshot = authority.localView(); show(snapshot);
@@ -158,7 +184,20 @@ export default function VirtualLanPage({ onBack }: { onBack?: () => void } = {})
             lastSave.current = { revision: snapshot.revision, at: Date.now() }; } catch (cause) { fail(cause); }
         }
       };
-      const hosting = await startVirtualNativeHost(authority, LanRoomNative, prefix + roomCode, changed, fail, undefined, (connectionId, text) => assets.handle(connectionId, text));
+      const hosting = await startVirtualNativeHost(authority, LanRoomNative, prefix + roomCode, changed, fail, undefined, (connectionId, text) => {
+        if (emoteAssets.handle(connectionId, text)) return true;
+        try { const value = JSON.parse(text); if (value.type === 'EMOTE' && !emoteAssets.allowed(connectionId, value.emoteId)) { fail(new Error('请先同步表情图片')); return true; } } catch { /* Room parser reports malformed messages. */ }
+        return assets.handle(connectionId, text);
+      }, async delivery => {
+        const value = JSON.parse(delivery.text);
+        if (value.type !== 'EMOTE') return;
+        // Image transfer runs beside gameplay traffic; it never stalls snapshots or intents.
+        void emoteAssets.ensure(delivery.connectionId, value.event.emoteId).then(async () => {
+          const live = authority.localView().game;
+          if (room.current === authority && authority.characterAssetPeer(delivery.connectionId) && live?.gameId === value.event.gameId && live?.roundId === value.event.roundId) await LanRoomNative.sendTo(delivery);
+        }).catch(fail);
+        return false;
+      });
       if (!alive.current) { await hosting.close(); return; }
       host.current = hosting; setRole('host'); setMine(authority.hostPlayerId); setAddress(`${hosting.info.host}:${hosting.info.port}`); setCode(roomCode); setRules(authority.localView().rules); changed(); setLinked(true);
     } catch (cause) { room.current = null; fail(cause); } finally { connectionBusy.current = false; if (alive.current) setBusy(false); }
@@ -231,6 +270,7 @@ export default function VirtualLanPage({ onBack }: { onBack?: () => void } = {})
       // Save before close marks the in-memory Host closed. Leaving keeps recoverable seats.
       if (room.current) saveRoom(localStorage, { format: 'musou.local.room', version: 1, role: 'host', checkpoint: room.current.exportCheckpoint() });
       await host.current?.close(); host.current = null; room.current = null;
+      hostEmoteAssets.current?.clear(); clientEmoteAssets.current?.clear();
       hostAssets.current?.clear(); hostAssets.current = null; clientAssetReceiver.current.clear(); clientAssetRequests.current.clear();
       await Promise.allSettled(handles.current.splice(0).map(item => item.remove()));
       if (client.current) await LanRoomNative.disconnect(); client.current = null;
@@ -245,10 +285,15 @@ export default function VirtualLanPage({ onBack }: { onBack?: () => void } = {})
     } catch (cause) { fail(cause); }
   };
   const discover = async () => {
+    setSearched(true);
     try {
       if (!discovery.current) {
         discovery.current = true;
-        const listener = await LanRoomNative.addListener('roomsChanged', event => { if (alive.current) setRooms(event.rooms.filter(item => item.serviceName.startsWith(prefix))); }).catch(cause => { discovery.current = false; throw cause; });
+        const listener = await LanRoomNative.addListener('roomsChanged', event => {
+          if (!alive.current) return;
+          setRooms(event.rooms.filter(item => item.serviceName.startsWith(prefix)));
+          if (event.error) setError(event.error);
+        }).catch(cause => { discovery.current = false; throw cause; });
         if (!alive.current) { await listener.remove(); return; } handles.current.push(listener);
       }
       const found = await LanRoomNative.discoverRooms();
@@ -259,16 +304,17 @@ export default function VirtualLanPage({ onBack }: { onBack?: () => void } = {})
     if (room.current) command(() => room.current!.setHostCharacter(choice));
     else if (client.current?.active) try { send(client.current.character(choice)); } catch (cause) { fail(cause); }
   };
-  if (view?.game && linked) return <VirtualTable characters={Object.fromEntries(view.seats.map((seat, index) => [seat.playerId, seat.character ?? defaultSeatCharacter(index)]))} onChooseCharacter={chooseCharacter} botIds={view.seats.filter(seat => seat.bot).map(seat => seat.playerId)} emotes={emotes} sendEmote={id => { if (room.current) command(() => room.current!.hostEmote(id)); else try { send(client.current!.emote(id)); } catch (cause) { fail(cause); } }} animateEntrance={dealRound === view.game.roundId} view={view.game} now={now} error={error} roomLabel="LAN 对局" canAdvance={role === 'host'} exit={() => { void leave(); }} next={() => command(() => room.current!.nextRound(view.game!.roundId))} send={intent => {
+  if (view?.game && linked) return <VirtualTable characters={Object.fromEntries(view.seats.map((seat, index) => [seat.playerId, seat.character ?? defaultSeatCharacter(index)]))} onChooseCharacter={chooseCharacter} botIds={view.seats.filter(seat => seat.bot).map(seat => seat.playerId)} emotes={emotes} sendEmote={async id => { if (room.current) return command(() => room.current!.hostEmote(id)); try { await clientEmoteAssets.current!.ensure('host', id); if (!client.current?.active) throw new Error('房间已断开'); await LanRoomNative.send({ text: client.current.emote(id) }); return true; } catch (cause) { fail(cause); return false; } }} animateEntrance={dealRound === view.game.roundId} view={view.game} now={now} error={error} roomLabel="LAN 对局" canAdvance={role === 'host'} exit={() => { void leave(); }} next={() => command(() => room.current!.nextRound(view.game!.roundId))} send={intent => {
     if (room.current) command(() => room.current!.hostAction({ ...intent, actionId: crypto.randomUUID(), gameId: view.game!.gameId, roundId: view.game!.roundId, turnId: view.game!.turnId }));
     else try { send(client.current!.action(intent)); } catch (cause) { fail(cause); }
   }} />;
   return <main className="vr-room vr-virtual-room"><header className="vr-room-header"><button className="vr-room-back" disabled={busy} aria-label="返回对局模式" onClick={() => { void (async () => { if (room.current || client.current) await leave(); if (onBack) onBack(); else window.location.href = '/virtual'; })(); }}>‹</button><div><small>麻将无双 · 虚拟麻将</small><h1>{view ? '房间席位' : '好友局域网对局'}</h1></div></header>
     <button className="vr-character-choice" type="button" onClick={() => setCharacterOpen(true)}><CharacterAvatar choice={view?.seats.find(seat => seat.playerId === mine)?.character ?? selectedCharacter} />选择角色</button>
     {characterOpen && <CharacterPicker value={view?.seats.find(seat => seat.playerId === mine)?.character ?? selectedCharacter} onSelect={chooseCharacter} onClose={() => setCharacterOpen(false)} />}
-    {!supported && <output>LAN 房间需要 Android App。浏览器可返回单机试打。</output>}{error && <p role="alert">{error}</p>}
+    {!supported && <output>LAN 房间需要支持本地网络的 App。浏览器可返回单机试打。</output>}{error && <p role="alert">{error}</p>}
+    {!view && <ol className="room-connect-steps" aria-label="连接步骤"><li><b>1</b> 同一 Wi-Fi</li><li><b>2</b> 创建或加入房间</li><li><b>3</b> 全员准备开局</li></ol>}
     {!view ? <div className="vr-room-layout"><div className="vr-room-profile">
-      <section><h2>继续上次房间</h2><p>退出保留身份和存档。房主恢复房间后，玩家可用原身份重连。</p>
+      <section><h2>继续上次房间</h2><p>保留原席位与进度，房主恢复后可重连。</p><details className="vr-help"><summary>连接与存档说明</summary><p>所有设备连接同一 Wi-Fi。房主保持 App 在前台，锁屏或切后台可能中断连接。退出保留身份与存档。</p></details>
         {savedRoom ? <p className="vr-saved-summary"><strong>{savedRoom.title}</strong><span>{savedRoom.detail}</span></p> : <p>暂无可恢复的房间</p>}
         <button disabled={!supported || busy || role !== 'none' || !savedRoom} onClick={() => { void restore(); }}>{savedRoom?.role === 'client' ? '按原身份重连' : '恢复上次房间'}</button>
         <button disabled={!supported || busy || role !== 'none' || !savedRoom} onClick={() => { try { clearRoom(localStorage); setSavedRoom(null); setError('存档已清除'); } catch (cause) { fail(cause); } }}>放弃旧存档</button>
@@ -280,20 +326,22 @@ export default function VirtualLanPage({ onBack }: { onBack?: () => void } = {})
         <button disabled={busy} onClick={() => { void leave(); }}>退出连接</button></output>}
       </div><div className="vr-room-forms"><nav aria-label="房间操作"><button aria-current={formTab === 'create'} onClick={() => setFormTab('create')}>创建房间</button><button aria-current={formTab === 'join'} onClick={() => setFormTab('join')}>加入房间</button></nav>
       {formTab === 'create' ? <><section aria-label="创建房间规则"><RoomRuleEditor rules={rules} change={setRules} basics />
-      </section><button className="vr-form-submit" disabled={!supported || busy || role === 'client'} onClick={() => { void create(); }}>创建房间</button></> : <section><h2>加入房间</h2><label>IP<input disabled={role === 'client'} value={ip} onChange={event => setIp(event.target.value)} /></label><label>端口<input disabled={role === 'client'} type="number" value={port} onChange={event => setPort(Number(event.target.value))} /></label><label>房间码<input disabled={role === 'client'} maxLength={32} value={code} onChange={event => setCode(event.target.value.toUpperCase())} /></label>
-        <button disabled={!supported || busy || role === 'client'} onClick={() => { void join(); }}>加入房间</button>
-        <button disabled={!supported || busy} onClick={() => { void discover(); }}>查找附近房间</button>
-        {rooms.map(item => <button key={`${item.host}:${item.port}`} onClick={() => { setIp(item.host); setPort(item.port); setCode(item.serviceName.slice(prefix.length).split(' ')[0]); }}>{item.serviceName} · {item.host}</button>)}
-      </section>}</div></div> : <div className="vr-room-active"><div><p className="vr-room-meta">{address && <span>{address}</span>}<span>房间码 {code}</span><span>{view.rules.players}人</span></p>
-        <section className="vr-seats">{Array.from({ length: view.rules.players }, (_, index) => { const seat = view.seats[index]; return <article key={index}><h2>{['东', '南', '西', '北'][index]}</h2>{seat && <CharacterAvatar choice={seat.character} className="vr-seat-character" />}<strong className={!seat ? 'vr-seat-empty' : undefined}>{seat?.name ?? '等待加入'}</strong>{seat?.bot && <span className="vr-bot-badge">人机</span>}<p className="vr-seat-status">{seat ? <><span>{seat.connected ? '在线' : '断线'} ·</span><span>{seat.ready ? '已准备' : '未准备'}</span></> : '空席'}</p>
+      </section><button className="vr-form-submit" disabled={!supported || busy || role === 'client'} onClick={() => { void create(); }}>创建房间</button></> : <section className="vr-join-form"><h2>选择附近房间</h2><button disabled={!supported || busy || role === 'client'} onClick={() => { void discover(); }}>查找附近房间</button>
+        <div className="vr-discovered-rooms">{rooms.map(item => <button disabled={role === 'client'} aria-pressed={ip === item.host && port === item.port} key={`${item.host}:${item.port}`} onClick={() => { setIp(item.host); setPort(item.port); setCode(item.serviceName.slice(prefix.length).split(' ')[0]); }}><strong>{item.serviceName}</strong><small>{item.host}:{item.port}</small></button>)}{rooms.length === 0 && <p>{searched ? '暂未找到房间。确认房主已开启房间，或使用手动连接。' : '房主开启房间后，点上方按钮查找。'}</p>}</div>
+        {ip && <p className="vr-selected-address">已选地址 {ip}:{port}</p>}
+        <details className="vr-manual-address"><summary>手动连接 · 输入 IP 与端口</summary><div className="vr-rule-fields"><label>IP<input disabled={role === 'client'} value={ip} onChange={event => setIp(event.target.value)} /></label><label>端口<input disabled={role === 'client'} type="number" value={port} onChange={event => setPort(Number(event.target.value))} /></label></div></details>
+        <label>房间码<input disabled={role === 'client'} maxLength={32} autoCapitalize="characters" autoCorrect="off" value={code} onChange={event => setCode(event.target.value.toUpperCase())} /></label>
+        <button className="vr-form-submit" disabled={!supported || busy || role === 'client'} onClick={() => { void join(); }}>{busy ? '正在加入…' : '加入房间'}</button>
+      </section>}</div></div> : <div className="vr-room-active"><div className="vr-room-main"><div className="vr-room-main-scroll"><div className="vr-access-card"><div><small>房间码</small><strong>{code}</strong></div><span>{view.seats.length} / {view.rules.players} 席 · {view.seats.filter(seat => seat.ready && seat.connected).length} 人准备</span>{address && <details><summary>手动连接地址</summary><code>{address}</code></details>}</div>
+        <section className="vr-seats">{Array.from({ length: view.rules.players }, (_, index) => { const seat = view.seats[index]; return <article data-status={!seat ? 'empty' : !seat.connected ? 'offline' : seat.ready ? 'ready' : 'waiting'} key={index}><h2>{['东', '南', '西', '北'][index]}</h2>{seat && <CharacterAvatar choice={seat.character} className="vr-seat-character" />}<strong className={!seat ? 'vr-seat-empty' : undefined}>{seat?.name ?? '等待加入'}</strong>{seat?.playerId === mine && <small className="vr-self-badge">我</small>}{seat?.bot && <span className="vr-bot-badge">人机</span>}<p className="vr-seat-status">{seat ? !seat.connected ? '已断线 · 等待重连' : seat.ready ? '已准备' : '在线 · 待准备' : '空席'}</p>
           {role === 'host' && seat && seat.playerId !== mine && <button onClick={() => command(() => room.current!.kick(seat.playerId))}>{seat.bot ? '移除人机' : '移出'}</button>}
         </article>; })}</section>
         {role === 'host' && !view.game && <div className="vr-swap"><label>从<select aria-label="换位起始席" value={swapFrom} onChange={event => setSwapFrom(Number(event.target.value))}>{view.seats.map(seat => <option key={seat.playerId} value={seat.seat}>{['东', '南', '西', '北'][seat.seat]} · {seat.name}</option>)}</select></label><label>到<select aria-label="换位目标席" value={swapTo} onChange={event => setSwapTo(Number(event.target.value))}>{view.seats.map(seat => <option key={seat.playerId} value={seat.seat}>{['东', '南', '西', '北'][seat.seat]} · {seat.name}</option>)}</select></label><button disabled={swapFrom === swapTo || swapFrom >= view.seats.length || swapTo >= view.seats.length} onClick={() => command(() => room.current!.swapSeats(swapFrom, swapTo))}>交换两席</button></div>}
-        <div className="vr-room-actions">{linked ? <button disabled={Boolean(view.game)} onClick={() => { const ready = !view.seats.find(seat => seat.playerId === mine)?.ready; if (room.current) command(() => room.current!.setHostReady(ready)); else try { send(client.current!.ready(ready)); } catch (cause) { fail(cause); } }}>{view.seats.find(seat => seat.playerId === mine)?.ready ? '取消准备' : '准备'}</button> : <><button disabled={busy || terminal} onClick={() => { void join(); }}>手动重连</button>{['waiting', 'trying', 'paused'].includes(reconnectStatus.kind) && <button onClick={cancelReconnect}>取消自动重连</button>}</>}
+        </div><output className="vr-ready-hint">{view.seats.length < view.rules.players ? `还差 ${view.rules.players - view.seats.length} 位玩家，可邀请好友${role === 'host' ? '或添加人机' : ''}。` : view.seats.some(seat => !seat.connected) ? '等待断线玩家重连。' : view.seats.some(seat => !seat.ready) ? '席位已满，等待全员准备。' : '全员已准备，房主可以开始对局。'}</output><div className="vr-room-actions">{linked ? <button disabled={Boolean(view.game)} onClick={() => { const ready = !view.seats.find(seat => seat.playerId === mine)?.ready; if (room.current) command(() => room.current!.setHostReady(ready)); else try { send(client.current!.ready(ready)); } catch (cause) { fail(cause); } }}>{view.seats.find(seat => seat.playerId === mine)?.ready ? '取消准备' : '准备'}</button> : <><button disabled={busy || terminal} onClick={() => { void join(); }}>手动重连</button>{['waiting', 'trying', 'paused'].includes(reconnectStatus.kind) && <button onClick={cancelReconnect}>取消自动重连</button>}</>}
           {role === 'host' && !view.game && <button disabled={view.seats.length >= view.rules.players} onClick={() => command(() => room.current!.addBot())}>添加人机</button>}
           {role === 'host' && <button disabled={view.seats.length !== view.rules.players || view.seats.some(seat => !seat.ready || !seat.connected)} onClick={() => command(() => room.current!.start())}>开始对局</button>}
           <button disabled={busy} onClick={() => { void leave(); }}>{role === 'host' ? '暂停并退出房间' : '暂时离开房间'}</button></div>
-      </div><aside><RoomRuleSummary rules={view.rules} />{role === 'host' && !view.game && <button onClick={() => setRuleEditorOpen(true)}>调整规则</button>}</aside></div>}
-    {ruleEditorOpen && role === 'host' && view && !view.game && <dialog open className="vr-rule-modal" aria-modal="true" aria-label="调整房间规则"><div><header><h2>调整房间规则</h2><p>应用后所有玩家需重新准备。</p>{error && <p role="alert">{error}</p>}</header><div className="vr-rule-modal-scroll"><RoomRuleEditor rules={rules} change={setRules} basics /></div><div className="vr-rule-modal-actions"><button onClick={() => { if (command(() => room.current!.changeRules(rules))) setRuleEditorOpen(false); }}>应用并取消准备</button><button onClick={() => { setRules(view.rules); setRuleEditorOpen(false); }}>取消</button></div></div></dialog>}
+      </div><aside><RoomRuleSummary rules={view.rules} />{role === 'host' && !view.game && <button onClick={() => { setRules(view.rules); setRuleEditorOpen(true); }}>调整规则</button>}</aside></div>}
+    {ruleEditorOpen && role === 'host' && view && !view.game && <RoomRuleDialog current={view.rules} draft={rules} change={setRules} error={error} close={() => { setRules(view.rules); setRuleEditorOpen(false); }} apply={() => { if (command(() => room.current!.changeRules(rules))) setRuleEditorOpen(false); }} />}
   </main>;
 }

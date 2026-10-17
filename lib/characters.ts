@@ -167,7 +167,7 @@ export async function exportCharacterPack(choice: CharacterChoice): Promise<Blob
   return new Blob([JSON.stringify({ format: 'mahjong-wushuang.character', version: 1, character: choice,
     avatar: await encodeBlob(avatar), portrait: await encodeBlob(portrait) })], { type: 'application/json' });
 }
-export async function importCharacterPack(file: Blob): Promise<CharacterChoice> {
+export async function inspectCharacterPack(file: Blob): Promise<{ choice: CharacterChoice; avatar: Blob; portrait: Blob }> {
   if (file.size > 4_500_000) throw new Error('角色包过大');
   const pack = JSON.parse(await file.text()) as Record<string, unknown>;
   if (pack.format !== 'mahjong-wushuang.character' || pack.version !== 1 || !validCharacterChoice(pack.character)
@@ -179,6 +179,10 @@ export async function importCharacterPack(file: Blob): Promise<CharacterChoice> 
     try { if (!bitmap.width || !bitmap.height || bitmap.width > 2000 || bitmap.height > 2000) throw new Error('角色图片尺寸无效'); }
     finally { bitmap.close(); }
   }
+  return { choice, avatar, portrait };
+}
+export async function importCharacterPack(file: Blob): Promise<CharacterChoice> {
+  const { choice, avatar, portrait } = await inspectCharacterPack(file);
   await putCharacterMedia(choice.avatarHash!, avatar);
   await putCharacterMedia(choice.portraitHash!, portrait);
   await saveCustomCharacter(choice);

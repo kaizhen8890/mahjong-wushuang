@@ -1,0 +1,44 @@
+{
+  "version": "2.0.0",
+  "name": "寂静之地 · 无声封界",
+  "durationSeconds": 6.4,
+  "silenceSeconds": 4.7,
+  "titleSeconds": 5.5,
+  "revealSeconds": 6.4,
+  "tailMs": 800,
+  "fps": 30,
+  "frames": 192,
+  "orientations": {
+    "landscape": [
+      1600,
+      1000
+    ],
+    "portrait": [
+      1000,
+      1600
+    ]
+  },
+  "assets": [
+    {
+      "file": "intro-landscape.mp4",
+      "bytes": 6286242,
+      "sha256": "6a5b9d081d453e0244fe9d052f97ac13f33ba94159de10ff9bfddb93875ff44a"
+    },
+    {
+      "file": "intro-portrait.mp4",
+      "bytes": 6444816,
+      "sha256": "cef05c68bb364a1d1427a11e63c9d8f329a0afab226ec771bb991ad87d0bffe8"
+    },
+    {
+      "file": "poster-landscape.jpg",
+      "bytes": 416861,
+      "sha256": "98fba3ef7dbccf4f18bcf202d8944c84c8d61cd443946d64dc55f0125b1be9e9"
+    },
+    {
+      "file": "poster-portrait.jpg",
+      "bytes": 434522,
+      "sha256": "80db5834eb0a91da9806df7071cfab210c7deafea46d8d145943e39cf8abb860"
+    }
+  ],
+  "provenance": "Original procedural v2 geometry, continuous pre-fractured pressure waves and deterministic synthesized audio. A development of the supplied silence package; no third-party models, texture images or audio samples."
+}

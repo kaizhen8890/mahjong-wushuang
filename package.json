@@ -1,6 +1,6 @@
 {
   "name": "sites-project",
-  "version": "1.0.0",
+  "version": "1.1.0-beta.45",
   "private": true,
   "engines": {
     "node": ">=22.13.0"
@@ -10,10 +10,18 @@
     "build": "vinext build",
     "build:offline-manifest": "node scripts/build-offline-manifest.mjs",
     "android:sync": "cap sync android",
-    "android:apk": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-android.ps1",
+    "ios:sync": "node scripts/capacitor-cli.cjs sync ios",
+    "ios:prepare": "pnpm exec tsc --noEmit && pnpm build && pnpm build:offline-manifest && pnpm ios:sync",
+    "ios:check": "node scripts/check-ios-project.mjs",
+    "ios:build:simulator": "node scripts/build-ios.mjs",
+    "test:core": "node scripts/test-core.mjs",
+    "android:apk": "node scripts/android-build.mjs",
     "start": "wrangler dev --config dist/server/wrangler.json",
     "lint": "oxlint",
-    "format": "oxfmt"
+    "format": "oxfmt",
+    "android:verify": "node scripts/android-verify.mjs",
+    "test:build": "python -m unittest discover -s tests/build -p test_*.py",
+    "test:content": "python tools/build/content_contract.py"
   },
   "dependencies": {
     "@base-ui/react": "1.7.0",
@@ -42,6 +50,7 @@
   "devDependencies": {
     "@capacitor/android": "8.5.1",
     "@capacitor/cli": "8.5.1",
+    "@capacitor/ios": "8.5.1",
     "@cloudflare/vite-plugin": "1.37.1",
     "@cloudflare/workers-types": "4.20260515.1",
     "@openai/sites-vite-plugin": "0.2.0",

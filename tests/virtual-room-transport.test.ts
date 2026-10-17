@@ -34,4 +34,27 @@ await assert.rejects(attachVirtualRoom(room, { ...port, async addListener(name: 
   return { async remove() { cleaned = true; } };
 } }, () => {}, () => {}));
 assert.ok(cleaned);
-console.log('PASS virtual transport: targeted delivery order, native event binding, disconnect, disposal and partial setup cleanup');
+// A custom emote's first media transfer is deferred outside the gameplay delivery queue.
+const sentWhileMediaPending: string[] = [];
+let finishMedia!: () => void;
+const mediaPending = new Promise<void>(resolve => { finishMedia = resolve; });
+let lateEmoteDelivered = false;
+const nonBlocking = await attachVirtualRoom(room, {
+  ...port,
+  async sendTo(value) { sentWhileMediaPending.push(JSON.parse(value.text).type); },
+}, () => {}, cause => { throw cause; }, undefined, async delivery => {
+  if (JSON.parse(delivery.text).type !== 'EMOTE') return;
+  void mediaPending.then(() => { lateEmoteDelivered = true; });
+  return false;
+});
+nonBlocking.publish([
+  { connectionId: 'bound-peer', text: JSON.stringify({ type: 'EMOTE' }) },
+  { connectionId: 'bound-peer', text: JSON.stringify({ type: 'SNAPSHOT', revision: 100 }) },
+]);
+await nonBlocking.flush();
+assert.deepEqual(sentWhileMediaPending, ['SNAPSHOT'], 'Gameplay snapshot reaches the peer before custom media is ready');
+assert.equal(lateEmoteDelivered, false);
+finishMedia(); await mediaPending; await Promise.resolve();
+assert.equal(lateEmoteDelivered, true);
+await nonBlocking.dispose();
+console.log('PASS virtual transport: targeted delivery order, coalesced snapshots, deferred emote media without blocking gameplay, disconnect, disposal and setup cleanup');

@@ -1,0 +1,7 @@
+{
+  "applicationId": "com.mahjongwushuang.table",
+  "maxApkBytes": 265000000,
+  "baselineBytes": 243573219,
+  "maxGrowthRatio": 0.05,
+  "maxUnaccountedBytes": 0
+}

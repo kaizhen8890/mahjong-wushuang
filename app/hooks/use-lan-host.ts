@@ -19,6 +19,8 @@ import {
   type RequestErrorCode,
   type ServerMessage,
 } from '@/lib/lan-protocol';
+import { activeEnvironment } from '@/lib/skill-experience';
+import { EmoteRoomAssets } from '@/lib/emote-transfer';
 import { applyRemoteControllerCommand, RemoteCommandError } from '@/lib/remote-command';
 import type { GameState, SkillCard } from '@/lib/mahjong';
 import { calculateTurnClock, turnElapsedMs } from '@/lib/mahjong';
@@ -95,6 +97,10 @@ export function useLanHost({ game, cards, gameRef, commitRemote }: UseLanHostOpt
   const noticesRef = useRef(new Map<string, ControllerNotification[]>());
   const commandResultsRef = useRef(new Map<string, CommandResult>());
   const lastPublishedGameRef = useRef<GameState | null>(null);
+  const emoteAssets = useRef<EmoteRoomAssets | null>(null);
+  emoteAssets.current ??= new EmoteRoomAssets(LAN_PROTOCOL_VERSION, () => roomIdRef.current,
+    id => Boolean(bindingsRef.current.get(id)?.playerId), (connectionId, text) => LanRoomNative.sendTo({ connectionId, text }),
+    cause => setError(cause instanceof Error ? cause.message : '表情同步失败'));
   const assetReceiver = useRef(new CharacterAssetReceiver());
   const assetAsked = useRef(new Map<string, number>());
 
@@ -113,6 +119,7 @@ export function useLanHost({ game, cards, gameRef, commitRemote }: UseLanHostOpt
   const sendAsset = useCallback((connectionId: string, frame: AssetFrame) =>
     LanRoomNative.sendTo({ connectionId, text: JSON.stringify({ ...nowBase(frame.type, roomIdRef.current), ...frame }) }), []);
   const handleAsset = useCallback((connectionId: string, text: string): boolean => {
+    if (emoteAssets.current!.handle(connectionId, text)) return true;
     if (!text.includes('character.asset.')) return false;
     void (async () => {
       if (new TextEncoder().encode(text).length > MAX_WIRE_BYTES) throw new Error('MESSAGE_TOO_LARGE');
@@ -168,6 +175,8 @@ export function useLanHost({ game, cards, gameRef, commitRemote }: UseLanHostOpt
   }, [gameRef, makeSnapshot, sendTo, ensureAssets]);
 
   const publishRealtimeEvent = useCallback(async (input: { kind: 'emote' | 'draw'; actorPlayerId: string; actorName?: string; emoteId?: string }) => {
+    const quiet = () => ['night', 'silence'].includes(activeEnvironment(gameRef.current)?.kind ?? '');
+    if (input.kind === 'emote' && quiet()) return;
     const actor = gameRef.current.players.find((player) => player.id === input.actorPlayerId);
     const event: ControllerRealtimeEvent = {
       eventId: createProtocolId('live'),
@@ -185,7 +194,12 @@ export function useLanHost({ game, cards, gameRef, commitRemote }: UseLanHostOpt
       roomId: roomIdRef.current,
       event,
     };
-    await Promise.allSettled([...bindingsRef.current.values()].map((peer) => sendTo(peer.connectionId, message)));
+    await Promise.allSettled([...bindingsRef.current.values()].filter(peer => peer.playerId).map(async peer => {
+      if (input.kind === 'emote' && input.emoteId) await emoteAssets.current!.ensure(peer.connectionId, input.emoteId);
+      if (input.kind === 'emote' && quiet()) return;
+      if (message.roomId !== roomIdRef.current || !hostInfoRef.current || !bindingsRef.current.get(peer.connectionId)?.playerId) return;
+      await sendTo(peer.connectionId, { ...message, sentAt: Date.now(), event: { ...event, createdAt: Date.now() } });
+    }));
   }, [gameRef, sendTo, setRealtimeEvent]);
 
   useEffect(() => {
@@ -257,12 +271,14 @@ export function useLanHost({ game, cards, gameRef, commitRemote }: UseLanHostOpt
     const handles: Array<{ remove: () => Promise<void> }> = [];
 
     const installListeners = async () => {
+      handles.push(await LanRoomNative.addListener('hostState', ({ message }) => setError(message)));
       handles.push(await LanRoomNative.addListener('peerOpened', ({ connectionId }) => {
         if (!hostInfoRef.current) return;
         bindingsRef.current.set(connectionId, { connectionId, deviceId: '', deviceName: '正在加入的手机' });
         refreshPeerUi();
       }));
       handles.push(await LanRoomNative.addListener('peerClosed', ({ connectionId }) => {
+        emoteAssets.current?.disconnect(connectionId);
         bindingsRef.current.delete(connectionId);
         refreshPeerUi();
       }));
@@ -409,6 +425,7 @@ export function useLanHost({ game, cards, gameRef, commitRemote }: UseLanHostOpt
               return;
             }
             try {
+              if (message.command.kind === 'emote.send' && !emoteAssets.current!.allowed(connectionId, message.command.emoteId)) throw new RemoteCommandError('NOT_ALLOWED', '请先同步表情图片');
               const outcome = applyRemoteControllerCommand(gameRef.current, cardsRef.current, binding.playerId, message.command);
               if (outcome.changed) {
                 const next = commitRemote(() => outcome.nextGame);
@@ -420,7 +437,7 @@ export function useLanHost({ game, cards, gameRef, commitRemote }: UseLanHostOpt
                 revisionRef.current += 1;
               }
               if (outcome.realtimeEvent) {
-                await publishRealtimeEvent(outcome.realtimeEvent);
+                void publishRealtimeEvent(outcome.realtimeEvent).catch(cause => setError(cause instanceof Error ? cause.message : '表情发送失败'));
               }
               const result: CommandResult = {
                 ...nowBase('command.result', roomIdRef.current),
@@ -486,6 +503,7 @@ export function useLanHost({ game, cards, gameRef, commitRemote }: UseLanHostOpt
       revisionRef.current = 1;
       matchIdRef.current = createProtocolId('match');
       handIdRef.current = createProtocolId('hand');
+      emoteAssets.current?.clear();
       bindingsRef.current.clear();
       sessionsRef.current.clear();
       noticesRef.current.clear();
@@ -520,6 +538,7 @@ export function useLanHost({ game, cards, gameRef, commitRemote }: UseLanHostOpt
       setError(cause instanceof Error ? cause.message : '关闭房间时发生错误');
     } finally {
       hostInfoRef.current = null;
+      emoteAssets.current?.clear();
       bindingsRef.current.clear();
       sessionsRef.current.clear();
       noticesRef.current.clear();

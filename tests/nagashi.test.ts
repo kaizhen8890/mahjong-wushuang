@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { createGameState, calculateNagashiDraw, DEFAULT_SETTINGS } from '../lib/mahjong';
-const game=createGameState();
+const game=createGameState({...DEFAULT_SETTINGS,teamsEnabled:false});
 const ids=game.players.map(p=>p.id);
 const values=(w:string[])=>ids.map(id=>calculateNagashiDraw(game,w)[id]);
 assert.deepEqual(values([ids[0]]),[12000,-4000,-4000,-4000]);
@@ -9,6 +9,6 @@ assert.deepEqual(values([ids[1],ids[2]]),[-8000,6000,6000,-4000]);
 game.honba=3;game.riichiSticks=2;
 assert.deepEqual(values([ids[1]]),[-4000,8000,-2000,-2000]);
 assert.equal(game.riichiSticks,2);
-const sanma=createGameState({...DEFAULT_SETTINGS,playerCount:3,sanmaTsumoLoss:true});
+const sanma=createGameState({...DEFAULT_SETTINGS,playerCount:3,sanmaTsumoLoss:true,teamsEnabled:false});
 assert.deepEqual(Object.values(calculateNagashiDraw(sanma,[sanma.players[1].id])),[-4000,6000,-2000]);
 console.log('Nagashi payment regressions passed.');

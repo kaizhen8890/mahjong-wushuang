@@ -11,7 +11,7 @@ export interface VirtualHostPort {
 
 /** Install before startHost. No broadcast API is available to this adapter. */
 export async function attachVirtualRoom(room: VirtualRoomHost, port: VirtualHostPort,
-  changed: () => void, failed: (cause: unknown) => void, assetMessage?: (connectionId: string, text: string) => boolean) {
+  changed: () => void, failed: (cause: unknown) => void, assetMessage?: (connectionId: string, text: string) => boolean, prepareDelivery?: (delivery: RoomDelivery) => Promise<void | boolean>) {
   let disposed = false;
   const handles: Handle[] = [];
   const tails = new Map<string, Promise<void>>();
@@ -30,7 +30,7 @@ export async function attachVirtualRoom(room: VirtualRoomHost, port: VirtualHost
       if (snapshot) queuedSnapshots.set(id, delivery);
       const tail = (tails.get(id) ?? Promise.resolve()).then(async () => {
         if (queuedSnapshots.get(id) === delivery) queuedSnapshots.delete(id);
-        if (!disposed) await port.sendTo(delivery);
+        if (!disposed) { const prepared = await prepareDelivery?.(delivery); if (!disposed && prepared !== false) await port.sendTo(delivery); }
       }).catch(failed).finally(() => {
         pending.set(id, (pending.get(id) ?? 1) - 1);
         if (tails.get(id) === tail) { tails.delete(id); pending.delete(id); }

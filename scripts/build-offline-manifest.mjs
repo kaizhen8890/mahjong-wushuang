@@ -7,6 +7,9 @@ async function collect(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
   const files = [];
   for (const entry of entries) {
+    // Android omits hidden build metadata such as .assetsignore. These are not
+    // runtime assets and must not appear in the offline precache list.
+    if (entry.name.startsWith('.')) continue;
     const absolute = path.join(directory, entry.name);
     if (entry.isDirectory()) files.push(...await collect(absolute));
     else if (entry.name !== 'precache-manifest.json') files.push(absolute);

@@ -31,8 +31,8 @@ export function usePresentationSequence(events: TablePresentation[] = EMPTY) {
 }
 export type PresentationSequence = ReturnType<typeof usePresentationSequence>;
 
-export function RollingScore({ value, playerId, groupIds, sequence, className = '' }: {
-  value: number; playerId: string; groupIds?: string[]; sequence: PresentationSequence; className?: string;
+export function RollingScore({ value, playerId, groupIds, sequence, className = '', fitToWidth = false }: {
+  value: number; playerId: string; groupIds?: string[]; sequence: PresentationSequence; className?: string; fitToWidth?: boolean;
 }) {
   const ref = useRef<HTMLOutputElement>(null);
   const displayed = useRef(value);
@@ -45,21 +45,49 @@ export function RollingScore({ value, playerId, groupIds, sequence, className = 
   }, [sequence.event, playerId, groupKey]);
   const held = !!change && sequence.phase === 'intro';
   const target = held ? change.before : change?.after ?? value;
+  const fit = useRef<() => void>(() => {});
+  useLayoutEffect(() => {
+    const element = ref.current;
+    if (!element || !fitToWidth) return;
+    const context = document.createElement('canvas').getContext('2d');
+    if (!context) return;
+    let base = 0, spacing = 0, width = 0, disposed = false;
+    fit.current = () => {
+      const text = element.textContent || '';
+      const measured = context.measureText(text).width + Math.max(0, text.length - 1) * spacing;
+      const size = Math.floor(base * Math.min(1, Math.max(1, width - 3) / Math.max(1, measured)) * 100) / 100;
+      if (size > 0 && element.style.fontSize !== `${size}px`) element.style.fontSize = `${size}px`;
+    };
+    const measure = () => {
+      if (disposed) return;
+      element.style.fontSize = '';
+      const style = getComputedStyle(element);
+      base = parseFloat(style.fontSize); spacing = parseFloat(style.letterSpacing) || 0; width = element.clientWidth;
+      context.font = `${style.fontStyle} ${style.fontWeight} ${base}px ${style.fontFamily}`;
+      fit.current();
+    };
+    const observer = new ResizeObserver(() => { if (width !== element.clientWidth) measure(); });
+    observer.observe(element); window.addEventListener('resize', measure);
+    void document.fonts.ready.then(measure); measure();
+    return () => { disposed = true; fit.current = () => {}; observer.disconnect(); window.removeEventListener('resize', measure); };
+  }, [fitToWidth, value, className]);
   useLayoutEffect(() => {
     const element = ref.current;
     if (!element) return;
     let frame = 0;
     const from = change && !held ? change.before : displayed.current;
     if (held || from === target || matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      displayed.current = target; element.textContent = target.toLocaleString('zh-CN');
+      displayed.current = target; element.textContent = target.toLocaleString('zh-CN'); fit.current();
       return;
     }
     element.textContent = from.toLocaleString('zh-CN');
+    fit.current();
     const started = performance.now();
     const tick = (now: number) => {
       const progress = Math.min(1, (now - started) / 1350);
       displayed.current = Math.round(from + (target - from) * (1 - (1 - progress) ** 3));
       element.textContent = displayed.current.toLocaleString('zh-CN');
+      fit.current();
       if (progress < 1) frame = requestAnimationFrame(tick);
     };
     frame = requestAnimationFrame(tick);

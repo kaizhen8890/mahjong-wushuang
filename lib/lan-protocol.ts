@@ -1,8 +1,12 @@
 import type { PlayerState, Wind, TurnClock } from '@/lib/mahjong';
 import type { TablePresentation } from './presentation';
 import { validCharacterChoice, type CharacterChoice } from './characters';
+import { type EnvironmentAction, type EnvironmentOptions, type EnvironmentView, type SkillExperienceEvent, ENVIRONMENTS } from './skill-experience';
+import { readRandomRule, type CoinDecision, type RandomRule } from './skill-random';
 
-export const LAN_PROTOCOL_VERSION = 5 as const;
+import type { WushuangCommand, WushuangGroup, WushuangSession } from './wushuang-session';
+
+export const LAN_PROTOCOL_VERSION = 8 as const;
 
 function parseTurnClock(value: unknown): TurnClock {
   const clock = expectRecord(value, 'clock');
@@ -90,10 +94,14 @@ export interface ControllerEffect {
   duration: SkillDuration;
   state: 'armed' | 'active' | 'triggered';
   hidden: boolean;
+  coinDecisionAvailable?: boolean;
   createdAt?: string;
 }
 
 export interface ControllerSkillCard {
+  /** Optional for compatibility with older text-only catalogs. */
+  rarity?: string;
+  randomRule?: RandomRule;
   id: number;
   name: string;
   typeCode: string;
@@ -101,6 +109,9 @@ export interface ControllerSkillCard {
 }
 
 export interface ControllerSnapshot {
+  wushuangSessions?: WushuangSession[];
+  environment?: EnvironmentView;
+  experienceEvents?: SkillExperienceEvent[];
   presentations?: TablePresentation[];
   roomId: string;
   matchId: string;
@@ -125,6 +136,8 @@ export interface ControllerSnapshot {
     handEnded: boolean;
     isMyTurn: boolean;
     wushuang: boolean;
+    playerCount?: 3 | 4;
+    akaDora?: boolean;
     openTanyao?: boolean;
     kiriageMangan?: boolean;
     kazoeYakuman?: boolean;
@@ -139,9 +152,12 @@ export interface ControllerSnapshot {
     turnExtraSeconds?: number;
   };
   targetOptions: Array<{
+    name?: string;
+    character?: CharacterChoice;
     playerId: string;
     wind: Wind;
     active: boolean;
+    enemy?: boolean;
   }>;
   controls: {
     canDraw: boolean;
@@ -159,6 +175,7 @@ export interface ControllerSnapshot {
 export type RemoteSnapshot = ControllerSnapshot;
 
 export interface RemoteWinDraft {
+  environmentNumberCount?: number;
   analysis?: { winningTile: string; meldText: string; automatic: boolean };
   winType: 'ron' | 'tsumo';
   loserPlayerId?: string;
@@ -183,6 +200,10 @@ export interface ScoreAdjustInput {
 }
 
 export interface SkillActivationInput {
+  wushuangCostConfirmed?: boolean;
+  coinDecision?: CoinDecision;
+  activationId?: string;
+  environment?: EnvironmentOptions;
   cardId: number;
   targetPlayerIds: string[];
   duration: SkillDuration;
@@ -191,12 +212,15 @@ export interface SkillActivationInput {
 }
 
 export interface TrapRevealInput {
+  coinDecision?: CoinDecision;
   effectId: string;
   targetPlayerIds: string[];
   effectText?: string;
 }
 
 export type ControllerCommand =
+  | WushuangCommand
+  | EnvironmentAction
   | { kind: 'character.select'; character: CharacterChoice }
   | { kind: 'draw.confirm'; turnStartedAt: number }
   | { kind: 'discard.confirm'; turnStartedAt: number }
@@ -620,13 +644,36 @@ function parseRemoteWinDraft(value: unknown): RemoteWinDraft {
     akaDora: expectInteger(record, 'akaDora', 0, 100),
     flowerDora: expectInteger(record, 'flowerDora', 0, 100),
     bonusHan: expectInteger(record, 'bonusHan', 0, 100),
+    environmentNumberCount: optionalInteger(record, 'environmentNumberCount', 0, 18),
     extraPoints: expectInteger(record, 'extraPoints', 0, 1_000_000),
   };
 }
 
+function parseWushuangGroup(value: unknown): WushuangGroup {
+  const g = expectRecord(value, '牌组');
+  return { id: expectString(g, 'id'), tiles: expectStringArray(g.tiles, 'tiles', 18, 2, false),
+    winningTile: expectString(g, 'winningTile', 2, 0), meldText: expectString(g, 'meldText', 128, 0),
+    mode: expectLiteral(g, 'mode', ['smart', 'manual'] as const), selected: expectStringArray(g.selected, 'selected', 64),
+    fu: expectInteger(g, 'fu', 20, 110), dora: expectInteger(g, 'dora', 0, 40) };
+}
+function parseWushuangSession(value: unknown): WushuangSession {
+  const s = expectRecord(value, '无双结算'), rules = expectRecord(s.rules, '无双规则');
+  const result = s.result === undefined ? undefined : expectRecord(s.result, '结算结果');
+  return { effectId: expectString(s, 'effectId'), actorId: expectString(s, 'actorId'), activationId: expectString(s, 'activationId'),
+    face: expectLiteral(s, 'face', ['heads', 'tails'] as const), source: expectLiteral(s, 'source', ['manual', 'toss'] as const),
+    revision: expectInteger(s, 'revision', 0, Number.MAX_SAFE_INTEGER), status: expectLiteral(s, 'status', ['pending', 'settled'] as const),
+    groups: expectArray(s.groups, 'groups', 9).map(parseWushuangGroup), targetId: optionalString(s, 'targetId'),
+    seatWind: expectLiteral(s, 'seatWind', WINDS), roundWind: expectLiteral(s, 'roundWind', WINDS),
+    rules: { playerCount: expectLiteral(rules, 'playerCount', [3,4] as const), akaDora: expectBoolean(rules, 'akaDora'),
+      openTanyao: expectBoolean(rules, 'openTanyao'), kiriageMangan: expectBoolean(rules, 'kiriageMangan'), kazoeYakuman: expectBoolean(rules, 'kazoeYakuman') },
+    ...(result ? { result: { points: expectInteger(result, 'points', 0, 1_000_000_000), deposits: expectInteger(result, 'deposits', 0, 1_000_000),
+      groupPoints: expectArray(result.groupPoints, 'groupPoints', 9).map(n => expectInteger({ n }, 'n', 0, 1_000_000_000)), settledAt: expectString(result, 'settledAt') } } : {}) };
+}
 function parseControllerCommand(value: unknown): ControllerCommand {
   const record = expectRecord(value, 'command');
   const kind = expectString(record, 'kind', 40);
+  if (kind === 'environment.action') return { kind, effectId: expectString(record, 'effectId'),
+    action: expectLiteral(record, 'action', ['judge', 'penalty', 'treasure'] as const), confirmed: expectBoolean(record, 'confirmed'), targetId: optionalString(record, 'targetId') };
   if (kind === 'character.select') {
     if (!validCharacterChoice(record.character)) throw new ValidationFault('INVALID_MESSAGE', '角色资料无效');
     return { kind, character: record.character };
@@ -654,29 +701,41 @@ function parseControllerCommand(value: unknown): ControllerCommand {
       },
     };
   }
+  if (kind === 'wushuang.update' || kind === 'wushuang.commit') {
+    const base = { effectId: expectString(record, 'effectId'), revision: expectInteger(record, 'revision', 0, Number.MAX_SAFE_INTEGER) };
+    return kind === 'wushuang.update' ? { kind, ...base, groups: expectArray(record.groups, 'groups', 9).map(parseWushuangGroup), targetId: optionalString(record, 'targetId') }
+      : { kind, ...base, physicalTilesConfirmed: expectBoolean(record, 'physicalTilesConfirmed'), expectedDeposits: expectInteger(record, 'expectedDeposits', 0, 1_000_000), expectedScore: expectInteger(record, 'expectedScore', -1_000_000_000, 1_000_000_000) };
+  }
   if (kind === 'skill.activate') {
     const input = expectRecord(record.input, 'input');
     const effectText = optionalString(input, 'effectText', MAX_EFFECT_TEXT_LENGTH);
+    const coinDecision = input.coinDecision === undefined ? undefined : expectLiteral(input, 'coinDecision', ['heads', 'tails', 'toss'] as const);
     return {
       kind,
       input: {
         cardId: expectInteger(input, 'cardId', 1, Number.MAX_SAFE_INTEGER),
+        activationId: optionalString(input, 'activationId'),
+        wushuangCostConfirmed: optionalBoolean(input, 'wushuangCostConfirmed'),
+        environment: input.environment === undefined ? undefined : (() => { const e = expectRecord(input.environment, 'environment'); return { yakuId: optionalString(e, 'yakuId'), number: optionalInteger(e, 'number', 1, 9) }; })(),
         targetPlayerIds: expectStringArray(input.targetPlayerIds, 'targetPlayerIds', MAX_TARGET_COUNT),
         duration: expectLiteral(input, 'duration', ['once', 'hand', 'match', 'manual'] as const),
         faceDown: expectBoolean(input, 'faceDown'),
         ...(effectText === undefined ? {} : { effectText }),
+        ...(coinDecision === undefined ? {} : { coinDecision }),
       },
     };
   }
   if (kind === 'skill.reveal') {
     const input = expectRecord(record.input, 'input');
     const effectText = optionalString(input, 'effectText', MAX_EFFECT_TEXT_LENGTH);
+    const coinDecision = input.coinDecision === undefined ? undefined : expectLiteral(input, 'coinDecision', ['heads', 'tails', 'toss'] as const);
     return {
       kind,
       input: {
         effectId: expectString(input, 'effectId'),
         targetPlayerIds: expectStringArray(input.targetPlayerIds, 'targetPlayerIds', MAX_TARGET_COUNT),
         ...(effectText === undefined ? {} : { effectText }),
+        ...(coinDecision === undefined ? {} : { coinDecision }),
       },
     };
   }
@@ -842,6 +901,7 @@ function parseControllerEffect(value: unknown): ControllerEffect {
     duration: expectLiteral(record, 'duration', EFFECT_DURATIONS),
     state: expectLiteral(record, 'state', EFFECT_STATES),
     hidden: expectBoolean(record, 'hidden'),
+    ...(record.coinDecisionAvailable === undefined ? {} : { coinDecisionAvailable: expectBoolean(record, 'coinDecisionAvailable') }),
     ...(createdAt === undefined ? {} : { createdAt }),
   };
 }
@@ -867,6 +927,27 @@ function parsePresentation(value: unknown): TablePresentation {
   };
 }
 
+function parseEnvironmentView(value: unknown): EnvironmentView {
+  const e = expectRecord(value, 'environment');
+  return { kind: expectLiteral(e, 'kind', Object.keys(ENVIRONMENTS) as (keyof typeof ENVIRONMENTS)[]),
+    effectId: expectString(e, 'effectId'), actorId: expectString(e, 'actorId'), name: expectString(e, 'name', 160),
+    yakuId: optionalString(e, 'yakuId'), number: optionalInteger(e, 'number', 1, 9), confirmed: optionalBoolean(e, 'confirmed') };
+}
+function parseExperienceEvent(value: unknown): SkillExperienceEvent {
+  const e = expectRecord(value, 'experienceEvent');
+  const random = e.random === undefined ? undefined : (() => {
+    const r = expectRecord(e.random, 'random');
+    return { ...(r.source === undefined ? {} : { source: expectLiteral(r, 'source', ['manual'] as const) }), kind: expectLiteral(r, 'kind', ['coin', 'dice', 'wheel'] as const),
+      faces: expectArray(r.faces, 'faces', 3).map(n => expectInteger({ n }, 'n', 0, 6)), total: expectInteger(r, 'total', 0, 18),
+      outcomeId: expectString(r, 'outcomeId', 40), label: expectString(r, 'label', 40), description: expectString(r, 'description', 160, 0),
+      options: r.options === undefined ? undefined : expectArray(r.options, 'options', 18).map(v => { const o = expectRecord(v, 'option'); return { id: expectString(o, 'id', 40), label: expectString(o, 'label', 40), weight: expectInteger(o, 'weight', 1, 1000) }; }) };
+  })();
+  return { id: expectString(e, 'id'), createdAt: expectInteger(e, 'createdAt', 0, Number.MAX_SAFE_INTEGER),
+    kind: expectLiteral(e, 'kind', ['environment', 'judgement', 'penalty', 'treasure', 'random', 'skill'] as const),
+    actorId: expectString(e, 'actorId'), actorName: expectString(e, 'actorName', 160), cardName: expectString(e, 'cardName', 160),
+    targets: expectStringArray(e.targets, 'targets', 4), label: expectString(e, 'label', 500, 0), random,
+    environment: e.environment === undefined ? undefined : expectLiteral(e, 'environment', Object.keys(ENVIRONMENTS) as (keyof typeof ENVIRONMENTS)[]) };
+}
 function parseControllerSnapshot(value: unknown): ControllerSnapshot {
   const record = expectRecord(value, 'snapshot');
   const self = expectRecord(record.self, 'snapshot.self');
@@ -876,10 +957,14 @@ function parseControllerSnapshot(value: unknown): ControllerSnapshot {
 
   const targetOptions = expectArray(record.targetOptions, 'snapshot.targetOptions', MAX_TARGET_COUNT).map((entry) => {
     const target = expectRecord(entry, 'targetOption');
+    if(target.character!==undefined&&!validCharacterChoice(target.character))throw new ValidationFault('INVALID_MESSAGE','目标角色资料无效');
     return {
+      name: optionalString(target,'name',MAX_SHORT_TEXT_LENGTH),
+      ...(target.character===undefined?{}:{character:target.character as CharacterChoice}),
       playerId: expectString(target, 'playerId'),
       wind: expectLiteral(target, 'wind', WINDS),
       active: expectBoolean(target, 'active'),
+      enemy: target.enemy === undefined ? true : expectBoolean(target, 'enemy'),
     };
   });
   const effects = expectArray(record.effects, 'snapshot.effects', MAX_LIST_COUNT).map(parseControllerEffect);
@@ -893,6 +978,9 @@ function parseControllerSnapshot(value: unknown): ControllerSnapshot {
     roomId: expectString(record, 'roomId'),
     matchId: expectString(record, 'matchId'),
     handId: expectString(record, 'handId'),
+    wushuangSessions: record.wushuangSessions === undefined ? [] : expectArray(record.wushuangSessions, 'wushuangSessions', 2).map(parseWushuangSession),
+    environment: record.environment === undefined ? undefined : parseEnvironmentView(record.environment),
+    experienceEvents: record.experienceEvents === undefined ? [] : expectArray(record.experienceEvents, 'experienceEvents', 8).map(parseExperienceEvent),
     revision: expectInteger(record, 'revision', 0, Number.MAX_SAFE_INTEGER),
     self: {
       playerId: expectString(self, 'playerId'),
@@ -913,6 +1001,8 @@ function parseControllerSnapshot(value: unknown): ControllerSnapshot {
       handEnded: expectBoolean(table, 'handEnded'),
       isMyTurn: expectBoolean(table, 'isMyTurn'),
       wushuang: expectBoolean(table, 'wushuang'),
+      playerCount: table.playerCount === undefined ? 4 : expectLiteral(table, 'playerCount', [3,4] as const),
+      akaDora: table.akaDora === undefined ? true : expectBoolean(table, 'akaDora'),
       openTanyao: table.openTanyao === undefined ? true : expectBoolean(table, 'openTanyao'),
       kiriageMangan: table.kiriageMangan === undefined ? false : expectBoolean(table, 'kiriageMangan'),
       kazoeYakuman: table.kazoeYakuman === undefined ? true : expectBoolean(table, 'kazoeYakuman'),
@@ -962,9 +1052,11 @@ function parseScorePreview(value: unknown): ScorePreview {
 function parseControllerSkillCard(value: unknown): ControllerSkillCard {
   const record = expectRecord(value, 'card');
   return {
+    ...(record.randomRule === undefined ? {} : { randomRule: readRandomRule(record.randomRule) }),
     id: expectInteger(record, 'id', 1, Number.MAX_SAFE_INTEGER),
     name: expectString(record, 'name', MAX_SHORT_TEXT_LENGTH),
     typeCode: expectString(record, 'typeCode', 16),
+    ...(record.rarity === undefined ? {} : { rarity: expectString(record, 'rarity', 32, 0) }),
     effectDescription: expectString(record, 'effectDescription', MAX_EFFECT_TEXT_LENGTH, 0),
   };
 }

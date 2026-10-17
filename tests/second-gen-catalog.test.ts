@@ -1,0 +1,30 @@
+import assert from 'node:assert/strict';
+import { existsSync } from 'node:fs';
+import data from '../data/skill-cards.json';
+import { migrateSkillLibrary, SKILL_CATALOG_REVISION } from '../lib/skill-catalog';
+import { skillCardArt } from '../lib/skill-art';
+import type { SkillCard } from '../lib/mahjong';
+const cards = data.cards as unknown as SkillCard[];
+const additions = cards.filter(c => [41,42,43,44].includes(c.id));
+assert.deepEqual(additions.map(c => c.name), ['麻将无双','断序杂音','宿星审判','听天问剑']);
+assert.ok(additions.every(c => c.rarity === '无双' && c.type.code === '神'));
+for (const card of additions) {
+  assert.equal(skillCardArt(card.id), card.artwork);
+  assert.ok(existsSync('public' + card.artwork));
+  assert.ok(card.effectDescription.includes('代价'));
+}
+const old = cards.filter(c => !data.addedCardIds.includes(c.id));
+old.find(c => c.id === 3)!.summary = '玩家在上次更新后自己修改的说明';
+const original = JSON.stringify(old);
+const migrated = migrateSkillLibrary(old, '2026-10-01');
+assert.equal(migrated.length, old.length + data.addedCardIds.length);
+assert.equal(migrated.find(c => c.id === 3)?.summary, old.find(c => c.id === 3)?.summary);
+assert.equal(JSON.stringify(old), original);
+assert.deepEqual(migrateSkillLibrary(migrated, SKILL_CATALOG_REVISION), migrated);
+const custom = { ...additions[0], name: '我的同编号卡', custom: true };
+const collision = migrateSkillLibrary([...old,custom], '2026-10-01');
+assert.equal(collision.filter(c => c.id === custom.id).length, 1);
+assert.equal(collision.find(c => c.id === custom.id)?.name, custom.name);
+const deleted = migrated.filter(c => c.id !== 41);
+assert.equal(migrateSkillLibrary(deleted, SKILL_CATALOG_REVISION).some(c => c.id === 41), false);
+console.log('PASS four god cards: exact names/types, full art, one-time migration, no mutation, custom collision and deliberate deletion preserved.');

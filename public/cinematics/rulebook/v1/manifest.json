@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "appVersion": "1.1.0-beta.2",
+  "fps": 30,
+  "durationSeconds": 5.6,
+  "impactSeconds": 3.1666666666666665,
+  "textRevealSeconds": 3.75,
+  "returnSeconds": 5.05,
+  "assets": [
+    {
+      "file": "intro-landscape.mp4",
+      "bytes": 5109104,
+      "sha256": "1f4798eed943a5e670a17a4b30a939e4e765a51cb4b57106ad0ba1c94b63483a"
+    },
+    {
+      "file": "poster-landscape.jpg",
+      "bytes": 262231,
+      "sha256": "a9c36cedd879e13a9e27a7dca936ee8c785e1102dde29850d0a3048b064ad0a6"
+    },
+    {
+      "file": "anchors-landscape.json",
+      "bytes": 8829,
+      "sha256": "8b00ccd4f340d2d1f6a144201a67f1c0f7daf095d1c5091c21ca43f43aef7469"
+    },
+    {
+      "file": "intro-portrait.mp4",
+      "bytes": 4703649,
+      "sha256": "db5ebec214d40c0ad9e04ede91d1206fe241279a97516aeac234b810d16fd7f6"
+    },
+    {
+      "file": "poster-portrait.jpg",
+      "bytes": 202273,
+      "sha256": "13fc260c8913d2a93e8a694774d4f4b1a93f28a4452e194253317b320f04448f"
+    },
+    {
+      "file": "anchors-portrait.json",
+      "bytes": 8882,
+      "sha256": "1c59e989f402a24ab8c81146bda28c91220dddda36d590555b6107a4c7955865"
+    }
+  ]
+}

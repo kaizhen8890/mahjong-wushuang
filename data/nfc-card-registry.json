@@ -1,0 +1,369 @@
+{
+  "version": 1,
+  "cards": [
+    {
+      "code": "MW-001",
+      "name": "麻将无双",
+      "uri": "mahjongwushuang://card/v1/MW-001",
+      "action": "skill",
+      "skillId": 41,
+      "skillName": "麻将无双"
+    },
+    {
+      "code": "MW-002",
+      "name": "断序杂音",
+      "uri": "mahjongwushuang://card/v1/MW-002",
+      "action": "skill",
+      "skillId": 42,
+      "skillName": "断序杂音",
+      "trackTitle": "断序杂音 / Desultory Signals",
+      "audioSrc": null
+    },
+    {
+      "code": "MW-003",
+      "name": "宿星审判",
+      "uri": "mahjongwushuang://card/v1/MW-003",
+      "action": "skill",
+      "skillId": 43,
+      "skillName": "宿星审判",
+      "trackTitle": "宿星审判 / 宿星審判",
+      "audioSrc": null
+    },
+    {
+      "code": "MW-004",
+      "name": "听天问剑",
+      "uri": "mahjongwushuang://card/v1/MW-004",
+      "action": "skill",
+      "skillId": 44,
+      "skillName": "听天问剑"
+    },
+    {
+      "code": "MW-005",
+      "name": "刹那旅程 · 特别卡",
+      "uri": "mahjongwushuang://card/v1/MW-005",
+      "action": "music",
+      "skillId": 40,
+      "skillName": "刹那旅程",
+      "artwork": "/skill-cards/pdf-p06-card02.png",
+      "trackTitle": "刹那旅程 / Setsuna Trip",
+      "audioSrc": null
+    },
+    {
+      "code": "MW-006",
+      "name": "刹那旅程 · 兼容入口",
+      "uri": "mahjongwushuang://card/v1/MW-006",
+      "action": "music",
+      "skillId": 40,
+      "skillName": "刹那旅程",
+      "artwork": "/skill-cards/pdf-p06-card02.png",
+      "trackTitle": "刹那旅程 / Setsuna Trip",
+      "audioSrc": null,
+      "aliasOf": "MW-005"
+    },
+    {
+      "code": "MW-101",
+      "name": "借刀杀人",
+      "uri": "mahjongwushuang://card/v1/MW-101",
+      "action": "skill",
+      "skillId": 1,
+      "skillName": "借刀杀人"
+    },
+    {
+      "code": "MW-102",
+      "name": "祸水东引",
+      "uri": "mahjongwushuang://card/v1/MW-102",
+      "action": "skill",
+      "skillId": 2,
+      "skillName": "祸水东引"
+    },
+    {
+      "code": "MW-103",
+      "name": "背水一战",
+      "uri": "mahjongwushuang://card/v1/MW-103",
+      "action": "skill",
+      "skillId": 3,
+      "skillName": "背水一战"
+    },
+    {
+      "code": "MW-104",
+      "name": "万箭齐发",
+      "uri": "mahjongwushuang://card/v1/MW-104",
+      "action": "skill",
+      "skillId": 4,
+      "skillName": "万箭齐发"
+    },
+    {
+      "code": "MW-105",
+      "name": "顺手牵羊",
+      "uri": "mahjongwushuang://card/v1/MW-105",
+      "action": "skill",
+      "skillId": 5,
+      "skillName": "顺手牵羊"
+    },
+    {
+      "code": "MW-106",
+      "name": "釜底抽薪",
+      "uri": "mahjongwushuang://card/v1/MW-106",
+      "action": "skill",
+      "skillId": 6,
+      "skillName": "釜底抽薪"
+    },
+    {
+      "code": "MW-107",
+      "name": "破釜沉舟",
+      "uri": "mahjongwushuang://card/v1/MW-107",
+      "action": "skill",
+      "skillId": 7,
+      "skillName": "破釜沉舟"
+    },
+    {
+      "code": "MW-108",
+      "name": "飞升天堂",
+      "uri": "mahjongwushuang://card/v1/MW-108",
+      "action": "skill",
+      "skillId": 8,
+      "skillName": "飞升天堂"
+    },
+    {
+      "code": "MW-109",
+      "name": "魔女审判",
+      "uri": "mahjongwushuang://card/v1/MW-109",
+      "action": "skill",
+      "skillId": 9,
+      "skillName": "魔女审判"
+    },
+    {
+      "code": "MW-110",
+      "name": "暗夜之战",
+      "uri": "mahjongwushuang://card/v1/MW-110",
+      "action": "skill",
+      "skillId": 10,
+      "skillName": "暗夜之战"
+    },
+    {
+      "code": "MW-111",
+      "name": "寂静之地",
+      "uri": "mahjongwushuang://card/v1/MW-111",
+      "action": "skill",
+      "skillId": 11,
+      "skillName": "寂静之地"
+    },
+    {
+      "code": "MW-112",
+      "name": "宝箱猎人",
+      "uri": "mahjongwushuang://card/v1/MW-112",
+      "action": "skill",
+      "skillId": 12,
+      "skillName": "宝箱猎人"
+    },
+    {
+      "code": "MW-113",
+      "name": "规则怪谈",
+      "uri": "mahjongwushuang://card/v1/MW-113",
+      "action": "skill",
+      "skillId": 13,
+      "skillName": "规则怪谈"
+    },
+    {
+      "code": "MW-114",
+      "name": "偶氮玉红",
+      "uri": "mahjongwushuang://card/v1/MW-114",
+      "action": "skill",
+      "skillId": 14,
+      "skillName": "偶氮玉红"
+    },
+    {
+      "code": "MW-115",
+      "name": "立直仙人",
+      "uri": "mahjongwushuang://card/v1/MW-115",
+      "action": "skill",
+      "skillId": 15,
+      "skillName": "立直仙人"
+    },
+    {
+      "code": "MW-116",
+      "name": "御风之使",
+      "uri": "mahjongwushuang://card/v1/MW-116",
+      "action": "skill",
+      "skillId": 16,
+      "skillName": "御风之使"
+    },
+    {
+      "code": "MW-117",
+      "name": "哈耶克的大手",
+      "uri": "mahjongwushuang://card/v1/MW-117",
+      "action": "skill",
+      "skillId": 17,
+      "skillName": "哈耶克的大手"
+    },
+    {
+      "code": "MW-118",
+      "name": "崇洋媚外",
+      "uri": "mahjongwushuang://card/v1/MW-118",
+      "action": "skill",
+      "skillId": 18,
+      "skillName": "崇洋媚外"
+    },
+    {
+      "code": "MW-119",
+      "name": "抗坏血酸",
+      "uri": "mahjongwushuang://card/v1/MW-119",
+      "action": "skill",
+      "skillId": 19,
+      "skillName": "抗坏血酸"
+    },
+    {
+      "code": "MW-120",
+      "name": "只狼",
+      "uri": "mahjongwushuang://card/v1/MW-120",
+      "action": "skill",
+      "skillId": 20,
+      "skillName": "只狼"
+    },
+    {
+      "code": "MW-121",
+      "name": "指鹿为马",
+      "uri": "mahjongwushuang://card/v1/MW-121",
+      "action": "skill",
+      "skillId": 21,
+      "skillName": "指鹿为马"
+    },
+    {
+      "code": "MW-122",
+      "name": "镀锌方杠",
+      "uri": "mahjongwushuang://card/v1/MW-122",
+      "action": "skill",
+      "skillId": 22,
+      "skillName": "镀锌方杠"
+    },
+    {
+      "code": "MW-124",
+      "name": "优势在我",
+      "uri": "mahjongwushuang://card/v1/MW-124",
+      "action": "skill",
+      "skillId": 24,
+      "skillName": "优势在我"
+    },
+    {
+      "code": "MW-125",
+      "name": "金坷垃",
+      "uri": "mahjongwushuang://card/v1/MW-125",
+      "action": "skill",
+      "skillId": 25,
+      "skillName": "金坷垃"
+    },
+    {
+      "code": "MW-126",
+      "name": "管中窥牌",
+      "uri": "mahjongwushuang://card/v1/MW-126",
+      "action": "skill",
+      "skillId": 26,
+      "skillName": "管中窥牌"
+    },
+    {
+      "code": "MW-127",
+      "name": "ELO机制",
+      "uri": "mahjongwushuang://card/v1/MW-127",
+      "action": "skill",
+      "skillId": 27,
+      "skillName": "ELO机制"
+    },
+    {
+      "code": "MW-128",
+      "name": "立直禁止",
+      "uri": "mahjongwushuang://card/v1/MW-128",
+      "action": "skill",
+      "skillId": 28,
+      "skillName": "立直禁止"
+    },
+    {
+      "code": "MW-129",
+      "name": "Ctrl + Z",
+      "uri": "mahjongwushuang://card/v1/MW-129",
+      "action": "skill",
+      "skillId": 29,
+      "skillName": "Ctrl + Z"
+    },
+    {
+      "code": "MW-130",
+      "name": "名刀司命",
+      "uri": "mahjongwushuang://card/v1/MW-130",
+      "action": "skill",
+      "skillId": 30,
+      "skillName": "名刀司命"
+    },
+    {
+      "code": "MW-131",
+      "name": "辉月",
+      "uri": "mahjongwushuang://card/v1/MW-131",
+      "action": "skill",
+      "skillId": 31,
+      "skillName": "辉月"
+    },
+    {
+      "code": "MW-132",
+      "name": "大东亚共荣",
+      "uri": "mahjongwushuang://card/v1/MW-132",
+      "action": "skill",
+      "skillId": 32,
+      "skillName": "大东亚共荣"
+    },
+    {
+      "code": "MW-133",
+      "name": "打卡啦摸多",
+      "uri": "mahjongwushuang://card/v1/MW-133",
+      "action": "skill",
+      "skillId": 33,
+      "skillName": "打卡啦摸多"
+    },
+    {
+      "code": "MW-134",
+      "name": "门前积雪",
+      "uri": "mahjongwushuang://card/v1/MW-134",
+      "action": "skill",
+      "skillId": 34,
+      "skillName": "门前积雪"
+    },
+    {
+      "code": "MW-135",
+      "name": "终极奉献",
+      "uri": "mahjongwushuang://card/v1/MW-135",
+      "action": "skill",
+      "skillId": 35,
+      "skillName": "终极奉献"
+    },
+    {
+      "code": "MW-136",
+      "name": "急速狂飙",
+      "uri": "mahjongwushuang://card/v1/MW-136",
+      "action": "skill",
+      "skillId": 36,
+      "skillName": "急速狂飙"
+    },
+    {
+      "code": "MW-137",
+      "name": "恭喜发财",
+      "uri": "mahjongwushuang://card/v1/MW-137",
+      "action": "skill",
+      "skillId": 37,
+      "skillName": "恭喜发财"
+    },
+    {
+      "code": "MW-139",
+      "name": "熠熠生辉",
+      "uri": "mahjongwushuang://card/v1/MW-139",
+      "action": "skill",
+      "skillId": 39,
+      "skillName": "熠熠生辉"
+    },
+    {
+      "code": "MW-140",
+      "name": "刹那旅程 · 普通技能",
+      "uri": "mahjongwushuang://card/v1/MW-140",
+      "action": "skill",
+      "skillId": 40,
+      "skillName": "刹那旅程"
+    }
+  ],
+  "revision": "2026-10-14"
+}

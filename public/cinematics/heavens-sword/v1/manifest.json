@@ -1,0 +1,125 @@
+{
+  "version": "1.0.0",
+  "cardId": 44,
+  "name": "听天问剑 · 断天三斩",
+  "durationSeconds": 11,
+  "fps": 30,
+  "frames": 330,
+  "presentationOnly": true,
+  "orientations": {
+    "landscape": [
+      1600,
+      1000
+    ],
+    "portrait": [
+      1000,
+      1600
+    ]
+  },
+  "endings": {
+    "heads": "Five generic skill card backs: +5 on each draw this round",
+    "tails": "One symbolic revealed wild tile 飞: human selects the real tile"
+  },
+  "title": {
+    "text": "听天问剑",
+    "face": "gold yellow",
+    "outline": "red",
+    "font": "Project Wushuang-Jianghu",
+    "fontFileCopied": false
+  },
+  "audio": {
+    "heads": {
+      "peak": 0.88,
+      "rms": 0.07528520874140365,
+      "sampleRate": 48000,
+      "channels": 2
+    },
+    "tails": {
+      "peak": 0.88,
+      "rms": 0.07431629624440553,
+      "sampleRate": 48000,
+      "channels": 2
+    }
+  },
+  "timeline": [
+    {
+      "at": 0,
+      "event": "Steel cutting-edge macro"
+    },
+    {
+      "at": 1.2,
+      "event": "Red blue storm and complete cleaver reveal"
+    },
+    {
+      "at": 3,
+      "event": "Weighted preparation"
+    },
+    {
+      "at": 4.63,
+      "event": "First heavy slash"
+    },
+    {
+      "at": 5.35,
+      "event": "Second heavy slash"
+    },
+    {
+      "at": 6.14,
+      "event": "Final cleave and continental fracture"
+    },
+    {
+      "at": 8,
+      "event": "Outcome-specific five cards or wild tile"
+    },
+    {
+      "at": 9.53,
+      "event": "Gold title with red outline"
+    },
+    {
+      "at": 11,
+      "event": "End"
+    }
+  ],
+  "provenance": "Original Blender geometry, procedural storm and materials, ballistic particles and synthesized stereo sound. Existing project font rendered into glyph textures. Both endings share frames 1-240 and 286-330 within each orientation; tails may reuse these identical frames. Does not choose coin outcomes, cards or real hand tiles.",
+  "assets": [
+    {
+      "file": "effect-heads-landscape.mp4",
+      "bytes": 21884266,
+      "sha256": "b45c3cf759568031073860dd645c01df20db8dd0ef2afad410a577ffd66418f7"
+    },
+    {
+      "file": "effect-heads-landscape.jpg",
+      "bytes": 492774,
+      "sha256": "1e73025cf2ffe28313c45b29823db676756e7f5914e9743d3b7ba04ec1df91a5"
+    },
+    {
+      "file": "effect-heads-portrait.mp4",
+      "bytes": 15296543,
+      "sha256": "3ab518d51b1c33ec3a8cebb1e79c3c17aafe971b9a927e4d60de831987c82049"
+    },
+    {
+      "file": "effect-heads-portrait.jpg",
+      "bytes": 383828,
+      "sha256": "5b74aa016087b11cec98d4f997ebb545066620a0ba066bb2f71eb21c256225f9"
+    },
+    {
+      "file": "effect-tails-landscape.mp4",
+      "bytes": 22253309,
+      "sha256": "e74606d9456e0c97a3adce0dbf6add764246e527ea5c49e23b59af7a39b8fb3e"
+    },
+    {
+      "file": "effect-tails-landscape.jpg",
+      "bytes": 492774,
+      "sha256": "1e73025cf2ffe28313c45b29823db676756e7f5914e9743d3b7ba04ec1df91a5"
+    },
+    {
+      "file": "effect-tails-portrait.mp4",
+      "bytes": 15540400,
+      "sha256": "453f757c2d98d1bf2e5b83ff14a0540e6aafa56e2e3238d1a52141f505cdec15"
+    },
+    {
+      "file": "effect-tails-portrait.jpg",
+      "bytes": 383828,
+      "sha256": "5b74aa016087b11cec98d4f997ebb545066620a0ba066bb2f71eb21c256225f9"
+    }
+  ]
+}

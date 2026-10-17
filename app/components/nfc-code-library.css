@@ -1,0 +1,38 @@
+[data-slot='dialog-content'].nfc-code-dialog{width:min(940px,calc(100vw - 24px));max-width:none;height:min(840px,calc(100dvh - 24px));max-height:calc(100dvh - 24px);display:flex;flex-direction:column;gap:12px;padding:20px;overflow:hidden;background:linear-gradient(145deg,rgba(36,42,65,.92),rgba(23,29,48,.95)),url('/art/mahjong-pattern.svg');border:1px solid #c4a66c;color:#f5ead6}
+.nfc-code-dialog [data-slot='dialog-header']{padding-right:28px;flex:none}
+.nfc-code-dialog [data-slot='dialog-title']{display:flex;align-items:center;gap:9px;color:#f6d58b;font-size:23px}
+.nfc-code-dialog [data-slot='dialog-description']{color:#c2c6cc;font-size:13px;line-height:1.5}
+.nfc-code-tools{display:grid;gap:9px;flex:none}
+.nfc-code-search{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 12px;border:1px solid #848995;border-radius:9px;background:#111a2c}
+.nfc-code-search svg{width:18px;flex:none;color:#d1b479}
+.nfc-code-search input{min-width:0;flex:1;background:transparent;border:0;outline:none;font-size:16px;color:#fff}
+.nfc-code-search button{min-height:40px;color:#f6d58b;font-size:12px}
+.nfc-code-filters{display:flex;gap:6px;flex-wrap:wrap}
+.nfc-code-filters button{min-height:40px;padding:6px 14px;border:1px solid #667081;border-radius:7px;color:#d4d8df;font-size:13px}
+.nfc-code-filters button[aria-pressed='true']{background:#ddbd7d;color:#211e25;border-color:#ddbd7d;font-weight:700}
+.nfc-code-notice{min-height:36px;text-align:left;color:#f1d38d;background:#b8893520;border:1px solid #b99a5c66;border-radius:6px;padding:6px 10px;font-size:12px}
+.nfc-code-scroll{overflow:auto;overscroll-behavior:contain;min-height:0;flex:1;padding:1px 3px 6px 0}
+.nfc-code-count{font-size:12px;color:#b8c1ce;margin:0 0 9px}
+.nfc-code-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.nfc-code-card{display:flex;gap:10px;min-width:0;padding:10px;border:1px solid #bd9d5e66;border-radius:9px;background:linear-gradient(135deg,#2b3348e6,#1c263be6)}
+.nfc-code-card .skill-card-art{width:76px;flex:0 0 76px;align-self:flex-start;aspect-ratio:2/3;border-radius:5px;overflow:hidden}
+.nfc-code-card .skill-card-art img{height:100%;width:100%;object-fit:contain}
+.nfc-code-card-copy{min-width:0;flex:1;display:flex;flex-direction:column;align-items:stretch;gap:6px}
+.nfc-code-heading{display:flex;flex-direction:column;align-items:flex-start;gap:3px}
+.nfc-code-heading strong{font-size:15px;line-height:1.4;color:#fff0d2;overflow-wrap:anywhere}
+.nfc-code-heading code{font-size:14px;letter-spacing:.04em;color:#f8d48c}
+.nfc-code-card-copy small{font-size:11px;color:#b9c7d9}
+.nfc-code-card-copy input{width:100%;min-width:0;min-height:36px;padding:4px 7px;border:1px solid #566075;border-radius:5px;background:#111b2d;color:#dfdfd8;font:11px/1.5 monospace;user-select:text}
+.nfc-code-card-copy [data-slot='button']{min-height:40px;align-self:stretch;font-size:12px;color:#ffdf9c}
+.nfc-code-unavailable{font-size:11px;color:#efc594;line-height:1.4}
+.nfc-code-footer{flex:none;display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1px solid #8e805d66;padding-top:10px}
+.nfc-code-footer output{font-size:12px;color:#d7d5c9;line-height:1.5}
+.nfc-code-footer button{flex:none;min-height:44px;font-size:12px}
+.nfc-code-help,.nfc-code-unregistered{padding:12px;background:#121c2e;border:1px solid #596174;border-radius:8px;font-size:12px;line-height:1.7;margin-bottom:12px;color:#d9dbe0}
+.nfc-code-help h3{font-size:14px;color:#f6d58b;margin-bottom:6px}
+.nfc-code-help p{margin:7px 0}.nfc-code-help ol{list-style:decimal;padding-left:20px}.nfc-code-unregistered{margin:12px 0 0}.nfc-code-unregistered summary{cursor:pointer;min-height:32px;align-content:center}.nfc-code-unregistered ul{padding-left:20px;list-style:disc}
+.nfc-code-empty{text-align:center;padding:30px 10px}.nfc-code-empty p{margin-bottom:16px}
+.nfc-code-dialog button:focus-visible,.nfc-code-dialog input:focus-visible{outline:2px solid #f8d48c;outline-offset:2px}
+@media(max-width:700px){.nfc-code-grid{grid-template-columns:1fr}[data-slot='dialog-content'].nfc-code-dialog{padding:14px;gap:9px}.nfc-code-dialog [data-slot='dialog-title']{font-size:21px}.nfc-code-filters{gap:5px}.nfc-code-filters button{padding:5px 10px;font-size:12px}.nfc-code-card .skill-card-art{width:68px;flex-basis:68px}.nfc-code-heading{flex-direction:row;flex-wrap:wrap;justify-content:space-between;gap:3px 8px}.nfc-code-footer{flex-wrap:wrap}.nfc-code-footer output{flex-basis:100%}.nfc-code-footer button{margin-left:auto}.nfc-code-card{padding:9px;gap:9px}}
+@media(max-height:480px){[data-slot='dialog-content'].nfc-code-dialog{gap:6px;padding:12px}.nfc-code-dialog [data-slot='dialog-description']{display:none}.nfc-code-tools{grid-template-columns:1fr 1fr;gap:5px 8px}.nfc-code-notice{grid-column:1/-1}.nfc-code-footer{padding-top:5px}.nfc-code-footer output{flex-basis:auto}.nfc-code-card .skill-card-art{width:60px;flex-basis:60px}}
+@media(max-height:480px) and (min-width:701px){.nfc-code-card{padding:7px;gap:8px}.nfc-code-card-copy{display:grid;grid-template-columns:minmax(0,1fr) auto;align-content:start;gap:5px 6px}.nfc-code-heading{grid-column:1/-1;flex-direction:row;justify-content:space-between;gap:6px}.nfc-code-card-copy small,.nfc-code-unavailable{grid-column:1/-1}.nfc-code-card-copy [data-slot='button']{min-height:36px;padding:4px 8px;font-size:11px}.nfc-code-card-copy input{min-height:36px}.nfc-code-card .skill-card-art{width:54px;flex-basis:54px}}

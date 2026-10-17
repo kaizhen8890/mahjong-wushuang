@@ -1,3 +1,4 @@
+import { LAN_PROTOCOL_VERSION } from '../lib/lan-protocol';
 import assert from 'node:assert/strict';
 import { createGameState } from '../lib/mahjong';
 import { createControllerSnapshot } from '../lib/controller-snapshot';
@@ -21,7 +22,7 @@ const transmitted = applyRemoteControllerCommand(game,[],player.id,parsed.value.
 assert.deepEqual(transmitted.nextGame.players.map(p=>p.score),direct.nextGame.players.map(p=>p.score));
 assert.deepEqual(transmitted.nextGame.presentations![0].tiles,tiles);
 const received = createControllerSnapshot(transmitted.nextGame,[],context);
-const roundtrip = parseServerMessage(serializeWireMessage({protocol: 5,type:'state.snapshot',roomId:'room',sentAt:Date.now(),snapshot:received}));
+const roundtrip = parseServerMessage(serializeWireMessage({protocol: LAN_PROTOCOL_VERSION,type:'state.snapshot',roomId:'room',sentAt:Date.now(),snapshot:received}));
 assert.ok(roundtrip.ok);
 if(roundtrip.ok && roundtrip.value.type==='state.snapshot')assert.deepEqual(roundtrip.value.snapshot.presentations![0].tiles,tiles);
 // Every suit, red fives, partial records and empty records retain multiplicity.
@@ -30,7 +31,7 @@ for(const tiles of [[],['0m','0m','5m','5m'],['7z','7z','7z','2p','2p','3s','3s'
  assert.ok(parsed.ok);
  if(parsed.ok&&parsed.value.type==='command.request'&&parsed.value.command.kind==='win.preview')assert.deepEqual(parsed.value.command.draft.tiles,tiles);
  const withTiles={...received,presentations:received.presentations!.map(p=>({...p,tiles}))};
- const shown=parseServerMessage(serializeWireMessage({protocol: 5,type:'state.snapshot',roomId:'room',sentAt:Date.now(),snapshot:withTiles}));
+ const shown=parseServerMessage(serializeWireMessage({protocol: LAN_PROTOCOL_VERSION,type:'state.snapshot',roomId:'room',sentAt:Date.now(),snapshot:withTiles}));
  assert.ok(shown.ok);
  if(shown.ok&&shown.value.type==='state.snapshot')assert.deepEqual(shown.value.snapshot.presentations![0].tiles,tiles);
 }

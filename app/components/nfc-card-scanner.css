@@ -1,0 +1,278 @@
+.nfc-entry {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid #b99a6155;
+  border-radius: 10px;
+  padding: 9px 13px;
+  color: #efd49d;
+  background: #252637;
+  font-size: 14px;
+}
+.nfc-entry:disabled {
+  opacity: 0.4;
+}
+.nfc-panel {
+  position: fixed;
+  top: auto !important;
+  bottom: 16px;
+  left: 0 !important;
+  right: 0 !important;
+  margin-inline: auto;
+  transform: none !important;
+  width: min(680px, calc(100vw - 24px)) !important;
+  max-width: 680px !important;
+  max-height: 92dvh;
+  padding: 0 !important;
+  gap: 0 !important;
+  display: flex !important;
+  flex-direction: column;
+  border: 1px solid #bfa67988;
+  border-radius: 22px;
+  background: #202332 !important;
+  color: #eee9df;
+  overflow: hidden;
+}
+.nfc-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 18px 22px;
+  border-bottom: 1px solid #bfa67933;
+  background: #2c2c40;
+}
+.nfc-header > button {
+  border: 1px solid #c0a57466;
+  border-radius: 50%;
+  padding: 10px;
+  color: #e8cf98;
+}
+.nfc-header h2 {
+  font-family: var(--font-serif-display);
+  font-size: 25px;
+  color: #f0d69e;
+}
+.nfc-header p {
+  font-size: 12px;
+  color: #c5c1ce;
+  margin: 4px 0 0;
+}
+.nfc-body {
+  overflow: auto;
+  min-height: 0;
+  padding: 18px 24px;
+}
+.nfc-status {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 14px;
+  background: #ffffff05;
+  border-radius: 14px;
+  color: #e3ce9e;
+}
+.nfc-status > svg {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+}
+.nfc-status output {
+  margin: 0;
+  line-height: 1.6;
+}
+.nfc-status.is-waiting > svg {
+  animation: nfc-breathe 1.5s ease-in-out infinite;
+}
+.nfc-diagnostics {
+  font-size: 12px;
+  color: #b9b5c7;
+  margin: 16px 0;
+}
+.nfc-diagnostics p {
+  overflow-wrap: anywhere;
+  line-height: 1.8;
+}
+.nfc-error {
+  color: #ffc8b8;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.nfc-binding h3,
+.nfc-result h3 {
+  color: #f1d69a;
+  margin: 16px 0 10px;
+  font-size: 20px;
+}
+.nfc-binding input,
+.nfc-actor select {
+  width: 100%;
+  border: 1px solid #b99a6166;
+  border-radius: 9px;
+  background: #181b29;
+  color: #f5eedb;
+  padding: 11px;
+  font: inherit;
+}
+.nfc-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-height: 190px;
+  overflow: auto;
+  padding: 12px 0;
+}
+.nfc-options button {
+  border: 1px solid #fff2;
+  border-radius: 8px;
+  padding: 9px 12px;
+  background: #ffffff06;
+  font-size: 13px;
+}
+.nfc-options button[aria-pressed='true'] {
+  border-color: #e7c27e;
+  background: #c7aa6930;
+  color: #ffe4a5;
+}
+.nfc-binding p,
+.nfc-result p {
+  font-size: 14px;
+  line-height: 1.8;
+  color: #d5d1df;
+}
+.nfc-primary,
+.nfc-secondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 16px;
+  margin-top: 12px;
+  border-radius: 9px;
+  font-size: 14px;
+}
+.nfc-primary {
+  border: 1px solid #caa86e;
+  background: #574369;
+  color: #ffebb7;
+  font-weight: 600;
+}
+.nfc-primary:disabled {
+  opacity: 0.4;
+}
+.nfc-secondary {
+  border: 1px solid #c5b19040;
+  background: #ffffff04;
+  color: #ddd3bf;
+}
+.nfc-result > img {
+  display: block;
+  max-height: 220px;
+  max-width: 100%;
+  object-fit: contain;
+  margin: 16px auto;
+}
+.nfc-result small {
+  display: block;
+  color: #c8bec9;
+  margin-top: 8px;
+}
+.nfc-actor {
+  display: block;
+  font-size: 13px;
+  color: #ead4a5;
+}
+.nfc-actor select {
+  margin-top: 8px;
+}
+.nfc-footer {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 13px 22px;
+  border-top: 1px solid #bfa67933;
+  color: #b8b1c2;
+  font-size: 11px;
+  line-height: 1.7;
+}
+.nfc-footer svg {
+  flex-shrink: 0;
+}
+@keyframes nfc-breathe {
+  50% {
+    opacity: 0.35;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nfc-status.is-waiting > svg {
+    animation: none;
+  }
+}
+@media (max-width: 600px) {
+  .nfc-panel {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    top: auto !important;
+    bottom: 0 !important;
+    transform: none !important;
+    max-height: 94dvh;
+    border-radius: 22px 22px 0 0;
+  }
+  .nfc-body {
+    padding: 14px 18px;
+  }
+  .nfc-header {
+    padding: 15px 18px;
+  }
+  .nfc-result > img {
+    max-height: 180px;
+  }
+}
+
+.nfc-header,
+.nfc-footer {
+  flex-shrink: 0;
+}
+
+.nfc-rule {
+  margin: 10px 0 16px;
+  font-size: 13px;
+  color: #c9c3d0;
+}
+.nfc-rule summary {
+  cursor: pointer;
+  color: #e1c994;
+}
+.nfc-result h3 {
+  text-align: center;
+}
+
+.nfc-music {
+  text-align: center;
+  padding: 24px 8px;
+  background: linear-gradient(135deg, #c29b5512, #8260a31c);
+  border: 1px solid #c7a57433;
+  border-radius: 16px;
+  margin-top: 16px;
+}
+.nfc-music > svg {
+  margin: 0 auto 12px;
+  color: #e9cd94;
+}
+.nfc-music strong {
+  display: inline-block;
+  color: #dec5ed;
+  padding: 7px 14px;
+  border: 1px solid #b68dd144;
+  border-radius: 20px;
+  font-size: 13px;
+}
+.nfc-music audio {
+  width: 100%;
+  margin-top: 14px;
+}
+
+.nfc-footer{gap:8px}.nfc-footer>svg{flex:none}.nfc-footer>span{flex:1}.nfc-return{flex:none;min-height:44px;padding:8px 12px;border:1px solid #bfa474;border-radius:8px;background:#443c46;color:#f4d9a1;font-size:13px}.nfc-return:focus-visible{outline:3px solid #ffe2aa;outline-offset:2px}@media(orientation:landscape) and (max-height:500px){.nfc-header{padding:8px 16px}.nfc-body{padding:10px 16px}.nfc-result>img{max-height:140px}.nfc-footer{padding:8px 16px}}
+
+@media(orientation:landscape) and (max-height:500px){.nfc-panel{max-height:calc(100dvh - 16px);bottom:8px}.nfc-header h2{font-size:21px}.nfc-header p{margin:0}.nfc-status{padding:7px 10px;gap:10px}.nfc-status>svg{width:24px;height:24px}.nfc-result{display:grid;grid-template-columns:86px minmax(0,1fr);gap:4px 14px;margin-top:10px}.nfc-result>img{grid-column:1;grid-row:1/8;margin:0;max-height:125px;align-self:start}.nfc-result>:not(img){grid-column:2}.nfc-result h3{text-align:left;font-size:18px;margin:0}.nfc-rule{margin:4px 0}.nfc-primary{margin-top:3px;min-height:44px;padding:8px}.nfc-result small{margin-top:3px;line-height:1.5}}

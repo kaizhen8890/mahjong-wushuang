@@ -32,7 +32,7 @@ export function TenpaiSeal({ guide, open, onOpenChange }: {
       onPointerUp={release} onPointerCancel={release}
       onPointerLeave={release}
       onFocus={() => { if (!pressed.current && Date.now() - releasedAt.current > 400) onOpenChange(true); }}
-      onBlur={() => onOpenChange(false)}>听</button>
+      onBlur={() => onOpenChange(false)}><span>听</span><small aria-hidden="true">按住</small></button>
     <div className="vm-tenpai-pop" id="vm-tenpai-pop" data-open={open ? 'true' : 'false'} aria-hidden={!open}>
       <strong>听牌</strong>{discard && <small>切{discard}后</small>}
       <div className="vm-tenpai-waits">{guide.waits.map(wait => <span className="vm-tenpai-wait" key={wait.type}>

@@ -34,7 +34,7 @@
     {
       "key": "pdf-p01-card03",
       "cardId": 4,
-      "name": "万剑齐发 攻",
+      "name": "万箭齐发 攻",
       "src": "/skill-cards/pdf-p01-card03.png",
       "page": 1,
       "crop": [
@@ -377,21 +377,6 @@
       "height": 1005
     },
     {
-      "key": "pdf-p04-card04",
-      "cardId": 23,
-      "name": "关税政策 陷",
-      "src": "/skill-cards/pdf-p04-card04.png",
-      "page": 4,
-      "crop": [
-        617.8600341796875,
-        32.13997192382813,
-        796.9400146484375,
-        283.21998291015626
-      ],
-      "width": 717,
-      "height": 1005
-    },
-    {
       "key": "pdf-p04-card05",
       "cardId": 29,
       "name": "Ctrl + Z 单",
@@ -557,21 +542,6 @@
       "height": 1005
     },
     {
-      "key": "pdf-p05-card08",
-      "cardId": 38,
-      "name": "反伤刺甲 陷",
-      "src": "/skill-cards/pdf-p05-card08.png",
-      "page": 5,
-      "crop": [
-        617.8600341796875,
-        311.50001831054686,
-        796.9400146484375,
-        562.580029296875
-      ],
-      "width": 717,
-      "height": 1005
-    },
-    {
       "key": "pdf-p06-card01",
       "cardId": 39,
       "name": "熠熠生辉 单",
@@ -615,6 +585,66 @@
       ],
       "width": 717,
       "height": 1005
+    },
+    {
+      "key": "gen2-mahjong-wushuang",
+      "cardId": 41,
+      "name": "麻将无双",
+      "src": "/skill-cards/gen2-mahjong-wushuang.png",
+      "page": 1,
+      "crop": [
+        6.189799976348877,
+        5.3400146484375,
+        184.78980712890626,
+        255.9400146484375
+      ],
+      "width": 716,
+      "height": 1003
+    },
+    {
+      "key": "gen2-discord",
+      "cardId": 42,
+      "name": "断序杂音",
+      "src": "/skill-cards/gen2-discord.png",
+      "page": 1,
+      "crop": [
+        199.3000061035156,
+        4.920001220703125,
+        377.90000610351564,
+        255.52000122070314
+      ],
+      "width": 715,
+      "height": 1004
+    },
+    {
+      "key": "gen2-astral-judgement",
+      "cardId": 43,
+      "name": "宿星审判",
+      "src": "/skill-cards/gen2-astral-judgement.png",
+      "page": 1,
+      "crop": [
+        393.59999389648436,
+        4.920001220703125,
+        572.2000244140625,
+        255.52000122070314
+      ],
+      "width": 715,
+      "height": 1004
+    },
+    {
+      "key": "gen2-heavens-sword",
+      "cardId": 44,
+      "name": "听天问剑",
+      "src": "/skill-cards/gen2-heavens-sword.png",
+      "page": 1,
+      "crop": [
+        587.3699829101563,
+        4.610003662109375,
+        765.9699829101562,
+        255.2100036621094
+      ],
+      "width": 715,
+      "height": 1003
     }
   ]
 }
