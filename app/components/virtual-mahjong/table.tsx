@@ -1,6 +1,6 @@
 'use client';
 /* oxlint-disable next/no-img-element -- Original local SVG tile artwork works offline. */
-import { Fragment, useState, useRef, useEffect, useMemo, type PointerEvent as ReactPointerEvent } from 'react';
+import { Fragment, useState, useRef, useEffect, useLayoutEffect, useMemo, type PointerEvent as ReactPointerEvent } from 'react';
 import type { PlayerVisibleGameState } from '@/lib/virtual-mahjong/projection';
 import type { RoundIntent } from '@/lib/virtual-mahjong/round-engine';
 import { tileCode } from '@/lib/virtual-mahjong/tiles';
@@ -35,14 +35,22 @@ import './table-assists.css';
 import './tenpai-guide.css';
 import { TableSettingsPanel } from './settings-panel';
 import { CallChoice } from './call-choice';
+import './local-controls.css';
+
+export interface LocalTableControls {
+  paused: boolean; status: string;
+  setPaused: (reason: string, paused: boolean) => void;
+  openSupply?: () => void; openSetup: () => void;
+}
 
 import { DEFAULT_QUALITY, QUALITY_STORAGE_KEY, isTableQuality, type TableQuality } from './three/quality';
 
 const labels = { chi: '吃', pon: '碰', daiminkan: '杠', ankan: '暗杠', kakan: '加杠', ron: '荣' };
 
-export function VirtualTable({ view, now, send, next, exit, emotes, sendEmote, botIds = [], characters = {}, onChooseCharacter, error = '', roomLabel = '单机试打', canAdvance = true, animateEntrance = false }: {
+export function VirtualTable({ view, now, send, next, exit, emotes, sendEmote, botIds = [], characters = {}, onChooseCharacter, error = '', roomLabel = '单机试打', canAdvance = true, animateEntrance = false, local }: {
   view: PlayerVisibleGameState; now: number; send: (intent: RoundIntent) => void; next: () => void; exit: () => void; error?: string; roomLabel?: string; canAdvance?: boolean; animateEntrance?: boolean; emotes?: VirtualEmote[]; sendEmote?: (id: string) => void | boolean | Promise<void | boolean>; botIds?: string[];
   characters?: Record<string, CharacterChoice>; onChooseCharacter?: (value: CharacterChoice) => void;
+  local?: LocalTableControls;
 }) {
   const [three, setThree] = useState(true);
   const root = useRef<HTMLElement>(null);
@@ -74,6 +82,15 @@ export function VirtualTable({ view, now, send, next, exit, emotes, sendEmote, b
   const [confirmMode, setConfirmMode] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [characterOpen, setCharacterOpen] = useState(false);
+  const pauseLocal = local?.setPaused;
+  useLayoutEffect(() => {
+    if (!pauseLocal) return;
+    pauseLocal('table-settings', settingsOpen || characterOpen);
+  }, [pauseLocal, settingsOpen, characterOpen]);
+  useLayoutEffect(() => () => pauseLocal?.('table-settings', false), [pauseLocal]);
+  const paused = Boolean(local && (local.paused || settingsOpen || characterOpen));
+  const pausedRef = useRef(paused);
+  useLayoutEffect(() => { pausedRef.current = paused; }, [paused]);
   const [sound, setSound] = useState(1), [music, setMusic] = useState(.42), [track, setTrack] = useState('random');
   useEffect(() => { setTableSoundGain(sound); return () => setTableSoundGain(1); }, [sound]);
   const actions = view.availableActions;
@@ -83,9 +100,14 @@ export function VirtualTable({ view, now, send, next, exit, emotes, sendEmote, b
   const canSelected = selected !== null && legal.includes(selected);
   const sortedHand = ownHand(view);
   const hand = displayHandOrder(sortedHand, handOrder.roundKey === roundKey ? handOrder.ids : [], assists.sort);
-  const guide = useMemo(() => (view.result || !own.hand ? null : tenpaiGuide(view, selected)), [view, selected, own.hand, view.result]);
+  const guide = useMemo(() => (view.result || !own.hand ? null : tenpaiGuide(view, selected)), [view, selected, own.hand]);
   const guideOpen = tenpaiOpen && Boolean(guide?.tenpai);
-  useEffect(() => { if (!guide?.tenpai) setTenpaiOpen(false); }, [guide?.tenpai]);
+  useEffect(() => {
+    if (!guide?.tenpai) {
+      const timer = window.setTimeout(() => setTenpaiOpen(false), 0);
+      return () => window.clearTimeout(timer);
+    }
+  }, [guide?.tenpai]);
   const visibleCalls = distinctCalls(actions.callOptions, own.hand ?? []);
   const callKinds = [...new Set(visibleCalls.map(option => option.kind))];
   const choices = picker?.context === context ? (picker.kind === 'self'
@@ -94,18 +116,18 @@ export function VirtualTable({ view, now, send, next, exit, emotes, sendEmote, b
   const timer = tableClock(view, now);
   const seconds = timer?.total ?? null;
   useRiichiMusic(!view.result && view.players.some(player => player.riichi !== 'none'), track, music);
-  useCountdownSound(!view.result && (legal.length > 0 || actions.canPass), seconds ?? 0);
-  const autoChoice = view.result || presentation.pending ? null : automaticIntent(actions, own.drawnTileId ?? null, assists, riichi);
+  useCountdownSound(!paused && !view.result && (legal.length > 0 || actions.canPass), seconds ?? 0);
+  const autoChoice = paused || view.result || presentation.pending ? null : automaticIntent(actions, own.drawnTileId ?? null, assists, riichi);
   const autoKey = autoChoice ? `${context}:${view.viewerId}:${JSON.stringify(autoChoice)}` : '';
   const autoDelay = autoChoice?.kind === 'DISCARD' ? 450 : 180;
   const lastAutoKey = useRef('');
   const latestSend = useRef(send), latestAutoChoice = useRef(autoChoice);
   useEffect(() => { latestSend.current = send; latestAutoChoice.current = autoChoice; }, [send, autoChoice]);
-  const sendIntent = (intent: RoundIntent) => { lastAutoKey.current = autoKey; send(intent); };
+  const sendIntent = (intent: RoundIntent) => { if (pausedRef.current) return; lastAutoKey.current = autoKey; send(intent); };
   useEffect(() => {
     if (!autoKey || lastAutoKey.current === autoKey) return;
     const timer = window.setTimeout(() => {
-      if (lastAutoKey.current === autoKey) return;
+      if (pausedRef.current || lastAutoKey.current === autoKey) return;
       const intent = latestAutoChoice.current;
       if (!intent) return;
       lastAutoKey.current = autoKey;
@@ -157,8 +179,9 @@ export function VirtualTable({ view, now, send, next, exit, emotes, sendEmote, b
     <section className="vm-stage" aria-label="虚拟麻将牌桌">
       {!view.result && <TableEmotes key={`${view.gameId}:${view.roundId}`} view={view} events={emotes} send={sendEmote} />}
       {three && <Table3D entrance={entrance} reduced={reduced} view={view} selection={{ selected, legal, riichi, highlight: hover }} quality={quality} pick={pickTile} fail={message => { setGraphicsError(message); setThree(false); }} />}
-      <header className="vm-toolbar"><button aria-label="牌桌设置" onClick={() => setSettingsOpen(!settingsOpen)}>⚙</button><button aria-label="退出牌桌" onClick={exit}>退出</button></header>
-      {settingsOpen && <TableSettingsPanel close={() => setSettingsOpen(false)} three={three} toggleThree={() => { setGraphicsError(''); setEntered(true); setThree(!three); }} quality={quality} changeQuality={changeQuality} graphicsError={graphicsError} reduced={reduced} setReduced={setReduced} sound={sound} setSound={setSound} music={music} setMusic={setMusic} track={track} setTrack={setTrack} confirmMode={confirmMode} setConfirmMode={setConfirmMode} chooseCharacter={onChooseCharacter ? () => setCharacterOpen(true) : undefined} />}
+      <header className="vm-toolbar"><button aria-label="牌桌设置" onClick={() => setSettingsOpen(!settingsOpen)}>⚙</button>{local?.openSupply && <button className="vm-supply-open" onClick={local.openSupply}>供牌</button>}<button aria-label="退出牌桌" onClick={exit}>退出</button></header>
+      {local && <div className="vm-local-status" aria-live="polite"><span>{local.status}</span>{paused && <span>已暂停</span>}</div>}
+      {settingsOpen && <TableSettingsPanel close={() => setSettingsOpen(false)} three={three} toggleThree={() => { setGraphicsError(''); setEntered(true); setThree(!three); }} quality={quality} changeQuality={changeQuality} graphicsError={graphicsError} reduced={reduced} setReduced={setReduced} sound={sound} setSound={setSound} music={music} setMusic={setMusic} track={track} setTrack={setTrack} confirmMode={confirmMode} setConfirmMode={setConfirmMode} chooseCharacter={onChooseCharacter ? () => setCharacterOpen(true) : undefined} local={local} />}
       {characterOpen && onChooseCharacter && <CharacterPicker value={view.viewerId ? characters[view.viewerId] : undefined} onSelect={onChooseCharacter} onClose={() => setCharacterOpen(false)} />}
       <nav className="vm-auto-controls" aria-label="自动操作开关">{([['sort', '理', '自动理牌'], ['win', '和', '自动和牌'], ['call', '鸣', '自动鸣牌'], ['cut', '切', '自动摸切']] as const).map(([key, glyph, label]) => <button key={key} type="button" aria-label={label} title={label} aria-pressed={assists[key]} onClick={() => toggleAssist(key)}>{glyph}</button>)}</nav>
       <aside className="vm-dora-panel"><div className="vm-dora" aria-label="宝牌指示牌">{Array.from({ length: 5 }, (_, index) => <span key={view.doraIndicators[index]?.id ?? `back-${index}`}><TileFace tile={view.doraIndicators[index]} /></span>)}</div><div>{view.honba} 本场 <span>供托 {view.riichiSticks}</span></div><small>麻将无双 · {roomLabel}</small></aside>

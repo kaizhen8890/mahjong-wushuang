@@ -3,6 +3,7 @@ import type { SelfKanOption } from './kan';
 import { createTiles } from './tiles';
 import { validateRules } from './rules';
 import { nagashiPlayerIds, nagashiSettlement, waits } from './scoring';
+import { validateLocalAccess, type LocalSupplyAccess } from './local-supply';
 
 /** Host-only payload. Never send through the player protocol or put into UI props. */
 export interface RoundCheckpoint {
@@ -11,7 +12,8 @@ export interface RoundCheckpoint {
   runtime: { lastNow: number; firstCycleInterrupted: boolean; pendingRiichi: string | null;
     forbiddenDiscardTypes: number[]; pendingKan: { playerId: string; option: SelfKanOption } | null;
     pendingNuki: { playerId: string; tileId: number } | null;
-    rinshanPlayerId: string | null; committedActions: string[] };
+    rinshanPlayerId: string | null; committedActions: string[]; localSupply?: LocalSupplyAccess };
+  // The capability must also be supplied explicitly by the restoring local Host.
 }
 export function requireCheckpoint(condition: unknown): asserts condition {
   if (!condition) throw new Error('INVALID_HOST_CHECKPOINT');
@@ -74,6 +76,7 @@ export function readRoundCheckpoint(input: unknown): RoundCheckpoint {
     validateRules(state.rules);
     requireCheckpoint(Array.isArray(state.players) && state.players.length === state.rules.players);
     const ids = state.players.map(player => player.id);
+    if (meta.localSupply !== undefined) validateLocalAccess(meta.localSupply, ids);
     requireCheckpoint(new Set(ids).size === ids.length && ids.every(id => typeof id === 'string'
       && /^[A-Za-z0-9_-]{1,128}$/.test(id) && !['__proto__', 'constructor', 'prototype'].includes(id)));
     const playerRef = (id: unknown) => id === null || ids.includes(id as string);

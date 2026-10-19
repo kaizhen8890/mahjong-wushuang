@@ -7,6 +7,7 @@ import { emptyActions, type AuthoritativeGameState, type CallOption, type CallWi
   type PrivateEvent, type RoundResult, type Rules } from './model';
 import { projectForViewer, type Viewer } from './projection';
 import { validateRules } from './rules';
+import { prepareLocalSupply, supplyableTypes, validateLocalAccess, type LocalSupplyAccess, type LocalSupplyRequest } from './local-supply';
 import { evaluateWin, nagashiPlayerIds, nagashiSettlement, waits, type WinFacts } from './scoring';
 import { createTiles, type Tile } from './tiles';
 import { createWall, dealHands, drawLive, drawNukiReplacement, drawRinshan, revealKanDora, type RandomUint32, type Wall } from './wall';
@@ -24,6 +25,8 @@ export interface RoundOptions {
 export interface HostDependencies {
   now: () => number;
   random?: RandomUint32;
+  /** Local cooperative session only. Not part of RoundOptions or any network request. */
+  localSupply?: LocalSupplyAccess;
   /** Host-only deterministic fixtures. Never populate this from a room/client message. */
   makeWall?: (rules: Rules, context: { dealerSeat: number; roundWind: RoundCarry['roundWind']; handNumber: number }) => Wall;
 }
@@ -50,6 +53,7 @@ export class MahjongRoundEngine {
 
   constructor(options: RoundOptions, private readonly host: HostDependencies) {
     validateRules(options.rules);
+    if (host.localSupply) validateLocalAccess(host.localSupply, options.players.map(player => player.id));
     if (!options.gameId || !options.roundId || options.players.length !== options.rules.players
       || new Set(options.players.map(player => player.id)).size !== options.players.length
       || options.players.some(player => !/^[A-Za-z0-9_-]{1,128}$/.test(player.id)
@@ -111,12 +115,14 @@ export class MahjongRoundEngine {
       runtime: { lastNow: this.lastNow, firstCycleInterrupted: this.firstCycleInterrupted, pendingRiichi: this.pendingRiichi,
         forbiddenDiscardTypes: [...this.forbiddenDiscardTypes], pendingKan: structuredClone(this.pendingKan),
         pendingNuki: structuredClone(this.pendingNuki),
+        ...(this.host.localSupply ? { localSupply: structuredClone(this.host.localSupply) } : {}),
         rinshanPlayerId: this.rinshanPlayerId, committedActions: this.gate.saveKeys() } };
   }
 
   /** Restore directly; never deal a throwaway wall or replay network messages. Downtime is paused. */
   static restoreCheckpoint(input: unknown, host: HostDependencies): MahjongRoundEngine {
     const saved = readRoundCheckpoint(input);
+    requireCheckpoint(JSON.stringify(saved.runtime.localSupply ?? null) === JSON.stringify(host.localSupply ?? null));
     const engine = Object.create(MahjongRoundEngine.prototype) as MahjongRoundEngine;
     Object.assign(engine, { state: { ...saved.state, actions: {} }, host,
       gate: new ActionGate(saved.state.gameId, saved.state.roundId, saved.runtime.committedActions),
@@ -186,6 +192,33 @@ export class MahjongRoundEngine {
       this.gate.commit(actorId, action.actionId);
       return { ok: true, revision: this.state.revision };
     } catch (error) { return { ok: false, error: error instanceof Error ? error.message : 'INVALID_ACTION' }; }
+  }
+
+  /** Host scheduler calls tick; clients cannot advance time or draw tiles. */
+  localSupplyTypes(): number[] {
+    if (!this.host.localSupply) throw new Error('LOCAL_SUPPLY_DISABLED');
+    return supplyableTypes(this.state, this.host.localSupply);
+  }
+
+  /** Explicit Host-only operation; deliberately absent from dispatch's wire action union. */
+  localSupplyDiscard(actorId: string, request: LocalSupplyRequest): { ok: true; revision: number } | { ok: false; error: string } {
+    const access = this.host.localSupply;
+    if (!access) return { ok: false, error: 'LOCAL_SUPPLY_DISABLED' };
+    const check = this.gate.check(actorId, request, { roundId: this.state.roundId, turnId: this.state.turnId,
+      ended: this.state.phase.kind === 'ROUND_RESULT' });
+    if (check) return { ok: false, error: check };
+    try {
+      this.transaction(now => {
+        const prepared = prepareLocalSupply(this.state, access, actorId, request);
+        this.refreshActions();
+        const eventStart = this.state.events.length;
+        this.discard(this.player(actorId), prepared.tileId, false, now);
+        const event = this.state.events.slice(eventStart).find(item => item.type === 'DISCARD');
+        if (event) event.data.localSupply = prepared.journal;
+      });
+      this.gate.commit(actorId, request.actionId);
+      return { ok: true, revision: this.state.revision };
+    } catch (error) { return { ok: false, error: error instanceof Error ? error.message : 'INVALID_SUPPLY' }; }
   }
 
   /** Host scheduler calls tick; clients cannot advance time or draw tiles. */

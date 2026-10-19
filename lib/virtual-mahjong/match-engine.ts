@@ -3,6 +3,7 @@ import { progression, rankMatch } from './match-progression';
 import { projectForViewer, type Viewer } from './projection';
 import { MahjongRoundEngine, type HostDependencies, type RoundOptions } from './round-engine';
 import { cloneCheckpoint, readRoundCheckpoint, requireCheckpoint, resumeClock, validateEvents, type RoundCheckpoint } from './checkpoint';
+import type { LocalSupplyRequest } from './local-supply';
 
 export type MatchOptions = Omit<RoundOptions, 'roundId' | 'carry'>;
 export interface MatchCheckpoint {
@@ -107,6 +108,19 @@ export class MahjongMatchEngine {
   dispatch(actorId: string, request: unknown) {
     if (this.terminal) return { ok: false as const, error: 'MATCH_ENDED' };
     const response = this.round.dispatch(actorId, request);
+    if (!response.ok) return response;
+    this.revision++;
+    this.finishIfNeeded();
+    return { ok: true as const, revision: this.revision };
+  }
+  localSupplyTypes(): number[] {
+    if (this.terminal) return [];
+    return this.round.localSupplyTypes();
+  }
+  /** This method is never exposed by the LAN room command dispatcher. */
+  localSupplyDiscard(actorId: string, request: LocalSupplyRequest) {
+    if (this.terminal) return { ok: false as const, error: 'MATCH_ENDED' };
+    const response = this.round.localSupplyDiscard(actorId, request);
     if (!response.ok) return response;
     this.revision++;
     this.finishIfNeeded();

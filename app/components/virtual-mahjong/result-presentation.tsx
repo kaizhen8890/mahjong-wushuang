@@ -82,8 +82,10 @@ export function ResultPresentation({ view: initialView, before: initialBefore, n
         <p>{view.matchResult ? '对局结束' : view.roundContinuation ? <>{view.roundContinuation.dealerId === view.dealerId ? '庄家连庄' : '轮换庄家'} · 下一局：{winds[view.roundContinuation.roundWind]}{view.roundContinuation.handNumber}局 · {view.roundContinuation.honba}本场 · 供托{view.roundContinuation.riichiSticks}</> : '等待房主确认下一局'}</p>
       </div>}
     </section>}
-    {win && step && winner && <section className="vr-win-panel" key={win.playerId}>
-      <aside className="vr-result-brand"><CharacterPortrait choice={characters[winner.id]} className="vr-result-character" /><h2>{winner.name}</h2></aside>
+    {win && step && winner && <section className="vr-win-scene" key={win.playerId}>
+      <h2 className="vr-winner-name">{winner.name}</h2>
+      <div className="vr-win-panel">
+      <aside className="vr-result-brand"><CharacterPortrait choice={characters[winner.id]} className="vr-result-character" /></aside>
       <div className="vr-win-content">
         <strong className="vr-win-type">{view.result!.reason === 'ron' ? '荣和' : '自摸'}</strong>
         <div className="vr-winning-hand" aria-label="和牌手牌">{win.concealed.filter(tile => tile.id !== win.winningTile.id).sort((a, b) => a.type - b.type || a.id - b.id).map(tile => <TileFace key={tile.id} tile={tile} />)}<span className="vr-winning-last"><TileFace tile={win.winningTile} /></span>{winner.melds.map(meld => <span className="vr-winning-meld" key={meld.id}>{meld.tiles.map(tile => <TileFace tile={tile} key={tile.id} />)}</span>)}</div>
@@ -91,8 +93,9 @@ export function ResultPresentation({ view: initialView, before: initialBefore, n
         {review !== null && <small className="vr-yaku-heading">役种 · {step.rows.length} 项{step.rows.length > 6 ? " · 上下滑动查看" : ""}</small>}<div className="vr-yaku-list">{step.rows.map((row, index) => revealTime >= step.yakuAt[index] && <div className="vr-yaku-row" key={row.id}><span>{row.name}</span><b>{row.value}<small>{row.unit}</small></b></div>)}</div>
         <div className="vr-fan-medallion">{revealTime >= step.fu && !win.yakuman && <small className="vr-fade">{win.fu} 符</small>}{revealTime >= step.han && <strong className="vr-fade">{win.yakuman || win.han}<small>{win.yakuman ? '倍役满' : '番'}</small></strong>}</div>
         {revealTime >= step.score && <output className="vr-point-drop">{win.winnerGain.toLocaleString()}<small>点</small></output>}
-        {revealTime >= step.limit && /满/.test(win.label) && <strong className="vr-limit-drop">{win.label}</strong>}
       </div>
+      </div>
+      {revealTime >= step.limit && /满/.test(win.label) && <strong className="vr-limit-drop">{win.label}</strong>}
     </section>}
     {review === null && elapsed >= timeline.points && elapsed < timeline.summary && <section className="vr-score-stage" aria-label="点数变化"><h2>点数变化</h2>{ranks.map((player, index) => {
       const newRank = elapsed >= timeline.ranks + index * timeline.rankStep;

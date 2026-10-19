@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mahjong-wushuang-table-v47';
+const CACHE_NAME = 'mahjong-wushuang-table-v48';
 const CORE_ASSETS = ['/', '/index.html', '/manifest.webmanifest', '/favicon.svg', '/cards/core/mahjong-wushuang-logo.png'];
 
 self.addEventListener('install', (event) => {

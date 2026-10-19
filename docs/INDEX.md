@@ -9,6 +9,7 @@
 | 技能库、表情、角色的增删改与用户数据边界 | [AI维护教程](AI-MAINTENANCE.md) |
 | 构建、校验、媒体和错误定位 | [统一Android管线](android-delivery-pipeline.md) |
 | NFC编号和兼容 | [NFC代码](nfc-card-codes.md) |
+| 本地单机供牌、人机模式、开局设置与暂停 | [本地虚拟麻将](local-virtual-play.md) |
 | 表情与本机素材库 | [表情库](emote-library.md)、[表情添加](../data/EMOTES.md) |
 | 技能卡维护（AI 单入口） | [SKILLS.md](../data/SKILLS.md) |
 | 技能演出机制 | [技能体验](skill-experience.md)、[音乐播放器](music-player.md) |

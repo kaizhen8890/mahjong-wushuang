@@ -1,62 +1,86 @@
 'use client';
-import { lazy, Suspense, useEffect, useRef, useState } from 'react';
-// A full document navigation leaves the isolated practice Host behind.
-// next/link currently resolves a second React runtime in the local Vinext preview.
-/* eslint-disable nextjs/no-html-link-for-pages */
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { VirtualTable } from '@/app/components/virtual-mahjong/table';
-import { MahjongMatchEngine } from '@/lib/virtual-mahjong/match-engine';
-import { defaultRules } from '@/lib/virtual-mahjong/rules';
-import type { PlayerVisibleGameState } from '@/lib/virtual-mahjong/projection';
-import type { RoundIntent } from '@/lib/virtual-mahjong/round-engine';
+import { LocalSetup } from '@/app/components/virtual-mahjong/local-setup';
+import { LocalSupplyPanel } from '@/app/components/virtual-mahjong/local-supply-panel';
+import { LocalVirtualSession, localControlMessage } from '@/lib/virtual-mahjong/local-session';
+import { DEFAULT_LOCAL_SETTINGS, LOCAL_SETTINGS_KEY, readLocalSettings, type LocalSettings } from '@/lib/virtual-mahjong/local-settings';
 import { DEFAULT_CHARACTER, defaultSeatCharacter, type CharacterChoice } from '@/lib/characters';
 import { preferredCharacter, savePreferredCharacter } from '@/app/components/character-picker';
+import { tileCode } from '@/lib/virtual-mahjong/tiles';
+import { tileName } from '@/app/components/mahjong-tile';
 const ScenarioLab = process.env.NODE_ENV === 'development' ? lazy(() => import('@/app/components/virtual-mahjong/scenario-lab')) : null;
 
-/** Local practice adapter. React receives only player A's projection; the engine stays in a Host ref. */
+function snapshot(session: LocalVirtualSession) {
+  return { view: session.view(), controls: session.controls(), now: session.clock.now() };
+}
+
+/** One local Host. Components receive only the human projection and control summaries. */
 export default function VirtualPractice({ onBack }: { onBack?: () => void } = {}) {
-  const host = useRef<MahjongMatchEngine | null>(null);
-  const sequence = useRef(0);
-  const [view, setView] = useState<PlayerVisibleGameState | null>(null);
-  const [now, setNow] = useState(0);
-  const [error, setError] = useState('');
+  const [session, setSession] = useState<LocalVirtualSession | null>(null);
+  const [frame, setFrame] = useState<ReturnType<typeof snapshot> | null>(null);
+  const [settings, setSettings] = useState<LocalSettings>({ ...DEFAULT_LOCAL_SETTINGS });
+  const [ready, setReady] = useState(false);
+  const [setupOpen, setSetupOpen] = useState(true);
+  const [supplyOpen, setSupplyOpen] = useState(false);
   const [lab, setLab] = useState(false);
   const [character, setCharacter] = useState<CharacterChoice>(DEFAULT_CHARACTER);
-  const refresh = () => { if (host.current) setView(host.current.view({ role: 'player', playerId: 'a' })); setNow(Date.now()); };
-  const start = () => {
-    host.current = new MahjongMatchEngine({ gameId: crypto.randomUUID(), rules: defaultRules(), dealerSeat: 0,
-      players: [{ id: 'a', name: '我' }, { id: 'b', name: '下家' }, { id: 'c', name: '对家' }, { id: 'd', name: '上家' }] }, { now: () => Date.now() });
-    setError(''); refresh();
-  };
-  const send = (intent: RoundIntent) => {
-    const engine = host.current; if (!engine || !view) return;
-    const response = engine.dispatch('a', { ...intent, gameId: view.gameId, roundId: view.roundId, turnId: view.turnId,
-      actionId: `local:${++sequence.current}` });
-    setError(response.ok ? '' : '操作状态已更新，请重新选择。'); refresh();
-  };
+  const active = useRef<LocalVirtualSession | null>(null);
+  const refresh = useCallback(() => { if (session && active.current === session) setFrame(snapshot(session)); }, [session]);
+  const setPaused = useCallback((reason: string, paused: boolean) => {
+    if (!session) return;
+    if (paused) session.pause(reason); else session.resume(reason);
+    if (active.current === session) setFrame(snapshot(session));
+  }, [session]);
   useEffect(() => {
-    const launch = window.setTimeout(() => { setCharacter(preferredCharacter('virtual')); start(); }, 0);
-    const timer = setInterval(() => {
-      const engine = host.current; if (!engine) return;
-      engine.tick();
-      // Deliberately simple practice seats: no AI rule decisions, just Host-authorized pass/discard.
-      for (const playerId of ['b', 'c', 'd']) {
-        const state = engine.view({ role: 'player', playerId });
-        const envelope = { gameId: state.gameId, roundId: state.roundId, turnId: state.turnId, actionId: `practice:${++sequence.current}` };
-        if (state.availableActions.canPass) engine.dispatch(playerId, { ...envelope, kind: 'RESPOND', optionId: 'pass' });
-        else if (state.phase.playerId === playerId && state.availableActions.discardableTileIds.length && state.clock && Date.now() - state.clock.startedAt >= 1000) {
-          const player = state.players.find(item => item.id === playerId)!;
-          const choices = state.availableActions.discardableTileIds;
-          engine.dispatch(playerId, { ...envelope, kind: 'DISCARD', tileId: choices.includes(player.drawnTileId ?? -1) ? player.drawnTileId : choices[0] });
-        }
-      }
-      setView(engine.view({ role: 'player', playerId: 'a' })); setNow(Date.now());
-    }, 250);
-    return () => { clearTimeout(launch); clearInterval(timer); };
+    const launch = window.setTimeout(() => {
+      setCharacter(preferredCharacter('virtual'));
+      try { setSettings(readLocalSettings(localStorage.getItem(LOCAL_SETTINGS_KEY))); } catch { /* Preferences are optional. */ }
+      setReady(true);
+    }, 0);
+    return () => window.clearTimeout(launch);
   }, []);
-  if (lab && ScenarioLab) return <Suspense fallback={<p>加载牌例…</p>}><ScenarioLab exit={() => { setLab(false); start(); }} /></Suspense>;
-  if (!view) return <main className="vm-lobby" aria-label="正在准备单机牌桌">正在准备单机牌桌…</main>;
-  return <><VirtualTable animateEntrance view={view} now={now} error={error} send={send} characters={{ a: character, b: defaultSeatCharacter(1), c: defaultSeatCharacter(2), d: defaultSeatCharacter(3) }} onChooseCharacter={choice => { setCharacter(choice); savePreferredCharacter(choice, 'virtual'); }} exit={() => { host.current = null; if (onBack) onBack(); else window.location.href = '/'; }} next={() => {
-    const result = host.current!.advanceRound({ gameId: view.gameId, roundId: view.roundId });
-    setError(result.ok ? '' : '暂时无法进入下一局，请重试。'); refresh();
-  }} />{ScenarioLab && <button style={{ position: 'fixed', left: 10, bottom: 2, zIndex: 60, background: '#172139', color: '#ffe4b9' }} onClick={() => { host.current = null; setLab(true); }}>开发牌例</button>}</>;
+  useEffect(() => {
+    if (!session) return;
+    const timer = window.setInterval(() => { session.tick(); refresh(); }, 250);
+    return () => window.clearInterval(timer);
+  }, [session, refresh]);
+  const exit = () => { active.current = null; if (onBack) onBack(); else window.location.href = '/'; };
+  const start = (choice: LocalSettings) => {
+    const next = new LocalVirtualSession(choice);
+    active.current = next; setSession(next); setFrame(snapshot(next));
+    setSettings({ ...choice }); setSetupOpen(false); setSupplyOpen(false);
+    try { localStorage.setItem(LOCAL_SETTINGS_KEY, JSON.stringify(choice)); } catch { /* Preferences are optional. */ }
+  };
+  const openSetup = () => { session?.pause('setup'); setSetupOpen(true); refresh(); };
+  const closeSetup = () => {
+    if (!session) { exit(); return; }
+    setSetupOpen(false); session.resume('setup'); refresh();
+  };
+  const openSupply = () => { session?.pause('supply'); setSupplyOpen(true); refresh(); };
+  const closeSupply = () => { setSupplyOpen(false); session?.resume('supply'); refresh(); };
+  if (!ready) return <main className="vm-local-lobby"><output>正在准备单机牌桌…</output></main>;
+  if (lab && ScenarioLab) return <Suspense fallback={<p>加载牌例…</p>}><ScenarioLab exit={() => { session?.resume('lab'); setLab(false); refresh(); }} /></Suspense>;
+  if (!session || !frame) return <LocalSetup initial={settings} key={JSON.stringify(settings)} start={start} close={exit} />;
+  const { view, controls, now } = frame;
+  const supplyName = controls.supply ? tileName(tileCode({ type: controls.supply.type, red: false })) : '';
+  return <>
+    <VirtualTable key={view.gameId} animateEntrance view={view} now={now} error={controls.error}
+      roomLabel={controls.mode === 'cooperative' ? '配合做牌' : '普通人机'} botIds={session.botIds}
+      local={{ paused: controls.paused, setPaused, openSetup,
+        ...(controls.mode === 'cooperative' ? { openSupply } : {}),
+        status: controls.supply ? '待供 ' + supplyName + ' · ' + (controls.supply.target === 'next' ? '下一位人机'
+          : view.players.find(player => player.id === controls.supply!.target)?.name ?? '') : controls.mode === 'cooperative' ? '配合做牌' : '普通人机' }}
+      characters={Object.fromEntries(view.players.map((player, index) => [player.id, index === 0 ? character : defaultSeatCharacter(index)]))}
+      onChooseCharacter={choice => { setCharacter(choice); savePreferredCharacter(choice, 'virtual'); }}
+      send={intent => { session.send(intent); refresh(); }} exit={exit} next={() => { session.advance(); refresh(); }} />
+    {setupOpen && <LocalSetup initial={settings} modal start={start} close={closeSetup} />}
+    {supplyOpen && <LocalSupplyPanel controls={controls} players={view.rules.players}
+      seats={view.players.filter(player => session.botIds.includes(player.id)).map(player => ({ id: player.id, name: player.name }))}
+      supply={(type, target) => { const response = session.requestSupply(type, target); refresh(); return response.ok ? '' : localControlMessage(response.error); }}
+      keep={types => { const response = session.setKeepTypes(types); refresh(); return response.ok ? '' : localControlMessage(response.error); }}
+      cancel={() => { session.cancelSupply(); refresh(); }} clear={() => { session.clearControls(); refresh(); }} close={closeSupply} />}
+    {ScenarioLab && <button style={{ position: 'fixed', left: 10, bottom: 2, zIndex: 60, background: '#172139', color: '#ffe4b9' }}
+      onClick={() => { session.pause('lab'); setLab(true); }}>开发牌例</button>}
+  </>;
 }

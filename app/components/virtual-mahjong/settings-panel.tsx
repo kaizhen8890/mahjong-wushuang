@@ -5,19 +5,21 @@ import { useNativeBackLayer } from '@/app/hooks/use-native-back-layer';
 import { RIICHI_MUSIC } from '@/app/hooks/use-game-audio';
 import { QUALITY_LEVELS, type TableQuality } from './three/quality';
 import './settings-panel.css';
+import type { LocalTableControls } from './table';
 
-export function TableSettingsPanel({ close, three, toggleThree, quality, changeQuality, graphicsError, reduced, setReduced, sound, setSound, music, setMusic, track, setTrack, confirmMode, setConfirmMode, chooseCharacter }: {
+export function TableSettingsPanel({ close, three, toggleThree, quality, changeQuality, graphicsError, reduced, setReduced, sound, setSound, music, setMusic, track, setTrack, confirmMode, setConfirmMode, chooseCharacter, local }: {
   close: () => void; three: boolean; toggleThree: () => void; quality: TableQuality; changeQuality: (value: TableQuality) => void;
   graphicsError: string; reduced: boolean; setReduced: (value: boolean) => void; sound: number; setSound: (value: number) => void;
   music: number; setMusic: (value: number) => void; track: string; setTrack: (value: string) => void;
   confirmMode: boolean; setConfirmMode: (value: boolean) => void; chooseCharacter?: () => void;
+  local?: LocalTableControls;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   const [section, setSection] = useState('显示');
   useEffect(() => { ref.current?.showModal(); }, []);
   useNativeBackLayer(() => ref.current, close);
   return <dialog ref={ref} className="vm-preferences" aria-labelledby="vm-preferences-title" onCancel={event => { event.preventDefault(); close(); }}>
-    <header><div><h2 id="vm-preferences-title">牌桌设置</h2><p>调整立即生效 · 对局计时继续</p></div><button type="button" aria-label="收起牌桌设置" onClick={close}><X /></button></header>
+    <header><div><h2 id="vm-preferences-title">牌桌设置</h2><p>{local ? '对局已暂停 · 返回后继续' : '调整立即生效 · 对局计时继续'}</p></div><button type="button" aria-label="收起牌桌设置" onClick={close}><X /></button></header>
     <nav aria-label="设置分组">{[['显示', Monitor], ['声音', Volume2], ['操作', Hand]].map(([name, Icon]) => { const LabelIcon = Icon as typeof Monitor; return <button type="button" key={String(name)} aria-pressed={section === name} onClick={() => setSection(String(name))}><LabelIcon />{String(name)}</button>; })}</nav>
     <div className="vm-preferences-body">
       {section === '显示' && <>
@@ -31,6 +33,7 @@ export function TableSettingsPanel({ close, three, toggleThree, quality, changeQ
         <section><label>立直曲目<select aria-label="立直曲目" value={track} onChange={event => setTrack(event.target.value)}><option value="random">随机播放</option>{RIICHI_MUSIC.map(item => <option key={item.id} value={item.id}>{item.label}</option>)}</select></label></section>
       </>}
       {section === '操作' && <section><h3>出牌方式</h3><div className="vm-preferences-choices"><button aria-pressed={!confirmMode} onClick={() => setConfirmMode(false)}><strong>双击同一张牌</strong><small>先选中，再点一次打出</small></button><button aria-pressed={confirmMode} onClick={() => setConfirmMode(true)}><strong>选牌后确认</strong><small>选中手牌，再点出牌按钮</small></button></div><p>自动理牌、和牌、鸣牌与摸切仍在牌桌侧边调整。</p></section>}
+      {local && <section><h3>本地牌局</h3><div className="vm-preferences-options">{local.openSupply && <button onClick={local.openSupply}>供牌与保留</button>}<button onClick={local.openSetup}>新开一场</button></div><small>新开一场可调整人数、点数、击飞和人机模式。</small></section>}
     </div>
     <footer><span>仅调整本机体验</span><button onClick={close}>返回牌桌</button></footer>
   </dialog>;
